@@ -91,6 +91,11 @@
     relate: () => ({ cost: G.actionCost(s, 'relate'), gain: { rel: 1, stress: -1 } }),
     rest: () => ({ cost: {}, gain: { stress: -2 } }),
   };
+  // ไอคอนและหมวดสีของกิจกรรม (สีใช้เป็นแถบด้านซ้ายของปุ่ม)
+  const ACT_LOOK = {
+    overtime: ['💼', 'work'], learn: ['📖', 'grow'], exercise: ['🏃', 'care'], relate: ['👥', 'care'], rest: ['😌', 'care'],
+    promote: ['🎖️', 'work'], explore: ['🔍', 'grow'], invest: ['📈', 'money'], repay: ['🔗', 'money'],
+  };
   function actionDock() {
     const btns = D.ACTIONS.filter(a => a.id !== 'project').map(a => {
       const why = G.actionStatus(s, a.id);
@@ -103,10 +108,13 @@
       else if (a.id === 'invest') detail = `<span class="note">ย้าย 🪙 เข้า 📈 (ขั้นต่ำ 2) ได้ +1/รอบ ต่อทุก 4</span>`;
       else if (a.id === 'repay') detail = `<span class="note">ลด 🔗 ดอกเบี้ย 1 ต่อหนี้ทุก 4</span>`;
       const tip = (detail.match(/<span class="note">(.*?)<\/span>/) || [])[1] || '';
-      return `<button class="act" data-act="${a.id}" ${why ? 'disabled' : ''} title="${tip.replace(/"/g, '&quot;')}"><b>${esc(a.label)}</b>${detail}${whyTag(why)}</button>`;
+      const [ico, kind] = ACT_LOOK[a.id] || ['•', 'work'];
+      return `<button class="act k-${kind}" data-act="${a.id}" ${why ? 'disabled' : ''} title="${tip.replace(/"/g, '&quot;')}"><b><i class="act-ico">${ico}</i>${esc(a.label)}</b>${detail}${whyTag(why)}</button>`;
     }).join('');
     const live = s.phase === 'actions';
+    const pips = Array.from({ length: s.crisis ? 3 : 4 }, (_, i) => `<i class="${i < s.time ? 'on' : ''}"></i>`).join('');
     return `<section class="dock ${live ? '' : 'waiting'}">
+      <div class="dock-lead"><b>ใช้เวลา</b><span class="dock-pips">${pips}</span><small>เหลือ ${s.time} ช่อง</small></div>
       <div class="dock-acts">${btns}</div>
       ${live ? '' : '<span class="dock-note">ตัดสินใจการ์ดบนโต๊ะก่อน</span>'}
       <button class="btn dock-end" data-do="end" ${live ? '' : 'disabled'}>${s.time > 0 ? `จบรอบ<small>เหลือ ${s.time} ช่อง</small>` : 'จบรอบ →'}</button>

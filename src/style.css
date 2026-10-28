@@ -512,3 +512,43 @@ html.m .tcard.dense .lv.next { gap: 2px 8px; }
 /* ภาพอาชีพบนการ์ดตัวเลือก (ถ้ายังไม่มีไฟล์ ช่องนี้จะหายไปเอง) */
 .pick-art { display: block; aspect-ratio: 16 / 9; margin: -14px -14px 4px; border-radius: 12px 12px 0 0; overflow: hidden; background: var(--sage-soft); }
 .pick-art img { width: 100%; height: 100%; object-fit: cover; object-position: center 45%; display: block; }
+
+/* ---------------------------------------------------------------- dock กิจกรรม: แถบเข้ม ปุ่มเด่น */
+.dock {
+  background: linear-gradient(180deg, #2f5440, var(--sage-dark));
+  border-top: 3px solid var(--mustard); box-shadow: 0 -8px 24px rgba(20, 35, 27, .28); gap: 10px;
+}
+.dock-lead { flex: none; display: grid; justify-items: center; gap: 2px; padding: 0 6px 0 2px; color: #fff; }
+.dock-lead b { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: .02em; }
+.dock-lead small { font-size: 11px; opacity: .8; }
+.dock-pips { display: flex; gap: 4px; }
+.dock-pips i { width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--mustard); }
+.dock-pips i.on { background: var(--mustard); }
+.dock-acts { gap: 8px; padding: 2px 2px 4px; scrollbar-color: rgba(255, 255, 255, .35) transparent; }
+.dock-acts .act {
+  background: #fffdf8; border: 0; border-left: 5px solid var(--sage); border-radius: 12px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .12), 0 4px 12px rgba(0, 0, 0, .12); padding: 7px 10px; transition: transform .1s, box-shadow .1s;
+}
+.dock-acts .act b { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px; color: var(--ink); }
+.act-ico { font-style: normal; font-size: 17px; line-height: 1; }
+.dock-acts .act:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0, 0, 0, .22); }
+.dock-acts .act:active:not(:disabled) { transform: translateY(0); }
+.dock-acts .act.k-work { border-left-color: var(--coral); }
+.dock-acts .act.k-grow { border-left-color: var(--star); }
+.dock-acts .act.k-care { border-left-color: var(--teal); }
+.dock-acts .act.k-money { border-left-color: var(--mustard); }
+.dock-acts .act:disabled { opacity: 1; background: rgba(255, 255, 255, .14); box-shadow: none; }
+.dock-acts .act:disabled b, .dock-acts .act:disabled .chip, .dock-acts .act:disabled .note { color: rgba(255, 255, 255, .55) !important; }
+.dock-acts .act:disabled .act-ico { filter: grayscale(1) opacity(.6); }
+.dock-acts .act:disabled .why { color: #ffd2c4; }
+.dock-acts .act:disabled .chip.req { background: rgba(255, 255, 255, .12); }
+.dock-end {
+  background: var(--mustard); color: var(--ink); border-radius: 12px; padding: 8px 18px; font-size: 16px;
+  box-shadow: 0 3px 0 #b9852a, 0 6px 16px rgba(0, 0, 0, .25);
+}
+.dock-end:hover:not(:disabled) { background: #f0b84a; }
+.dock-end:disabled { background: rgba(255, 255, 255, .2); color: rgba(255, 255, 255, .6); box-shadow: none; }
+.dock.waiting .dock-acts { opacity: .45; }
+.dock-note { background: var(--mustard); color: var(--ink); font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, .25); }
+html.m .dock-lead { display: none; }
+html.m .dock-acts .act b { font-size: 14px; }
