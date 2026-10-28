@@ -37,7 +37,7 @@ function uniq(list, name) {
 function count(list, n, name) { if (list.length !== n) err(name, `ต้องมี ${n} ใบ แต่มี ${list.length}`); }
 
 count(D.CAREERS, 8, 'CAREERS'); count(D.GOALS, 8, 'GOALS'); count(D.PROJECTS, 12, 'PROJECTS');
-count(D.EVENTS, 24, 'EVENTS'); count(D.ECHOES, 16, 'ECHOES'); count(D.OPPORTUNITIES, 12, 'OPPORTUNITIES');
+count(D.EVENTS, 24, 'EVENTS'); count(D.ECHOES, 19, 'ECHOES'); count(D.OPPORTUNITIES, 12, 'OPPORTUNITIES');
 [['CAREERS', D.CAREERS], ['GOALS', D.GOALS], ['PROJECTS', D.PROJECTS], ['EVENTS', D.EVENTS], ['ECHOES', D.ECHOES], ['OPPORTUNITIES', D.OPPORTUNITIES]]
   .forEach(([n, l]) => uniq(l, n));
 

@@ -143,7 +143,7 @@
         { label: 'เข้ากลุ่มวิ่ง', cost: { cash: 1 }, gain: { health: 1, rel: 1 } } ] },
       { name: 'ฮาล์ฟมาราธอน', cost: { cash: 1, energy: 2 }, outcomes: [
         { label: 'ฝืนทำเวลา', gain: { health: 1, lp: 2, stress: 1 } },
-        { label: 'ค่อยเป็นค่อยไป', gain: { health: 2, lp: 1 } } ] },
+        { label: 'ค่อยเป็นค่อยไป', gain: { health: 2, lp: 1 }, echo: { id: 'E17', era: '+1' } } ] },
       { name: 'ฟูลมาราธอน', cost: { cash: 2, energy: 3 }, outcomes: [
         { label: 'เข้าเส้นชัย', gain: { lp: 3, health: 1, ongoing: { stress: -1 } } },
         { label: 'วิ่งการกุศล', gain: { impact: 3, rel: 1 } } ] },
@@ -246,7 +246,7 @@
       { label: 'เริ่มลงทุนทันที', cost: { cash: 2 }, gain: { portfolio: 2 }, echo: { id: 'E02', era: '+1' } },
       { label: 'เก็บไว้เฉยๆ', gain: {} } ] },
     { id: 'V102', era: 1, title: 'เพื่อนชวนเที่ยวต่างประเทศ', story: 'แก๊งเพื่อนมหาวิทยาลัยนัดเที่ยวญี่ปุ่นกันครั้งแรกหลังเรียนจบ', options: [
-      { label: 'ไปด้วย', cost: { cash: 3 }, gain: { stress: -2, rel: 1 } },
+      { label: 'ไปด้วย', cost: { cash: 3 }, gain: { stress: -2, rel: 1 }, echo: { id: 'E18', era: '+1' } },
       { label: 'ไม่ไป ทำงานเก็บเงิน', gain: { cash: 2, stress: 1 }, echo: { id: 'E03', era: '+1' } } ] },
     { id: 'V103', era: 1, title: 'ข้อเสนอที่ปฏิเสธยาก', story: 'หัวหน้าชวนรับผิดชอบโครงการสำคัญ แต่ต้องใช้เวลาส่วนตัวมากขึ้น', options: [
       { label: 'รับงาน', cost: { energy: 2 }, gain: { cash: 3, skills: 1, stress: 1 } },
@@ -260,14 +260,14 @@
       { label: 'ซื้อแพ็กเกจเต็มแล้วเร่งเรียน', cost: { cash: 4 }, gain: { skills: 2, stress: 1 } },
       { label: 'ข้ามไป', gain: {} } ] },
     { id: 'V106', era: 1, title: 'นอนดึกติดต่อกันหลายเดือน', story: 'งานกับซีรีส์ทำให้คุณนอนตีสองเป็นปกติ', options: [
-      { label: 'ปรับตารางชีวิตใหม่', cost: { energy: 2 }, gain: { health: 1 } },
+      { label: 'ปรับตารางชีวิตใหม่', cost: { energy: 2 }, gain: { health: 1 }, echo: { id: 'E17', era: '+1' } },
       { label: 'ยังไหวอยู่', gain: { stress: 2 }, echo: { id: 'E05', era: '+1' } } ] },
     // ยุค II
     { id: 'V201', era: 2, title: 'เพื่อนชวนร่วมหุ้น', story: 'เพื่อนสนิทกำลังเปิดร้านกาแฟ ขาดเงินอีกก้อน', options: [
       { label: 'ร่วมหุ้น', cost: { cash: 4 }, gain: {}, echo: { id: 'E06', era: '+1' } },
       { label: 'ปฏิเสธ', gain: { rel: -1 } } ] },
     { id: 'V202', era: 2, title: 'งานแต่งเพื่อนสนิท', story: 'เพื่อนขอให้เป็นเพื่อนเจ้าบ่าวเจ้าสาว ต้องช่วยงานหลายวัน', options: [
-      { label: 'ช่วยงานเต็มที่', cost: { cash: 2, energy: 1 }, gain: { rel: 2 } },
+      { label: 'ช่วยงานเต็มที่', cost: { cash: 2, energy: 1 }, gain: { rel: 2 }, echo: { id: 'E18', era: '+1' } },
       { label: 'ไปร่วมงานอย่างเดียว', cost: { cash: 1 }, gain: {} },
       { label: 'ติดงาน ไม่ไป', gain: { rel: -1 } } ] },
     { id: 'V203', era: 2, title: 'บริษัทปรับโครงสร้าง', story: 'หลายทีมถูกยุบ งานที่เหลือตกมาที่คนที่ยังอยู่', options: [
@@ -275,7 +275,7 @@
       { label: 'เตรียมหางานสำรอง', cost: { energy: 2 }, gain: { skills: 1 } },
       { label: 'นิ่งไว้ก่อน', gain: { stress: 1 } } ] },
     { id: 'V204', era: 2, title: 'พ่อแม่เริ่มต้องการคนดูแล', story: 'พ่อหกล้มเป็นครั้งที่สอง แม่ดูแลคนเดียวไม่ไหว', options: [
-      { label: 'รับมาอยู่ด้วย', gain: { rel: 2, ongoing: { cash: -1 } } },
+      { label: 'รับมาอยู่ด้วย', gain: { rel: 2, ongoing: { cash: -1 } }, echo: { id: 'E19', era: '+1' } },
       { label: 'จ้างผู้ดูแล', cost: { cash: 3 }, gain: {} },
       { label: 'ไว้ค่อยว่ากัน', gain: {}, echo: { id: 'E08', era: '+1' } } ] },
     { id: 'V205', era: 2, title: 'โบนัสก้อนใหญ่', story: 'ปีนี้ผลงานดี โบนัสออกมาเกินคาด', options: [
@@ -301,7 +301,7 @@
       { label: 'ไปเยี่ยมและช่วยค่ารักษา', cost: { cash: 3, energy: 1 }, gain: { rel: 2, impact: 1 } },
       { label: 'ส่งข้อความให้กำลังใจ', gain: {} } ] },
     { id: 'V305', era: 3, title: 'คนในบ้านต้องการคุณ', story: 'ลูกมีปัญหาที่โรงเรียน ครูขอพบผู้ปกครองช่วงเวลางาน', options: [
-      { label: 'ลางานไปคุยเอง', cost: { energy: 2 }, gain: { rel: 2 } },
+      { label: 'ลางานไปคุยเอง', cost: { energy: 2 }, gain: { rel: 2 }, echo: { id: 'E19', era: '+1' } },
       { label: 'จ้างติวเตอร์แก้ปัญหา', cost: { cash: 3 }, gain: {}, echo: { id: 'E13', era: '+1' } },
       { label: 'ให้คู่ชีวิตจัดการไปก่อน', gain: { rel: -1 }, echo: { id: 'E13', era: '+1' } } ] },
     { id: 'V306', era: 3, title: 'วิกฤตวัยกลางคน', story: 'ตื่นมาแล้วรู้สึกว่าชีวิตวนอยู่ที่เดิม', options: [
@@ -333,7 +333,7 @@
       { label: 'ขอผ่าน', gain: {} } ] },
   ];
 
-  // ---------------------------------------------------------------- Echo (16)
+  // ---------------------------------------------------------------- Echo (19: ดี 8 · ร้าย 11)
   // kind: good | bad · Echo ร้ายมีทาง "แก้ไข" กับ "ปล่อยไว้" (regret)
   const ECHOES = [
     { id: 'E01', kind: 'bad', title: 'สัญญาณเตือนจากร่างกาย', story: 'Burnout ครั้งก่อนทิ้งร่องรอย ร่างกายเริ่มเรียกร้องการพัก', options: [
@@ -380,6 +380,13 @@
     { id: 'E16', kind: 'bad', title: 'นักลงทุนเร่งผลงาน', story: 'บอร์ดต้องการตัวเลขโตสามเท่าภายในปีนี้', options: [
       { label: 'เจรจาเป้าใหม่', require: { skills: 5 }, cost: { energy: 2 }, gain: { stress: 1 } },
       { label: 'โหมทำตามเป้า', gain: { stress: 3, health: -1 }, regret: 1 } ] },
+    { id: 'E17', kind: 'good', title: 'ร่างกายที่ดูแลมา', story: 'ช่วงที่คนรอบตัวเริ่มป่วย คุณยังมีแรงเต็มที่', options: [
+      { label: 'ใช้แรงที่มีเดินหน้าต่อ', gain: { health: 1, stress: -2 } } ] },
+    { id: 'E18', kind: 'good', title: 'เพื่อนในวันที่ลำบาก', story: 'เพื่อนที่คุณเคยอยู่ข้างเขา กลับมาช่วยคุณบ้าง', options: [
+      { label: 'รับความช่วยเหลือ', gain: { cash: 4 } },
+      { label: 'ชวนกันทำโปรเจกต์ใหม่', gain: { skills: 1, rel: 1 } } ] },
+    { id: 'E19', kind: 'good', title: 'ครอบครัวที่อยู่ข้างกัน', story: 'ในวันที่งานหนักที่สุด คนที่บ้านรับภาระแทนให้โดยไม่ต้องขอ', options: [
+      { label: 'ขอบคุณและพักใจ', gain: { rel: 1, lp: 2, stress: -1 } } ] },
   ];
 
   // ---------------------------------------------------------------- Opportunities (12)
