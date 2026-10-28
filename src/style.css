@@ -580,3 +580,12 @@ html:not(.m) .hero.setup .pickgrid { grid-template-columns: repeat(3, minmax(0, 
 .name-card input:focus { outline: none; border-color: var(--sage); }
 .name-card .note { margin: 0; }
 .topbar .who { color: var(--mustard); }
+
+/* เรื่องเล่าที่ Claude เรียบเรียง */
+.ai-story #ai-text h3 { font-size: 18px; color: var(--sage-dark); margin: 16px 0 6px; }
+.ai-story #ai-text h3:first-child { margin-top: 4px; }
+.ai-story #ai-text p { margin: 0 0 10px; line-height: 1.9; font-size: 15.5px; }
+.ai-story.loading #ai-text > :last-child::after { content: '▍'; color: var(--mustard); animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+details.panel > summary { cursor: pointer; font-family: 'Kanit', sans-serif; font-weight: 600; color: var(--sage-dark); font-size: 16px; }
+details.panel[open] > summary { margin-bottom: 6px; }

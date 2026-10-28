@@ -1,0 +1,8 @@
+# หน้าเกมเป็นไฟล์ static ล้วน คัดลอกเฉพาะไฟล์ที่ต้องใช้ไป dist (ไม่ให้ node_modules, tools, docs หลุดขึ้นเว็บ)
+[build]
+  command = "rm -rf dist && mkdir dist && cp -r index.html src assets dist/"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"

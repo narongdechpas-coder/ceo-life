@@ -432,11 +432,90 @@
       <div><h1>${s.gameOver === 'crisis' ? 'ชีวิตต้องเริ่มต้นใหม่' : `ชีวิตของ${s.name ? esc(gapIfLatin(s.name)) : 'คุณ'}`}</h1>
         <p class="story">${esc(c.name)} · ตั้งใจเป็น “${esc(g.name)}” · ${f.goal === 'full' ? 'ทำได้ตามที่ตั้งใจ' : f.goal === 'partial' ? 'ทำได้บางส่วน' : 'ยังไปไม่ถึง'}</p>
         <p><span class="tier-badge">${esc(f.tier)}</span> <b class="big">${f.total} คะแนน</b> <span class="note">ช่วงคะแนนของแต่ละระดับยังเป็นค่าชั่วคราว</span></p></div>
-      <section class="panel"><div class="section-title"><h2>เรื่องเล่า 4 ยุค</h2></div>${eras}</section>
+      ${aiPanel()}
+      ${s.aiStory ? `<details class="panel"><summary>ดูเหตุการณ์ทีละบท</summary>${eras}</details>`
+        : `<section class="panel"><div class="section-title"><h2>เรื่องเล่า 4 ยุค</h2></div>${eras}</section>`}
       <section class="panel"><div class="section-title"><h2>การตัดสินใจที่ส่งผลต่อเนื่อง</h2><small>เลือกวันนั้น → ผลที่กลับมา → สิ่งที่คุณทำ</small></div>${chains()}</section>
       <section class="panel"><div class="section-title"><h2>คะแนนมาจากไหน</h2></div><table class="score-table">${rows}<tr class="total"><td>รวม</td><td>${f.total}</td></tr></table></section>
       <div><button class="btn" data-do="new">เริ่มชีวิตใหม่</button> <span class="note">seed ${s.seed}</span></div>
     </main>`;
+  }
+
+  // ---------------------------------------------------------------- เรื่องเล่าที่ Claude เรียบเรียง
+  // เรียกผ่าน Netlify Function (/api/life-story) ครั้งเดียวต่อเกม แล้วเก็บผลไว้ในเซฟ
+  // เปิดจากไฟล์ในเครื่องหรือเว็บที่ไม่มี function จะเห็นเรื่องเล่าแบบแยกบทตามเดิม
+  let ai = { status: 'idle', text: '', seed: null };
+  const aiAvailable = () => /^https?:$/.test(location.protocol);
+  const stripMark = t => t.replace(/\n?\[\[(END|ERROR)\]\]\s*$/, '');
+  function mdLite(t) {
+    const out = []; let para = [];
+    const flush = () => { if (para.length) out.push(`<p>${para.map(esc).join('<br>')}</p>`); para = []; };
+    for (const line of t.replace(/\r/g, '').split('\n')) {
+      const l = line.trim();
+      if (l.startsWith('## ')) { flush(); out.push(`<h3>${esc(l.slice(3))}</h3>`); } else if (!l) flush(); else para.push(l);
+    }
+    flush();
+    return out.join('');
+  }
+  function aiPanel() {
+    const head = note => `<div class="section-title"><h2>เรื่องเล่าชีวิต</h2><small>${note}</small></div>`;
+    if (s.aiStory) return `<section class="panel ai-story">${head('เรียบเรียงโดย Claude จากการตัดสินใจของคุณ')}<div id="ai-text">${mdLite(s.aiStory)}</div></section>`;
+    if (!aiAvailable() || ai.status === 'off') return '';
+    if (ai.status === 'fail') return `<section class="panel ai-story">${head('')}<p class="note">เรียบเรียงเรื่องเล่าไม่สำเร็จ ด้านล่างเป็นเรื่องเล่าแบบแยกบท</p>
+      <button class="btn ghost" data-do="ai-retry">ลองเรียบเรียงอีกครั้ง</button></section>`;
+    return `<section class="panel ai-story loading">${head('Claude กำลังเรียบเรียง…')}<div id="ai-text">${ai.text ? mdLite(stripMark(ai.text))
+      : '<p class="note">กำลังร้อยเรียงเรื่องราวจากการตัดสินใจทั้งหมดของคุณ อาจใช้เวลาราวครึ่งนาที</p>'}</div></section>`;
+  }
+  // ส่งเฉพาะข้อเท็จจริงที่หน้าสรุปแสดงอยู่แล้ว Claude จะได้ไม่ต้องเดา
+  function storyFacts() {
+    const txt = el => el.textContent.replace(/\s+/g, ' ').trim();
+    const f = s.final;
+    return {
+      name: s.name || '', career: G.CAREER[s.careerId].name, goal: G.GOAL[s.goalId].name,
+      goalResult: f.goal === 'full' ? 'ทำได้ตามที่ตั้งใจ' : f.goal === 'partial' ? 'ทำได้บางส่วน' : 'ยังไปไม่ถึง',
+      ending: s.gameOver === 'crisis' ? 'สุขภาพทรุดหนักจนชีวิตจบก่อนครบ 8 บท' : 'ใช้ชีวิตครบทั้ง 8 บท',
+      tier: f.tier, total: f.total,
+      // แยก node ทีละชิ้น ไม่ให้ "บทที่ 1" ติดกับประโยค
+      eras: [...document.querySelectorAll('.era-story')].map(a => ({ title: txt(a.querySelector('h3')),
+        lines: [...a.querySelectorAll('p')].map(p => [...p.childNodes].map(n => n.textContent.trim()).filter(Boolean).join(' ')) })),
+      echoes: [...document.querySelectorAll('.chains li')].map(txt),
+      final: [`ตำแหน่งสุดท้าย ${G.tier(s).name}`, `สุขภาพ ${s.health}`, `ความสัมพันธ์ ${s.rel}`, `ทักษะ ${s.skills}`, `ความเครียด ${s.stress}`,
+        `เงินสด ${s.cash}`, `เงินลงทุน ${s.portfolio}`, `หนี้ ${s.debt}`, `Burnout ${s.burnouts} ครั้ง`, `Regret ${f.regrets} เรื่อง`],
+      score: f.rows.map(([k, v]) => `${k} ${v > 0 ? '+' : ''}${v}`),
+    };
+  }
+  async function requestStory() {
+    if (ai.status === 'loading' || s.phase !== 'end' || s.aiStory) return;
+    const seed = s.seed;
+    const facts = storyFacts();
+    ai = { status: 'loading', text: '', seed };
+    render();
+    const same = () => s.phase === 'end' && s.seed === seed;
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 120000);
+    try {
+      const res = await fetch('/api/life-story', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(facts), signal: ctl.signal });
+      // ไม่มี function (เช่น GitHub Pages) หรือยังไม่ได้ตั้ง key: ไม่ต้องให้ลองใหม่
+      if ([404, 405, 503].includes(res.status)) { ai.status = 'off'; if (same()) render(); return; }
+      if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
+      const reader = res.body.getReader(), dec = new TextDecoder();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (!same()) { ctl.abort(); return; }
+        ai.text += dec.decode(value, { stream: true });
+        const box = document.getElementById('ai-text');
+        if (box) box.innerHTML = mdLite(stripMark(ai.text));
+      }
+      if (!/\[\[END\]\]\s*$/.test(ai.text)) throw new Error('ไม่ครบ');
+      if (!same()) return;
+      s.aiStory = stripMark(ai.text).trim();
+      ai.status = 'done';
+    } catch (e) {
+      if (ai.seed !== seed) return;
+      ai.status = 'fail';
+    } finally { clearTimeout(timer); }
+    if (same()) render();
   }
 
   // ---------------------------------------------------------------- table
@@ -625,6 +704,7 @@
     const lg = document.getElementById('log'); if (lg) lg.scrollTop = lg.scrollHeight;
     const cards = document.getElementById('cards'); if (cards) cards.scrollLeft = 0;
     fitCards();
+    if (s.phase === 'end' && !s.aiStory && ai.status === 'idle' && aiAvailable()) setTimeout(requestStory);
     const pname = document.getElementById('pname');
     if (pname) { pname.focus(); pname.select(); document.getElementById('name-form').onsubmit = ev => { ev.preventDefault(); startWithName(); }; }
     const amt = document.getElementById('amt');
@@ -695,6 +775,7 @@
   function newGame() {
     s = G.newGame((Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0);
     ui = { modal: null, sheet: null, showAll: 0, pickGoal: null, pickCareer: null };
+    ai = { status: 'idle', text: '', seed: null };
     window.scrollTo(0, 0);
     render();
   }
@@ -710,6 +791,7 @@
     if (d.do === 'bg') { applyBg(!bgPlain()); render(); return; }
     if (d.do === 'showall') { ui.showAll = ui.showAll === s.round ? 0 : s.round; render(); return; }
     if (d.do === 'new') { ui.sheet = null; if (s.phase === 'setup' || s.phase === 'end' || confirm('เริ่มเกมใหม่? เกมที่เล่นอยู่จะหายไป')) newGame(); return; }
+    if (d.do === 'ai-retry') { ai.status = 'idle'; requestStory(); return; }
     if (d.do === 'rules') { ui.sheet = null; ui.modal = 'rules'; render(); return; }
     if (d.do === 'close') { ui.modal = null; ui.sheet = null; render(); return; }
     if (d.do === 'reroll') {

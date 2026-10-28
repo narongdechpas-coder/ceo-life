@@ -12,7 +12,13 @@
 | `src/data/cards.js` | ข้อมูลการ์ดทั้งหมด (แก้ตัวเลขที่นี่) |
 | `src/game.js` | Game engine ใช้ร่วมกันทั้งเบราว์เซอร์และ Node |
 | `src/ui.js`, `src/style.css` | หน้าเกม (Style 2) แบบโต๊ะ: บนโต๊ะมีเฉพาะการ์ดที่ต้องตัดสินใจตอนนั้น |
-| `assets/art/<id>.webp` | ภาพประกอบการ์ด 26 ภาพ (prompt และสเปกอยู่ที่ `docs/image-prompts.md`, ตรวจด้วย `node tools/check-art.js`) ถ้าไม่มีไฟล์จะใช้ไอคอนแทน |
+| `netlify/functions/life-story.mjs` | ให้ Claude เรียบเรียงบทสรุปชีวิตตอนจบเกม (streaming) |
+| `assets/art/<id>.webp` | ภาพประกอบการ์ด 27 ภาพ (prompt และสเปกอยู่ที่ `docs/image-prompts.md`, ตรวจด้วย `node tools/check-art.js`) ถ้าไม่มีไฟล์จะใช้ไอคอนแทน |
+
+## Deploy (Netlify)
+- `netlify.toml` คัดลอกเฉพาะ `index.html`, `src`, `assets` ไปที่ `dist` แล้ว publish จากโฟลเดอร์นั้น
+- ตั้ง env `ANTHROPIC_API_KEY` ใน Netlify เพื่อเปิดเรื่องเล่าที่ Claude เรียบเรียง ถ้าไม่ได้ตั้ง หน้าสรุปจะแสดงเรื่องเล่าแบบแยกบทตามเดิม
+- เปิดจากไฟล์ในเครื่องหรือเว็บที่ไม่มี function ก็เล่นได้ครบ ยกเว้นเรื่องเล่าที่ Claude เรียบเรียง
 
 ## ตรวจ
 ```bash

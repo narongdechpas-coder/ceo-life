@@ -1,0 +1,11 @@
+{
+  "name": "life-ceo",
+  "private": true,
+  "description": "LIFE CEO — เกมจำลองชีวิต (หน้าเว็บไม่มีขั้น build ส่วน dependency ใช้กับ Netlify Function เท่านั้น)",
+  "scripts": {
+    "test": "node tools/validate-cards.js && node tools/smoke.js 1000"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.3.0"
+  }
+}
