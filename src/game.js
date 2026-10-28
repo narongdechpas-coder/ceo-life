@@ -105,14 +105,26 @@
     const target = Math.min(4, eraOf(s.round) + 1);
     s.echoQueue[target].push(id);
     s.echoesPlanted += 1;
-    s.echoLinks.push({ id, planted: s.round, from: ctx || '', resolved: null });
+    (s.echoLinks = s.echoLinks || []).push({ id, planted: s.round, from: ctx || '', resolved: null });
     log(s, `มีผลสะท้อนบางอย่างรออยู่ในยุค ${target}`, 'echo');
   }
   // บันทึกเรื่องราวแบบมีโครงสร้าง สำหรับหน้าสรุปชีวิต
-  function story(s, entry) { s.story.push({ round: s.round, ...entry }); }
+  function story(s, entry) { (s.story = s.story || []).push({ round: s.round, ...entry }); }
   function snapshot(s) {
-    s.snaps.push({ round: s.round, cash: s.cash, portfolio: s.portfolio, debt: s.debt, health: s.health, rel: s.rel,
+    (s.snaps = s.snaps || []).push({ round: s.round, cash: s.cash, portfolio: s.portfolio, debt: s.debt, health: s.health, rel: s.rel,
       skills: s.skills, stress: s.stress, lp: s.lp, tier: s.careerTier, passive: passive(s), cost: livingCost(s) });
+  }
+
+  // ---------------------------------------------------------------- save เก่า
+  // เติมช่องที่เวอร์ชันหลังเพิ่มเข้ามา ให้เกมที่เซฟไว้ก่อนอัปเดตเล่นต่อได้
+  function migrate(s) {
+    if (!s || typeof s !== 'object') return s;
+    for (const k of ['story', 'echoLinks', 'snaps', 'log', 'pending', 'oppChoices', 'completed', 'ongoing']) if (!Array.isArray(s[k])) s[k] = [];
+    if (!s.flags) s.flags = { advanced: [] };
+    if (!Array.isArray(s.flags.advanced)) s.flags.advanced = [];
+    if (!s.echoQueue) s.echoQueue = { 1: [], 2: [], 3: [], 4: [] };
+    if (typeof s.impactLp !== 'number') s.impactLp = 0;
+    return s;
   }
 
   // ---------------------------------------------------------------- เริ่มเกม
@@ -192,7 +204,7 @@
     applyOutcome(s, o, card.id, `“${card.title}” แล้วเลือก${o.label}`);
     if (kind === 'echo' && o.regret) s.regrets += 1;
     if (kind === 'echo') {
-      const link = s.echoLinks.find(l => l.id === card.id && !l.resolved);
+      const link = (s.echoLinks || []).find(l => l.id === card.id && !l.resolved);
       if (link) link.resolved = { round: s.round, label: o.label, regret: !!o.regret };
       story(s, { kind: 'echo', id: card.id, good: card.kind === 'good', title: card.title, label: o.label, regret: !!o.regret, from: link ? link.from : '', planted: link ? link.planted : null });
     } else story(s, { kind: 'event', title: card.title, label: o.label, echo: !!o.echo });
@@ -399,7 +411,7 @@
 
   const API = {
     D, CAREER, GOAL, PROJECT, EVENT, ECHO, OPP, ROUNDS,
-    newGame, chooseSetup, chooseOption, doAction, takeOpportunity, endRound,
+    newGame, migrate, chooseSetup, chooseOption, doAction, takeOpportunity, endRound,
     currentCard, actionStatus, actionCost, projectStatus, score, summary,
     eraOf, era, career, tier, energyCap, salary, passive, livingCost, interest, portfolioYield, blocker, sumCost,
   };

@@ -440,7 +440,7 @@
   function fitCards() {
     const over = c => c.scrollHeight > c.clientHeight + 1;
     const all = [...document.querySelectorAll('.table .tcard')];
-    all.forEach(c => c.classList.remove('dense', 'compact', 'tight'));
+    all.forEach(c => c.classList.remove('dense', 'compact', 'tight', 'scrolly'));
     const row = document.getElementById('cards');
     if (!row || isMobile() || row.classList.contains('browse')) {
       // มือถือ และโหมดดูทั้งหมด: การ์ดขนาดปกติ เลื่อนดูได้ แก้แค่ซ่อนภาพเมื่อข้อความล้น
@@ -448,6 +448,7 @@
       all.forEach(c => { if (over(c)) c.classList.add('dense'); });
       all.forEach(c => { if (over(c)) c.classList.add('compact'); });
       if (!isMobile()) all.forEach(c => { if (over(c)) c.classList.add('tight'); });
+      lastResort(all);
       return;
     }
     // จอคอม/แท็บเล็ต: ทุกใบต้องเห็นครบโดยไม่ต้องเลื่อน
@@ -472,6 +473,11 @@
     if (all.some(over)) size(maxW);
     all.forEach(c => { if (over(c)) c.classList.add('compact'); });
     all.forEach(c => { if (over(c)) c.classList.add('tight'); });
+    lastResort(all);
+  }
+  // ตาข่ายสุดท้าย: ทางเลือกที่กดไม่ถึงแย่กว่าการเลื่อน ให้เนื้อการ์ดเลื่อนได้และมีเงาบอกว่ามีต่อ
+  function lastResort(all) {
+    all.forEach(c => { if (c.scrollHeight > c.clientHeight + 1) c.classList.add('scrolly'); });
   }
 
   // ---------------------------------------------------------------- device mode
@@ -544,6 +550,8 @@
       return k;
     });
     fn();
+    const stayed = leaving.some(c => c.dataset.id && document.querySelector(`.table .tcard[data-id="${c.dataset.id}"]`));
+    if (stayed) { clones.forEach(k => k.remove()); return; }
     clones.forEach(k => k.classList.add('go'));
     document.querySelectorAll('.table .tcard').forEach(c => {
       const old = before.get(c.dataset.id);
@@ -566,6 +574,15 @@
     document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
   }
   function run(err) { if (err) toast(err); render(); }
+  // all-or-nothing: ถ้า engine พังกลางคำสั่ง คืน state เดิมทั้งหมด ผู้เล่นจะไม่เสีย ⚡/🪙 ฟรี
+  function safely(fn) {
+    const before = JSON.stringify(s);
+    try { return fn(); } catch (e) {
+      s = JSON.parse(before);
+      console.error(e);
+      return 'เกิดข้อผิดพลาด ลองใหม่อีกครั้ง';
+    }
+  }
 
   function newGame() {
     s = G.newGame((Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0);
@@ -587,30 +604,30 @@
     if (d.do === 'new') { ui.sheet = null; if (s.phase === 'setup' || s.phase === 'end' || confirm('เริ่มเกมใหม่? เกมที่เล่นอยู่จะหายไป')) newGame(); return; }
     if (d.do === 'rules') { ui.sheet = null; ui.modal = 'rules'; render(); return; }
     if (d.do === 'close') { ui.modal = null; ui.sheet = null; render(); return; }
-    if (d.do === 'start') { run(G.chooseSetup(s, ui.pickGoal, ui.pickCareer)); return; }
+    if (d.do === 'start') { run(safely(() => G.chooseSetup(s, ui.pickGoal, ui.pickCareer))); return; }
     if (d.do === 'end') {
       if (s.time > 0 && !confirm(`ยังเหลือเวลา ${s.time} ช่อง จบรอบเลยไหม`)) return;
-      run(G.endRound(s)); return;
+      run(safely(() => G.endRound(s))); return;
     }
     if (d.pickGoal) { ui.pickGoal = d.pickGoal; render(); return; }
     if (d.pickCareer) { ui.pickCareer = d.pickCareer; render(); return; }
-    if (d.opt !== undefined) { withFx([el.closest('.tcard')], ev, () => run(G.chooseOption(s, Number(d.opt)))); return; }
+    if (d.opt !== undefined) { withFx([el.closest('.tcard')], ev, () => run(safely(() => G.chooseOption(s, Number(d.opt))))); return; }
     if (d.opp !== undefined) {
       // รับโอกาสหรือปล่อยผ่าน การ์ดโอกาสทุกใบออกจากโต๊ะพร้อมกัน
-      withFx([...document.querySelectorAll('.table .ecard2.opp')], ev, () => run(G.takeOpportunity(s, d.opp || null)));
+      withFx([...document.querySelectorAll('.table .ecard2.opp')], ev, () => run(safely(() => G.takeOpportunity(s, d.opp || null))));
       return;
     }
     if (d.amount) {
       const v = Number(document.getElementById('amt').value);
-      ui.modal = null; run(G.doAction(s, d.amount, { amount: v })); return;
+      ui.modal = null; run(safely(() => G.doAction(s, d.amount, { amount: v }))); return;
     }
     if (d.act) {
       if (d.act === 'invest' || d.act === 'repay') { ui.modal = d.act; render(); return; }
-      run(G.doAction(s, d.act)); return;
+      run(safely(() => G.doAction(s, d.act))); return;
     }
     if (d.proj) {
       withFx([el.closest('.tcard')], ev, () => {
-        const err = G.doAction(s, 'project', { id: d.proj, outcome: Number(d.out) });
+        const err = safely(() => G.doAction(s, 'project', { id: d.proj, outcome: Number(d.out) }));
         render();
         // การ์ดจะออกจากโต๊ะ (ทำได้ 1 ขั้นต่อรอบ) จึงบอกผลสั้นๆ
         toast(err || s.log[s.log.length - 1].text);
@@ -618,9 +635,19 @@
     }
   });
 
+  // ฟอนต์จริงโหลดตามมาทีหลังทำให้ตัวหนังสือสูงขึ้น และแถบเบราว์เซอร์มือถือหด/ขยายได้ จึงคำนวณขนาดการ์ดใหม่
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitCards());
+  if (window.ResizeObserver) {
+    let fitT = null;
+    const ro = new ResizeObserver(() => { cancelAnimationFrame(fitT); fitT = requestAnimationFrame(fitCards); });
+    ro.observe(document.body);
+    new MutationObserver(() => { const c = document.getElementById('cards'); if (c && !c.__ro) { c.__ro = true; ro.observe(c); } })
+      .observe(app, { childList: true });
+  }
+
   // ---------------------------------------------------------------- boot
   if (!document.getElementById('fx')) { const fx = document.createElement('div'); fx.id = 'fx'; document.body.appendChild(fx); }
   const saved = load();
-  if (saved && saved.v === 2) { s = saved; render(); } else newGame();
+  if (saved && saved.v === 2) { s = G.migrate(saved); render(); } else newGame();
   window.__lifeceo = { get state() { return s; }, newGame, render };
 })();

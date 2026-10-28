@@ -496,3 +496,11 @@ html.m .tcard.dense .lv.next { gap: 2px 8px; }
   .fx-clone { display: none; }
   .fx-enter { animation: none; }
 }
+
+/* ตาข่ายสุดท้ายเมื่อย่อทุกขั้นแล้วยังล้น: เนื้อการ์ดเลื่อนได้ มีเงาบอกว่ามีต่อด้านล่าง */
+.tcard.scrolly .pbody { overflow-y: auto; overscroll-behavior: contain; }
+.tcard.scrolly .pbody > * { flex-shrink: 0; }
+.tcard.scrolly::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 28px; height: 28px; pointer-events: none;
+  background: linear-gradient(transparent, rgba(35, 48, 42, .18));
+}

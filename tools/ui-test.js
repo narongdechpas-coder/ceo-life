@@ -11,6 +11,8 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
     ['tablet', { viewport: { width: 768, height: 1000 } }],
     ['mobile', { viewport: { width: 375, height: 740 }, hasTouch: true }],
     ['mobile-small', { viewport: { width: 360, height: 640 }, hasTouch: true }],
+    // Chrome บนมือถือแจ็คตอนแถบ URL โผล่
+    ['mobile-chrome', { viewport: { width: 393, height: 660 }, hasTouch: true }],
     // มือถือจอกว้าง 393px ที่เบราว์เซอร์วาดหน้า 980px แล้วย่อให้พอดีจอ (เคสที่เจอบนเครื่องจริง)
     ['phone-desktop-mode', { viewport: { width: 980, height: 2122 }, screen: { width: 393, height: 851 }, hasTouch: true }],
   ];
@@ -31,7 +33,9 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
     const geom = () => page.evaluate(() => ({
       vh: document.documentElement.scrollHeight - innerHeight, hx: document.documentElement.scrollWidth - innerWidth,
       // การ์ดและแผงข้างต้องไม่มีเนื้อหาล้น (ข้อความครบ ไม่มี scroll)
-      over: [...document.querySelectorAll('.tcard, .side')].filter(el => el.scrollHeight > el.clientHeight + 1)
+      // ตาข่ายสุดท้าย (เลื่อนในการ์ด) ไม่ควรถูกใช้ในสภาพปกติ
+      scrolly: document.querySelectorAll('.table .tcard.scrolly').length,
+      over: [...document.querySelectorAll('.table .tcard, .side')].filter(el => el.scrollHeight > el.clientHeight + 1)
         .map(el => `${el.querySelector('h3') ? el.querySelector('h3').textContent : el.className} +${el.scrollHeight - el.clientHeight}px`),
       desk: document.documentElement.classList.contains('desk'),
       showAll: (document.querySelector('[data-do="showall"]') || {}).textContent === 'ดูเฉพาะที่เล่นได้',
@@ -49,6 +53,7 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       if (phase === 'end') break;
       const g = await geom();
       if (g.vh > 0 || g.hx > 0) problem(`${phase}@${round} page scroll v${g.vh} h${g.hx}`);
+      if (g.scrolly) problem(`${phase}@${round} ${g.scrolly} card(s) needed in-card scroll`);
       if (g.over.length) problem(`${phase}@${round} overflow ${g.over.join(', ')}`);
       if (g.desk !== wantDesk) problem(`layout desk=${g.desk} expected ${wantDesk}`);
       if (g.cardsScroll > 1 && !g.showAll) problem(`${phase}@${round} table needs horizontal scroll ${g.cardsScroll}px`);
