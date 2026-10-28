@@ -1,4 +1,4 @@
-// ทดสอบหน้าเกมใน Chromium ครบ 8 บท 4 แบบจอ (รวมมือถือที่เบราว์เซอร์บังคับโหมดเดสก์ท็อป) — รัน: node tools/ui-test.js [โฟลเดอร์เก็บ screenshot]
+// ทดสอบหน้าเกมใน Chromium ครบ 8 บท 6 แบบจอ (รวมมือถือที่เบราว์เซอร์บังคับโหมดเดสก์ท็อป) — รัน: node tools/ui-test.js [โฟลเดอร์เก็บ screenshot]
 const { chromium } = require('playwright');
 const path = require('path');
 const OUT = process.argv[2] || require('os').tmpdir();
@@ -17,62 +17,80 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
   for (const [name, opts] of CASES) {
     const page = await browser.newPage(opts);
     const errors = [], problems = [];
+    const problem = p => { if (!problems.includes(p)) problems.push(p); };
     page.on('pageerror', e => errors.push(e.message));
     page.on('console', m => { if (m.type() === 'error' && !/fonts\.g|net::|ERR_/.test(m.text())) errors.push(m.text()); });
     page.on('dialog', d => d.accept());
     await page.goto(URL);
     await page.evaluate(() => localStorage.clear()); await page.reload();
     const picks = await page.locator('[data-pick-goal]').count() + 'x' + await page.locator('[data-pick-career]').count();
-    if (picks !== '3x3') problems.push(`setup choices ${picks}`);
-    await page.screenshot({ path: `${OUT}/c-${name}-setup.png` });
+    if (picks !== '3x3') problem(`setup choices ${picks}`);
     await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
-    await page.locator('.opt:not([disabled])').first().click();
-    // ขนาดตัวหนังสือที่ตาเห็นจริงบนจอ และที่ว่างใต้ขั้นสุดท้ายของการ์ด
-    const look = await page.evaluate(() => {
-      const z = Number(getComputedStyle(document.documentElement).getPropertyValue('--z')) || 1;
-      const shrink = Math.min(1, screen.width / innerWidth);
-      const px = sel => { const el = document.querySelector(sel); return el ? +(parseFloat(getComputedStyle(el).fontSize) * z * shrink).toFixed(1) : null; };
-      const lv = document.querySelector('.pcard .levels'); const last = lv.lastElementChild;
-      return { mobile: document.documentElement.classList.contains('m'), z: +z.toFixed(2),
-        outText: px('.out b'), chip: px('.chip'), act: px('.dock-acts .act'),
-        gapUnderLast: Math.round((lv.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom) / z) };
-    });
-    console.log(name, 'look', JSON.stringify(look));
-    if (name.startsWith('phone') || name === 'mobile') {
-      if (!look.mobile) problems.push('mobile layout not applied');
-      if (look.outText < 14 || look.chip < 14 || look.act < 14) problems.push(`text too small ${JSON.stringify(look)}`);
-    }
+
     const st = () => page.evaluate(() => { const s = window.__lifeceo.state; return { phase: s.phase, round: s.round, time: s.time }; });
     const geom = () => page.evaluate(() => ({
       vh: document.documentElement.scrollHeight - innerHeight, hx: document.documentElement.scrollWidth - innerWidth,
       // การ์ดและแผงข้างต้องไม่มีเนื้อหาล้น (ข้อความครบ ไม่มี scroll)
-      over: [...document.querySelectorAll('.pcard, .apanel, .plist')].filter(el => el.scrollHeight > el.clientHeight + 1)
-        .map(el => `${el.className.split(' ')[0]}${el.closest('.slide') ? ':' + el.closest('.slide').dataset.id : ''} +${el.scrollHeight - el.clientHeight}px`),
+      over: [...document.querySelectorAll('.tcard, .side')].filter(el => el.scrollHeight > el.clientHeight + 1)
+        .map(el => `${el.querySelector('h3') ? el.querySelector('h3').textContent : el.className} +${el.scrollHeight - el.clientHeight}px`),
       desk: document.documentElement.classList.contains('desk'),
+      showAll: (document.querySelector('[data-do="showall"]') || {}).textContent === 'ดูเฉพาะที่เล่นได้',
+      // ทุก Project บนโต๊ะต้องมีทางเลือกที่กดได้ (เว้นแต่อยู่ในโหมดดูทั้งหมด)
+      deadCards: [...document.querySelectorAll('.table .pcard')].filter(c => !c.querySelector('.out:not([disabled])')).length,
+      endDisabled: document.querySelector('[data-do="end"]').disabled,
     }));
     const wantDesk = name.startsWith('desktop');
-    let shot = 0, focusChecks = 0, shotPlay = false;
+    const shots = new Set();
+    let lookDone = false, showAllChecked = false;
     for (let step = 0; step < 500; step++) {
       const { phase, round, time } = await st();
       if (phase === 'end') break;
       const g = await geom();
-      if (g.vh > 0 || g.hx > 0) problems.push(`${phase}@${round} vScroll ${g.vh} hScroll ${g.hx}`);
-      if (g.over.length) problems.push(`${phase}@${round} overflow ${g.over.join(', ')}`);
-      if (g.desk !== wantDesk) problems.push(`layout desk=${g.desk} expected ${wantDesk}`);
-      if (phase === 'event') { if (!shot++) await page.screenshot({ path: `${OUT}/c-${name}-event.png` }); await page.locator('.opt:not([disabled])').first().click(); continue; }
-      if (phase === 'opportunity') { await page.locator('[data-opp]:not([disabled])').first().click(); continue; }
-      if (round === 4 && !shotPlay) { shotPlay = true; await page.screenshot({ path: `${OUT}/c-${name}-play.png` }); }
+      if (g.vh > 0 || g.hx > 0) problem(`${phase}@${round} page scroll v${g.vh} h${g.hx}`);
+      if (g.over.length) problem(`${phase}@${round} overflow ${g.over.join(', ')}`);
+      if (g.desk !== wantDesk) problem(`layout desk=${g.desk} expected ${wantDesk}`);
+      if (phase !== 'actions' && !g.endDisabled) problem(`end button enabled during ${phase}`);
+      if (phase === 'actions' && !g.showAll && g.deadCards) problem(`${g.deadCards} unplayable card(s) on table @${round}`);
+      const shot = async key => { if (!shots.has(key)) { shots.add(key); await page.screenshot({ path: `${OUT}/t-${name}-${key}.png` }); } };
+
+      if (phase === 'event') { await shot('event'); await page.locator('.opt:not([disabled])').first().click(); continue; }
+      if (phase === 'opportunity') { await shot('opp'); await page.locator('[data-opp]:not([disabled])').first().click(); continue; }
+
+      if (!lookDone && await page.locator('.out b').count()) {
+        lookDone = true;
+        // ขนาดตัวหนังสือที่ตาเห็นจริงบนจอ
+        const look = await page.evaluate(() => {
+          const z = Number(getComputedStyle(document.documentElement).getPropertyValue('--z')) || 1;
+          const shrink = Math.min(1, screen.width / innerWidth);
+          const px = sel => { const el = document.querySelector(sel); return el ? +(parseFloat(getComputedStyle(el).fontSize) * z * shrink).toFixed(1) : null; };
+          return { mobile: document.documentElement.classList.contains('m'), z: +z.toFixed(2), outText: px('.out b'), chip: px('.chip'), act: px('.dock-acts .act') };
+        });
+        console.log(name, 'look', JSON.stringify(look));
+        if (name.startsWith('phone') || name.startsWith('mobile')) {
+          if (!look.mobile) problem('mobile layout not applied');
+          if (look.outText < 14 || look.chip < 14 || look.act < 14) problem(`text too small ${JSON.stringify(look)}`);
+        }
+      }
+      if (round >= 3) await shot('play');
+
+      // ปุ่มดูทั้งหมด: ต้องได้การ์ดครบ ของฉัน (ที่ยังไม่จบ) + ตลาด แล้วกดกลับ
+      if (!showAllChecked && await page.locator('[data-do="showall"]').count()) {
+        showAllChecked = true;
+        await page.click('[data-do="showall"]');
+        const [n, want] = await page.evaluate(() => { const s = window.__lifeceo.state;
+          return [document.querySelectorAll('.table .pcard').length, Object.values(s.projects).filter(p => p.level < 3).length + s.market.length]; });
+        if (n !== want) problem(`show all: ${n} cards, expected ${want}`);
+        await shot('showall');
+        await page.click('[data-do="showall"]');
+        continue;
+      }
+
       const outs = page.locator('.out[data-proj]:not([disabled])');
       if (time > 0 && await outs.count() && step % 3 === 0) {
-        const btn = outs.last();
-        const pid = await btn.getAttribute('data-proj');
-        await page.click(`[data-goto="${pid}"]`); await page.waitForTimeout(400);
-        await page.locator(`.out[data-proj="${pid}"]:not([disabled])`).last().click(); await page.waitForTimeout(150);
-        // หลังเลือก การ์ดเดิมต้องยังอยู่ในจอ (desktop: เป็นการ์ดตรงกลาง · carousel: อยู่ในกรอบ)
-        const visible = await page.evaluate(id => {
-          if (document.documentElement.classList.contains('desk')) return window.__lifeceo.state && document.querySelector('.pitem.active').dataset.goto === id;
-          const el = document.querySelector(`.slide[data-id="${id}"]`); const c = document.getElementById('car').getBoundingClientRect(); const r = el.getBoundingClientRect(); return r.left >= c.left - 2 && r.right <= c.right + 2; }, pid);
-        focusChecks++; if (!visible) problems.push(`card ${pid} not in view after choosing (round ${round})`);
+        const pid = await outs.last().getAttribute('data-proj');
+        await outs.last().click();
+        const still = await page.locator(`.out[data-proj="${pid}"]`).count();
+        if (still && !(await geom()).showAll) problem(`card ${pid} still on table after playing it`);
         continue;
       }
       const tryAct = async id => { const l = page.locator(`[data-act="${id}"]:not([disabled])`); if (time > 0 && await l.count()) { await l.click(); if (id === 'invest') await page.click('[data-amount]'); return true; } return false; };
@@ -82,27 +100,18 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       if (await tryAct('rest')) continue;
       await page.click('[data-do="end"]');
     }
-    // sheet
     const final = await st();
-    await page.screenshot({ path: `${OUT}/c-${name}-end.png` });
-    console.log(name, final.phase, '| focus checks', focusChecks, '| errors', errors.length ? errors : 'none', '| problems', problems.length ? problems.slice(0, 6) : 'none');
+    console.log(name, final.phase, '| errors', errors.length ? errors : 'none', '| problems', problems.length ? problems.slice(0, 8) : 'none');
     await page.close();
   }
-  // sheet + swipe check บนมือถือ
+  // sheet บนมือถือ
   const page = await browser.newPage({ viewport: { width: 375, height: 740 } });
   page.on('dialog', d => d.accept());
   await page.goto(URL);
   await page.evaluate(() => localStorage.clear()); await page.reload();
   await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
-  await page.locator('.opt:not([disabled])').first().click();
-  await page.screenshot({ path: `${OUT}/c-mobile-start.png` });
-  const before = await page.evaluate(() => window.__lifeceo.state && document.querySelector('.strip-chip.active').dataset.goto);
-  await page.evaluate(() => document.getElementById('car').scrollBy({ left: 360 }));
-  await page.waitForTimeout(400);
-  const after = await page.evaluate(() => document.querySelector('.strip-chip.active').dataset.goto);
-  await page.click('[data-sheet="career"]'); await page.screenshot({ path: `${OUT}/c-mobile-sheet.png` });
+  await page.click('[data-sheet="career"]');
   await page.click('.sheet-overlay', { position: { x: 20, y: 20 } });
-  const closed = await page.locator('.sheet').count();
-  console.log('swipe changes active chip:', before !== after, `(${before} → ${after})`, '| sheet closes on backdrop:', closed === 0);
+  console.log('sheet closes on backdrop:', await page.locator('.sheet').count() === 0);
   await browser.close();
 })();

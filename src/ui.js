@@ -12,7 +12,8 @@
   const NAME = { cash: 'Cash', energy: 'Energy', health: 'Health', rel: 'Relations', skills: 'Skills', stress: 'Stress', debt: 'Debt', portfolio: 'Invest', lp: 'Life Pts' };
 
   let s = null;
-  let ui = { modal: null, sheet: null, focus: null, pickGoal: null, pickCareer: null };
+  // showAll = เลขบทที่กด "ดูทั้งหมด" (รีเซ็ตเองเมื่อขึ้นบทใหม่)
+  let ui = { modal: null, sheet: null, showAll: 0, pickGoal: null, pickCareer: null };
 
   // ---------------------------------------------------------------- save
   function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(s)); } catch (e) { /* โหมดส่วนตัว */ } }
@@ -94,9 +95,11 @@
       else if (a.id === 'repay') detail = `<span class="note">ลด 🔗 ดอกเบี้ย 1 ต่อหนี้ทุก 4</span>`;
       return `<button class="act" data-act="${a.id}" ${why ? 'disabled' : ''}><b>${esc(a.label)}</b>${detail}${whyTag(why)}</button>`;
     }).join('');
-    return `<section class="dock">
+    const live = s.phase === 'actions';
+    return `<section class="dock ${live ? '' : 'waiting'}">
       <div class="dock-acts">${btns}</div>
-      <button class="btn dock-end" data-do="end">${s.time > 0 ? `จบรอบ<small>เหลือ ${s.time} ช่อง</small>` : 'จบรอบ →'}</button>
+      ${live ? '' : '<span class="dock-note">ตัดสินใจการ์ดบนโต๊ะก่อน</span>'}
+      <button class="btn dock-end" data-do="end" ${live ? '' : 'disabled'}>${s.time > 0 ? `จบรอบ<small>เหลือ ${s.time} ช่อง</small>` : 'จบรอบ →'}</button>
     </section>`;
   }
 
@@ -129,12 +132,14 @@
           ${chips(o.cost, o.gain, o)}${whyTag(why)}</${live ? 'button' : 'div'}>`;
       }).join('');
       return `<li class="lv next"><span class="lv-badge">L${n}</span>
-        <div><div class="lv-name">${esc(lv.name)}</div>${chips(lv.cost, lv.gain, { require: lv.require })}</div>
+        <div class="lv-main"><div class="lv-name">${esc(lv.name)}</div>${chips(lv.cost, lv.gain, { require: lv.require })}</div>
         <div class="outs">${outs}</div></li>`;
     }).join('');
     const t = p.tags[0];
     const tags = p.tags.map(x => `<span title="${TAG_TH[x]}">${TAG_ICON[x]}</span>`).join('');
-    return `<article class="pcard ${complete ? 'complete' : ''} ${opts && opts.wide ? 'wide' : ''}">
+    const why = opts && opts.why;
+    return `<article class="tcard pcard ${complete ? 'complete' : ''} ${why ? 'unplayable' : ''}">
+      ${why ? `<span class="why-badge">${esc(why)}</span>` : ''}
       <header class="pcard-head"><span class="ico">${TAG_ICON[t]}</span><div class="ttl"><h3>${esc(p.en)}</h3><p>${esc(p.name)}</p></div><span class="tags">${tags}</span></header>
       <div class="pbody">
         <div class="art t-${t}"><span class="ph">${TAG_ICON[t]}</span><img src="assets/art/${pid}.webp" alt="" loading="lazy" onerror="this.remove()"></div>
@@ -177,29 +182,40 @@
   }
 
   // ---------------------------------------------------------------- modals
-  function eventModal() {
+  // ---------------------------------------------------------------- event / echo / opportunity cards (วางบนโต๊ะ)
+  const ERA_ICON = ['', '🌅', '🏗️', '⛰️', '🌳'];
+  function eventCard() {
     const { kind, card } = G.currentCard(s);
-    const cls = kind === 'echo' ? `echo-${card.kind}` : '';
+    const tone = kind === 'echo' ? `echo-${card.kind}` : 'event';
     const label = kind === 'echo' ? (card.kind === 'good' ? 'ECHO · ผลสะท้อนที่ดี' : 'ECHO · ผลสะท้อน') : `LIFE EVENT · ยุค ${ROMAN[card.era]}`;
-    const left = s.pending.length > 1 ? ` · เหลืออีก ${s.pending.length - 1} ใบ` : '';
     const opts = card.options.map((o, i) => {
       const why = G.blocker(s, o.cost || {}, o.require);
-      return `<button class="opt ${o.regret ? 'regret' : ''}" data-opt="${i}" ${why ? 'disabled' : ''}><b>${esc(o.label)}</b>${chips(o.cost, o.gain, o)}${why ? `<span class="why">${esc(why)}</span>` : ''}</button>`;
+      return `<button class="opt ${o.regret ? 'regret' : ''}" data-opt="${i}" ${why ? 'disabled' : ''}><b>${esc(o.label)}</b>${chips(o.cost, o.gain, o)}${whyTag(why)}</button>`;
     }).join('');
-    return `<div class="overlay"><div class="ecard ${cls}" role="dialog" aria-modal="true">
-      <div class="ecard-head"><small>${label}${left}</small><h3>${esc(card.title)}</h3></div>
-      <div class="ecard-body"><p class="story">${esc(card.story)}</p>${opts}</div></div></div>`;
+    return `<article class="tcard ecard2 ${tone}">
+      <header class="pcard-head"><div class="ttl"><small>${label}</small><h3 class="th">${esc(card.title)}</h3></div></header>
+      <div class="pbody">
+        <div class="art"><span class="ph">${kind === 'echo' ? '🔮' : ERA_ICON[card.era]}</span></div>
+        <p class="story">${esc(card.story)}</p>
+        <div class="eopts">${opts}</div>
+      </div>
+      <footer class="pcard-foot">${kind === 'echo' ? 'ECHO' : 'LIFE EVENT'}</footer>
+    </article>`;
   }
-  function oppModal() {
-    const opts = s.oppChoices.map(id => {
-      const o = G.OPP[id];
-      const why = G.blocker(s, o.cost || {}, o.require);
-      return `<button class="opt" data-opp="${id}" ${why ? 'disabled' : ''}><b>${esc(o.title)}</b>${chips(o.cost, o.gain, o)}${why ? `<span class="why">${esc(why)}</span>` : ''}</button>`;
-    }).join('');
-    return `<div class="overlay"><div class="ecard opp" role="dialog" aria-modal="true">
-      <div class="ecard-head"><small>OPPORTUNITY · เลือกได้ 1 ใบ</small><h3>โอกาสที่เข้ามา</h3></div>
-      <div class="ecard-body">${opts}<button class="btn ghost" data-opp="">ปล่อยผ่านทั้งหมด</button></div></div></div>`;
+  function oppCard(id) {
+    const o = G.OPP[id];
+    const why = G.blocker(s, o.cost || {}, o.require);
+    return `<article class="tcard ecard2 opp">
+      <header class="pcard-head"><div class="ttl"><small>OPPORTUNITY</small><h3 class="th">${esc(o.title)}</h3></div></header>
+      <div class="pbody">
+        <div class="art"><span class="ph">✨</span></div>
+        <div class="eopts"><div class="opt static">${chips(o.cost, o.gain, o)}</div>
+          <button class="btn" data-opp="${id}" ${why ? 'disabled' : ''}>รับโอกาสนี้</button>${whyTag(why)}</div>
+      </div>
+      <footer class="pcard-foot">OPPORTUNITY</footer>
+    </article>`;
   }
+
   function amountModal(kind) {
     const max = kind === 'invest' ? s.cash : Math.min(s.cash, s.debt);
     const min = kind === 'invest' ? 2 : 1;
@@ -259,110 +275,69 @@
     </main>`;
   }
 
-  // การ์ดใน carousel: โปรเจกต์ของฉันก่อน แล้วตามด้วยตลาด
-  const slides = () => [...Object.keys(s.projects).map(id => ({ id, mine: true })), ...s.market.map(id => ({ id, mine: false }))];
+  // ---------------------------------------------------------------- table
+  const allProjects = () => [...Object.keys(s.projects).filter(id => s.projects[id].level < 3), ...s.market];
+  const playable = id => [0, 1].some(j => !G.projectStatus(s, id, j));
+  function blockReason(id) {
+    if (s.flags.advanced.includes(id)) return 'ทำแล้วรอบนี้';
+    return G.projectStatus(s, id, 0) || G.projectStatus(s, id, 1);
+  }
 
-  function cardStrip(list) {
-    let html = '', group = null;
-    for (const x of list) {
-      if (x.mine !== group) { group = x.mine; html += `<span class="strip-label">${x.mine ? 'ของฉัน' : 'ตลาด'}</span>`; }
-      const lv = s.projects[x.id] ? s.projects[x.id].level : 0;
-      const dots = [0, 1, 2].map(i => `<i class="${i < lv ? 'on' : ''}"></i>`).join('');
-      html += `<button class="strip-chip ${ui.focus === x.id ? 'active' : ''}" data-goto="${x.id}">${TAG_ICON[G.PROJECT[x.id].tags[0]]} ${esc(G.PROJECT[x.id].name)}<span class="lvdots">${dots}</span></button>`;
+  function tableView() {
+    if (s.phase === 'event') {
+      const left = s.pending.length - 1;
+      return { head: `<b>เหตุการณ์ชีวิต</b><span>ตัดสินใจก่อนใช้เวลา${left ? ` · ต่อจากนี้อีก ${left} ใบ` : ''}</span>`, cards: [eventCard()] };
     }
-    return `<nav class="strip" id="strip">${html}</nav>`;
+    if (s.phase === 'opportunity') {
+      return { head: '<b>โอกาสที่เข้ามา</b><span>เลือกได้ 1 ใบ</span><button class="btn ghost sm" data-opp="">ปล่อยผ่านทั้งหมด</button>',
+        cards: s.oppChoices.map(oppCard) };
+    }
+    const all = allProjects();
+    const ok = all.filter(playable);
+    const showAll = ui.showAll === s.round;
+    const rest = all.length - ok.length;
+    const toggle = rest ? `<button class="btn ghost sm" data-do="showall">${showAll ? 'ดูเฉพาะที่เล่นได้' : 'ดูทั้งหมด'}</button>` : '';
+    const head = `<b>Life Projects</b><span>เล่นได้ ${ok.length} ใบ${rest ? ` · ยังเล่นไม่ได้ ${rest} ใบ` : ''}</span>${toggle}`;
+    const list = showAll ? all : ok;
+    if (!list.length) {
+      const msg = s.time <= 0 ? 'เวลาหมดแล้ว กด "จบรอบ" ด้านล่าง' : 'รอบนี้ยังไม่มีโปรเจกต์ที่เล่นได้ ใช้กิจกรรมด้านล่างสะสมทรัพยากร';
+      return { head, cards: [], empty: msg };
+    }
+    return { head, cards: list.map(id => projectCard(id, { why: playable(id) ? null : blockReason(id) })) };
+  }
+
+  function sidePanel() {
+    const logs = s.log.slice(-4).map(l => `<p class="${l.tone}">${l.tone === 'era' ? '' : `<small>บท ${l.round}</small> `}${esc(l.text)}</p>`).join('');
+    return `<aside class="side">
+      <section class="panel mini">${sheetBody('goal')}</section>
+      <section class="panel mini">${sheetBody('career')}</section>
+      <section class="panel mini">${sheetBody('echo').replace(/<p class="note">.*<\/p>/, '')}</section>
+      <section class="panel mini side-log"><h3>📔 ล่าสุด</h3><div class="log">${logs}</div>
+        <button class="btn ghost sm" data-sheet="log">ดูทั้งหมด</button></section>
+    </aside>`;
   }
 
   function gameScreen() {
-    const list = slides();
-    if (!list.some(x => x.id === ui.focus)) ui.focus = list.length ? list[0].id : null;
-    return isDesk() ? deskScreen(list) : carouselScreen(list);
-  }
-
-  function carouselScreen(list) {
-    const dock = s.phase === 'actions' ? actionDock() : '<section class="dock dock-wait">รอเลือกเหตุการณ์…</section>';
+    const v = tableView();
     return `<div class="game">
       ${topbar()}
-      ${cardStrip(list)}
-      <div class="carousel-wrap">
-        <button class="nav-arrow prev" data-nav="-1" aria-label="การ์ดก่อนหน้า">‹</button>
-        <div class="carousel" id="car">${list.map(x => `<div class="slide" data-id="${x.id}">${projectCard(x.id)}</div>`).join('')}</div>
-        <button class="nav-arrow next" data-nav="1" aria-label="การ์ดถัดไป">›</button>
+      <div class="board">
+        <main class="table">
+          <div class="table-head">${v.head}</div>
+          <div class="table-cards" id="cards">${v.cards.join('') || `<p class="table-empty">${esc(v.empty || '')}</p>`}</div>
+        </main>
+        ${isDesk() ? sidePanel() : ''}
       </div>
-      ${dock}
-    </div>`;
-  }
-
-  // ---------------------------------------------------------------- desktop layout B
-  function projectState(id) {
-    const prog = s.projects[id];
-    const lv = prog ? prog.level : 0;
-    if (lv >= 3) return ['done', 'สำเร็จแล้ว'];
-    if (s.phase !== 'actions') return ['', ''];
-    if (s.flags.advanced.includes(id)) return ['wait', 'ทำแล้วรอบนี้'];
-    const why = [0, 1].map(j => G.projectStatus(s, id, j));
-    if (why.some(w => !w)) return ['ready', `พร้อมทำ L${lv + 1}`];
-    return ['blocked', why[0]];
-  }
-  function projectList(list) {
-    let html = '', group = null;
-    for (const x of list) {
-      if (x.mine !== group) { group = x.mine; html += `<h4>${x.mine ? 'ของฉัน' : 'ตลาด'}</h4>`; }
-      const p = G.PROJECT[x.id];
-      const lv = s.projects[x.id] ? s.projects[x.id].level : 0;
-      const dots = [0, 1, 2].map(i => `<i class="${i < lv ? 'on' : ''}"></i>`).join('');
-      const [cls, label] = projectState(x.id);
-      html += `<button class="pitem ${ui.focus === x.id ? 'active' : ''}" data-goto="${x.id}">
-        <span class="pi-ico">${TAG_ICON[p.tags[0]]}</span>
-        <span class="pi-name">${esc(p.name)}<small class="pi-st ${cls}">${esc(label)}</small></span>
-        <span class="lvdots">${dots}</span></button>`;
-    }
-    return `<nav class="plist">${html}</nav>`;
-  }
-  function actionPanel() {
-    const g = G.GOAL[s.goalId];
-    const sum = G.summary(s);
-    const goalNow = g.checkFull(sum) ? '✅ บรรลุแล้ว' : g.checkPartial(sum) ? '◐ บางส่วน' : '○ ยังไม่บรรลุ';
-    const echo = [1, 2, 3, 4].map(e => `<span>ยุค ${ROMAN[e]} <b>${s.echoQueue[e].length}</b></span>`).join('');
-    const pips = Array.from({ length: s.crisis ? 3 : 4 }, (_, i) => `<span class="pip ${i < s.time ? 'on' : ''}"></span>`).join('');
-    let acts = '<p class="note wait">รอเลือกเหตุการณ์…</p>';
-    if (s.phase === 'actions') {
-      acts = D.ACTIONS.filter(a => a.id !== 'project').map(a => {
-        const why = G.actionStatus(s, a.id);
-        let detail;
-        if (ACTION_DESC[a.id]) { const d = ACTION_DESC[a.id](); detail = chips(d.cost, d.gain); }
-        else if (a.id === 'promote') { const next = G.career(s).tiers[s.careerTier + 1]; detail = next ? chips({ energy: 1 }, {}, { require: next.require }) : ''; }
-        else if (a.id === 'explore') detail = chips({ energy: 1 });
-        else if (a.id === 'invest') detail = '<span class="note">🪙 → 📈</span>';
-        else detail = '<span class="note">🪙 → ลด 🔗</span>';
-        return `<button class="arow" data-act="${a.id}" ${why ? 'disabled' : ''}><b>${esc(a.label)}</b>${detail}${whyTag(why)}</button>`;
-      }).join('') + `<button class="btn" data-do="end">${s.time > 0 ? `จบรอบ (เหลือ ${s.time} ช่อง)` : 'จบรอบ →'}</button>`;
-    }
-    return `<aside class="apanel">
-      <div class="ap-head"><h4>ใช้เวลา</h4><span class="time">⏳ ${pips}</span></div>
-      <div class="ap-acts">${acts}</div>
-      <button class="ap-goal" data-sheet="goal"><b>🎯 ${esc(g.name)}</b><span>${goalNow}</span></button>
-      <button class="ap-echo" data-sheet="echo">🔮 ${echo}</button>
-    </aside>`;
-  }
-  function deskScreen(list) {
-    return `<div class="game">
-      ${topbar()}
-      <div class="desk-main">
-        ${projectList(list)}
-        <main class="focus">${ui.focus ? projectCard(ui.focus, { wide: true }) : ''}</main>
-        ${actionPanel()}
-      </div>
+      ${actionDock()}
     </div>`;
   }
 
   // ---------------------------------------------------------------- fit: ข้อความต้องครบ ไม่มี scroll
   function fitCards() {
-    document.querySelectorAll('.pcard').forEach(c => {
+    document.querySelectorAll('.tcard').forEach(c => {
       c.classList.remove('dense');
-      const art = c.querySelector('.art');
-      const overflow = c.scrollHeight > c.clientHeight + 1;
-      if (overflow || (art && !c.classList.contains('wide') && art.getBoundingClientRect().height < 40)) c.classList.add('dense');
+      // ภาพหดได้เอง จึงซ่อนภาพ (dense) เฉพาะตอนที่ข้อความยังล้นจริง
+      if (c.scrollHeight > c.clientHeight + 1) c.classList.add('dense');
     });
   }
 
@@ -390,40 +365,6 @@
     resizeT = setTimeout(() => { const was = modeKey(); applyDeviceMode(); if (s && was !== modeKey()) render(); else fitCards(); }, 150);
   });
 
-  // ---------------------------------------------------------------- carousel position
-  function slideEl(id) { return document.querySelector(`.slide[data-id="${id}"]`); }
-  function scrollToSlide(id, smooth) {
-    const car = document.getElementById('car'), el = slideEl(id);
-    if (car && el) car.scrollTo({ left: el.offsetLeft - car.offsetLeft - (car.clientWidth - el.clientWidth) / 2 * (isMobile() ? 1 : 0), behavior: smooth ? 'smooth' : 'auto' });
-  }
-  function markFocus(id) {
-    ui.focus = id;
-    document.querySelectorAll('.strip-chip').forEach(b => b.classList.toggle('active', b.dataset.goto === id));
-    const chip = document.querySelector(`.strip-chip[data-goto="${id}"]`);
-    if (chip) chip.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-  }
-  function bindCarousel() {
-    const car = document.getElementById('car');
-    if (!car) return;
-    scrollToSlide(ui.focus, false);
-    let t = null;
-    car.addEventListener('scroll', () => {
-      clearTimeout(t);
-      t = setTimeout(() => {
-        // ใช้ getBoundingClientRect ทั้งคู่ จะได้อยู่หน่วยเดียวกันแม้มี zoom
-        const cr = car.getBoundingClientRect();
-        const mid = isMobile() ? cr.left + cr.width / 2 : cr.left + 40;
-        let best = null, dist = Infinity;
-        car.querySelectorAll('.slide').forEach(el => {
-          const r = el.getBoundingClientRect();
-          const d = Math.abs((isMobile() ? r.left + r.width / 2 : r.left) - mid);
-          if (d < dist) { dist = d; best = el.dataset.id; }
-        });
-        if (best && best !== ui.focus) markFocus(best);
-      }, 80);
-    }, { passive: true });
-  }
-
   // ---------------------------------------------------------------- render
   function render() {
     if (!s) return;
@@ -435,11 +376,9 @@
     if (ui.modal === 'rules') m = rulesModal();
     else if (ui.sheet && s.phase !== 'setup' && s.phase !== 'end') m = sheetModal(ui.sheet);
     else if (ui.modal === 'invest' || ui.modal === 'repay') m = amountModal(ui.modal);
-    else if (s.phase === 'event') m = eventModal();
-    else if (s.phase === 'opportunity') m = oppModal();
     modalRoot.innerHTML = m;
     const lg = document.getElementById('log'); if (lg) lg.scrollTop = lg.scrollHeight;
-    bindCarousel();
+    const cards = document.getElementById('cards'); if (cards) cards.scrollLeft = 0;
     fitCards();
     const amt = document.getElementById('amt');
     if (amt) amt.oninput = () => { document.getElementById('amt-out').textContent = amt.value; };
@@ -454,7 +393,7 @@
 
   function newGame() {
     s = G.newGame((Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0);
-    ui = { modal: null, sheet: null, focus: null, pickGoal: null, pickCareer: null };
+    ui = { modal: null, sheet: null, showAll: 0, pickGoal: null, pickCareer: null };
     window.scrollTo(0, 0);
     render();
   }
@@ -467,16 +406,7 @@
     if (!el || el.disabled) return;
     const d = el.dataset;
     if (d.sheet) { ui.sheet = d.sheet; render(); return; }
-    if (d.goto) {
-      if (isDesk()) { ui.focus = d.goto; render(); return; }
-      markFocus(d.goto); scrollToSlide(d.goto, true); return;
-    }
-    if (d.nav) {
-      const list = slides(); const i = list.findIndex(x => x.id === ui.focus);
-      const next = list[Math.max(0, Math.min(list.length - 1, i + Number(d.nav)))];
-      if (next) { markFocus(next.id); scrollToSlide(next.id, true); }
-      return;
-    }
+    if (d.do === 'showall') { ui.showAll = ui.showAll === s.round ? 0 : s.round; render(); return; }
     if (d.do === 'new') { ui.sheet = null; if (s.phase === 'setup' || s.phase === 'end' || confirm('เริ่มเกมใหม่? เกมที่เล่นอยู่จะหายไป')) newGame(); return; }
     if (d.do === 'rules') { ui.sheet = null; ui.modal = 'rules'; render(); return; }
     if (d.do === 'close') { ui.modal = null; ui.sheet = null; render(); return; }
@@ -497,14 +427,12 @@
       if (d.act === 'invest' || d.act === 'repay') { ui.modal = d.act; render(); return; }
       run(G.doAction(s, d.act)); return;
     }
-    if (d.proj) { ui.focus = d.proj; run(G.doAction(s, 'project', { id: d.proj, outcome: Number(d.out) })); }
-  });
-
-  document.addEventListener('keydown', ev => {
-    if (!s || !isDesk() || modalRoot.innerHTML || !['ArrowUp', 'ArrowDown'].includes(ev.key)) return;
-    const list = slides(); const i = list.findIndex(x => x.id === ui.focus);
-    const next = list[Math.max(0, Math.min(list.length - 1, i + (ev.key === 'ArrowDown' ? 1 : -1)))];
-    if (next && next.id !== ui.focus) { ev.preventDefault(); ui.focus = next.id; render(); }
+    if (d.proj) {
+      const err = G.doAction(s, 'project', { id: d.proj, outcome: Number(d.out) });
+      render();
+      // การ์ดจะออกจากโต๊ะ (ทำได้ 1 ขั้นต่อรอบ) จึงบอกผลสั้นๆ
+      toast(err || s.log[s.log.length - 1].text);
+    }
   });
 
   // ---------------------------------------------------------------- boot

@@ -206,43 +206,110 @@ button:disabled { cursor: not-allowed; }
 .note { font-size: 12px; color: var(--muted); }
 .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: #fff; padding: 8px 14px; border-radius: 10px; z-index: 60; font-size: 14px; max-width: calc(100% - 32px); }
 
-/* ---------------------------------------------------------------- one-screen game (carousel) */
+/* ---------------------------------------------------------------- one-screen game */
 body.in-game { overflow: hidden; }
 html.zoomed body { zoom: var(--z); }
 .game { height: calc(100vh / var(--z, 1)); height: calc(100dvh / var(--z, 1)); display: flex; flex-direction: column; overflow: hidden; }
 .topbar { position: static; flex: none; }
+html.desk .topbar-row, html.desk .resbar, html.desk .flow { max-width: none; }
 .info-btns { display: flex; gap: 4px; }
 .info-btns .icon-btn { position: relative; padding: 6px 8px; font-size: 15px; line-height: 1; }
 .badge { position: absolute; top: -4px; right: -4px; background: var(--mustard); color: var(--ink); font-style: normal; font-size: 10px; font-weight: 700; border-radius: 999px; min-width: 16px; height: 16px; display: grid; place-items: center; padding: 0 3px; }
+/* จอคอมมีแผงขวาแล้ว ไม่ต้องมีปุ่มซ้ำ */
+html.desk .info-btns [data-sheet="goal"], html.desk .info-btns [data-sheet="career"], html.desk .info-btns [data-sheet="echo"] { display: none; }
 
-.strip { flex: none; display: flex; gap: 6px; align-items: center; overflow-x: auto; padding: 8px 16px; scrollbar-width: none; background: var(--bg); border-bottom: 1px solid var(--line); }
-.strip::-webkit-scrollbar { display: none; }
-.strip-label { flex: none; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; padding-left: 4px; }
-.strip-chip { flex: none; display: inline-flex; align-items: center; gap: 6px; background: var(--paper); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 13px; white-space: nowrap; }
-.strip-chip.active { background: var(--sage); border-color: var(--sage); color: #fff; }
-.lvdots { display: inline-flex; gap: 2px; }
-.lvdots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
-.lvdots i.on { background: var(--mustard); }
-
-.carousel-wrap { flex: 1; min-height: 0; position: relative; }
-.carousel {
-  height: 100%; display: flex; gap: 14px; overflow-x: auto; overflow-y: hidden;
-  scroll-snap-type: x mandatory; padding: 12px 16px; scroll-padding: 0 16px; scrollbar-width: thin;
-  overscroll-behavior-x: contain;
+/* ---------------------------------------------------------------- table (โต๊ะเขียว) */
+.board { flex: 1; min-height: 0; display: flex; }
+.table {
+  flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column;
+  background: radial-gradient(ellipse at 50% 30%, #4f8462, #3b6b4c 70%, #335d43);
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, .18);
 }
-.slide { flex: 0 0 360px; height: 100%; scroll-snap-align: start; min-width: 0; display: flex; flex-direction: column; }
-/* การ์ดสูงตามเนื้อหา เลื่อนในการ์ดเฉพาะเมื่อยาวเกินจอ */
-/* การ์ดทุกใบสูงเท่ากัน ข้อความได้พื้นที่ก่อน ภาพกินที่เหลือ (หดจนหายได้) ไม่มี scroll ในการ์ด */
-.slide .pcard, .focus .pcard { height: 100%; min-height: 0; }
-.nav-arrow {
-  position: absolute; top: 50%; transform: translateY(-50%); z-index: 2; width: 40px; height: 40px; border-radius: 50%;
-  border: 1px solid var(--line); background: var(--paper); box-shadow: var(--shadow); font-size: 24px; line-height: 1; color: var(--sage-dark);
+.table-head { flex: none; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 16px 0; color: #fff; }
+.table-head b { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 16px; }
+.table-head span { font-size: 13px; opacity: .85; }
+.table-head .btn { margin-left: auto; }
+.btn.sm { padding: 5px 12px; font-size: 13px; }
+.table .btn.ghost { color: #fff; border-color: rgba(255, 255, 255, .6); background: rgba(255, 255, 255, .08); }
+.table-cards {
+  flex: 1; min-height: 0; display: flex; gap: 18px; padding: 12px 16px 16px;
+  overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; justify-content: safe center; scrollbar-width: thin;
 }
-.nav-arrow.prev { left: 4px; }
-.nav-arrow.next { right: 4px; }
+.table-empty { margin: auto; color: #fff; opacity: .85; font-size: 15px; text-align: center; max-width: 360px; }
 
-.dock { flex: none; display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: var(--paper); border-top: 1px solid var(--line); box-shadow: 0 -4px 14px rgba(35, 48, 42, .08); padding-bottom: max(8px, env(safe-area-inset-bottom)); }
-.dock-wait { justify-content: center; align-items: center; color: var(--muted); font-size: 13px; min-height: 60px; }
+/* การ์ดแนวตั้ง 5:7 สูงเต็มโต๊ะ ทุกใบเท่ากัน ข้อความได้พื้นที่ก่อน ภาพกินที่เหลือ ไม่มี scroll ในการ์ด */
+.tcard {
+  flex: none; height: 100%; aspect-ratio: 5 / 7; max-width: 480px; min-height: 0; scroll-snap-align: center;
+  display: flex; flex-direction: column; overflow: hidden; position: relative; container-type: inline-size;
+  background: var(--paper); border: 3px solid var(--sage); border-radius: 18px; box-shadow: 0 10px 24px rgba(0, 0, 0, .28);
+}
+.tcard.unplayable { opacity: .62; filter: saturate(.6); }
+.why-badge { position: absolute; top: 8px; right: 8px; z-index: 2; background: var(--coral); color: #fff; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 2px 10px; }
+.pcard-head, .pcard-foot { flex: none; }
+.pcard-head .ttl { flex: 1; min-width: 0; }
+.pcard-head .ttl small { display: block; font-size: 11px; letter-spacing: .1em; opacity: .85; }
+.pcard-head .ttl .th { font-size: 19px; text-transform: none; letter-spacing: 0; }
+.pcard-head .tags { display: flex; gap: 4px; font-size: 16px; }
+.pbody { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.pbody .art { flex: 1 1 0; min-height: 0; aspect-ratio: auto; }
+.pbody .levels, .pbody .story, .pbody .eopts { flex: none; }
+
+/* แถวย่อ: ขั้นที่ทำแล้ว / ล็อก */
+.lv.row { grid-template-columns: 30px minmax(0, 1fr); align-items: center; padding: 6px 8px; }
+.lv.row .lv-badge { grid-row: auto; width: 30px; height: 30px; font-size: 14px; border-radius: 8px; }
+.lv.row .row-text { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; }
+.lv.row .chosen { grid-column: auto; }
+.lv.done .lv-badge::after { content: none; }
+.peekline { flex-basis: 100%; font-size: 12px; color: var(--muted); }
+.peekline span { cursor: help; }
+
+/* ขั้นที่เล่นอยู่: ซ้าย L + ชื่อ + ต้นทุน แตกไปขวาเป็น A/B (แบบ Style 2) */
+.lv.next { grid-template-columns: 34px minmax(0, 1fr) minmax(0, 1.25fr); align-items: center; gap: 4px 10px; }
+.lv.next .lv-badge { grid-row: auto; width: 34px; height: 34px; font-size: 15px; border-radius: 9px; }
+.lv.next .outs { grid-column: 3; grid-row: 1; position: relative; padding-left: 12px; border-left: 2px solid var(--sage); }
+.lv.next .lv-main { min-width: 0; }
+@container (max-width: 400px) {
+  .lv.next { grid-template-columns: 30px minmax(0, 1fr); }
+  .lv.next .lv-badge { width: 30px; height: 30px; font-size: 14px; }
+  .lv.next .outs { grid-column: 1 / -1; grid-row: auto; padding-left: 0; border-left: 0; }
+}
+
+/* event / echo / opportunity */
+.ecard2 .pcard-head { padding: 10px 14px; }
+.ecard2 .art { background: linear-gradient(135deg, var(--sage-soft), var(--mustard-soft)); display: grid; place-items: center; }
+.ecard2 .art .ph { font-size: 64px; }
+.ecard2 .story { margin: 0; padding: 10px 14px 4px; color: var(--muted); font-size: 15px; }
+.ecard2 .eopts { display: grid; gap: 6px; padding: 8px 12px 12px; }
+.opt.static { cursor: default; }
+.ecard2.echo-good { border-color: var(--teal); }
+.ecard2.echo-good .pcard-head, .ecard2.echo-good .pcard-foot { background: var(--teal); }
+.ecard2.echo-good .art { background: linear-gradient(135deg, var(--teal-soft), #eef0ea); }
+.ecard2.echo-bad { border-color: var(--coral); }
+.ecard2.echo-bad .pcard-head, .ecard2.echo-bad .pcard-foot { background: var(--coral); }
+.ecard2.echo-bad .art { background: linear-gradient(135deg, var(--coral-soft), #eef0ea); }
+.ecard2.opp { border-color: var(--mustard); }
+.ecard2.opp .pcard-head, .ecard2.opp .pcard-foot { background: #b9852a; }
+.ecard2.opp .art { background: linear-gradient(135deg, var(--mustard-soft), #fff); }
+
+/* dense: จอเตี้ยมาก ซ่อนภาพ ลด padding (ตัวหนังสือไม่เล็กลง) */
+.tcard.dense .art { display: none; }
+.tcard.dense .levels { padding: 6px 8px; gap: 4px; }
+.tcard.dense .lv { padding: 6px; }
+.tcard.dense .out { padding: 4px 8px; }
+.tcard.dense .pcard-foot, .tcard.dense .pcard-head h3:not(.th) { display: none; }
+.tcard.dense .pcard-head p { font-size: 16px; font-weight: 600; font-family: 'Kanit', sans-serif; }
+
+/* ---------------------------------------------------------------- side panel (จอ ≥ 1024) */
+.side { flex: 0 0 320px; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 10px; padding: 12px; background: var(--bg); border-left: 1px solid var(--line); }
+.side .panel { padding: 12px; }
+.side-log { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+.side-log .log { flex: 1; min-height: 0; overflow: hidden; max-height: none; align-content: start; }
+.side-log .btn { align-self: flex-start; }
+
+/* ---------------------------------------------------------------- dock */
+.dock { flex: none; display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: var(--paper); border-top: 1px solid var(--line); box-shadow: 0 -4px 14px rgba(35, 48, 42, .08); padding-bottom: max(8px, env(safe-area-inset-bottom)); position: relative; }
+.dock.waiting .dock-acts { opacity: .35; }
+.dock-note { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: var(--ink); color: #fff; font-size: 13px; padding: 4px 12px; border-radius: 999px; pointer-events: none; white-space: nowrap; }
 .dock-acts { flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: thin; padding-bottom: 2px; }
 .dock-acts .act { flex: 0 0 150px; scroll-snap-align: start; padding: 6px 8px; gap: 2px; font-size: 13px; align-content: start; }
 .dock-acts .act .why { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -254,74 +321,7 @@ html.zoomed body { zoom: var(--z); }
 .sheet { width: min(520px, 100%); max-height: calc(80dvh / var(--z, 1)); overflow: auto; background: var(--paper); border-radius: 18px 18px 0 0; padding: 10px 16px 18px; display: grid; gap: 8px; box-shadow: 0 -10px 40px rgba(0, 0, 0, .25); }
 .sheet .grab { justify-self: center; width: 40px; height: 4px; border-radius: 4px; background: var(--line); }
 .sheet .log { max-height: 55dvh; }
-
-/* ---------------------------------------------------------------- card v2: pbody + แถวย่อ */
-.pcard { overflow: hidden; }
-.pcard-head, .pcard-foot { flex: none; }
-.pcard-head .ttl { flex: 1; min-width: 0; }
-.pcard-head .tags { display: flex; gap: 4px; font-size: 16px; }
-.pbody { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-.pbody .art { flex: 1 1 0; min-height: 0; aspect-ratio: auto; }
-.pbody .levels { flex: none; }
-.lv.row { grid-template-columns: 30px minmax(0, 1fr); align-items: center; padding: 6px 8px; }
-.lv.row .lv-badge { grid-row: auto; width: 30px; height: 30px; font-size: 14px; border-radius: 8px; }
-.lv.row .row-text { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; }
-.lv.row .chosen { grid-column: auto; }
-.lv.done .lv-badge::after { content: none; }
-.peekline { flex-basis: 100%; font-size: 12px; color: var(--muted); }
-.peekline span { cursor: help; }
-.pcard.dense .art { display: none; }
-.pcard.dense .levels { padding: 6px 8px; gap: 4px; }
-.pcard.dense .lv { padding: 6px; }
-.pcard.dense .out { padding: 4px 8px; }
-.pcard.dense .pcard-foot, .pcard.dense .pcard-head h3 { display: none; }
-.pcard.dense .pcard-head p { font-size: 16px; font-weight: 600; font-family: 'Kanit', sans-serif; }
-/* จอเตี้ย: แผงกิจกรรมเป็น 2 คอลัมน์ */
-@media (max-height: 880px) {
-  .ap-acts { grid-template-columns: 1fr 1fr; }
-  .ap-acts .btn { grid-column: 1 / -1; }
-  .arow { flex-direction: column; align-items: flex-start; padding: 5px 8px; }
-  .arow b { margin-right: 0; }
-  .arow .why { flex-basis: auto; }
-}
-
-/* ---------------------------------------------------------------- desktop layout B */
-html.desk .topbar-row, html.desk .resbar, html.desk .flow { max-width: none; }
-.desk-main { flex: 1; min-height: 0; display: grid; grid-template-columns: 250px minmax(0, 1fr) 330px; gap: 16px; padding: 14px 16px; }
-.plist, .apanel { min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 6px; }
-.plist h4, .apanel h4 { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 6px 4px 0; }
-.pitem { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; align-items: center; text-align: left; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; }
-.pitem:hover { border-color: var(--sage); }
-.pitem.active { background: var(--sage); border-color: var(--sage); color: #fff; }
-.pi-ico { font-size: 18px; }
-.pi-name { font-weight: 600; display: grid; line-height: 1.3; }
-.pi-st { font-weight: 500; font-size: 12px; color: var(--muted); }
-.pi-st.ready { color: var(--sage); }
-.pi-st.blocked { color: var(--coral); }
-.pi-st.done { color: #b9852a; }
-.pitem.active .pi-st { color: rgba(255, 255, 255, .85); }
-.focus { min-width: 0; min-height: 0; display: flex; justify-content: center; }
-.focus .pcard { width: 100%; max-width: 1000px; }
-.pcard.wide .pbody { flex-direction: row; }
-.pcard.wide .art { flex: 0 0 38%; min-height: 0; height: auto; }
-.pcard.wide .art .ph { font-size: 96px; }
-.pcard.wide .levels { flex: 1; min-width: 0; align-content: center; padding: 14px; gap: 8px; }
-.apanel { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
-.ap-head { display: flex; justify-content: space-between; align-items: center; }
-.ap-head h4 { margin: 0; }
-.ap-head .pip { border-color: var(--mustard); }
-.ap-acts { display: grid; gap: 5px; }
-.ap-acts .wait { text-align: center; padding: 20px 0; }
-.arow { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; }
-.arow:hover:not(:disabled) { border-color: var(--sage); }
-.arow:disabled { opacity: .45; }
-.arow b { font-weight: 600; margin-right: auto; }
-.arow .why { flex-basis: 100%; font-size: 11px; color: var(--coral); }
-.ap-acts .btn { margin-top: 4px; }
-.ap-goal, .ap-echo { text-align: left; background: var(--panel); border: 0; border-radius: 10px; padding: 8px 10px; display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
-.ap-goal { margin-top: auto; }
-.ap-echo { color: #5b3fa0; }
-.ap-echo span { white-space: nowrap; }
+.res .net { font-size: 11px; font-weight: 500; opacity: .85; margin-left: 2px; }
 
 /* ---------------------------------------------------------------- responsive
    layout มือถือใช้ class html.m (ตั้งจาก ui.js) แทน media query
@@ -330,9 +330,10 @@ html.desk .topbar-row, html.desk .resbar, html.desk .flow { max-width: none; }
   .layout { grid-template-columns: minmax(0, 1fr); }
 }
 html.m body { font-size: 15px; }
-html.m .slide { flex-basis: calc(100% - 28px); scroll-snap-align: center; }
-html.m .carousel { gap: 10px; padding: 10px 14px; }
-html.m .nav-arrow { display: none; }
+html.m .tcard { aspect-ratio: auto; width: calc(100% - 28px); max-width: none; }
+html.m .table-cards { gap: 10px; padding: 8px 14px 10px; justify-content: flex-start; }
+html.m .table-head { padding: 8px 14px 0; }
+html.m .table-head .btn { font-size: 14px; }
 
 html.m .topbar-row { padding: 6px 10px; gap: 8px; flex-wrap: wrap; row-gap: 4px; }
 html.m .brand { font-size: 17px; }
@@ -347,15 +348,8 @@ html.m .res .v { font-size: 15px; }
 html.m .res .k { display: none; }
 html.m .flow { padding: 0 10px 6px; font-size: 12px; }
 
-html.m .strip { padding: 6px 10px; }
-html.m .strip-label { font-size: 12px; }
-html.m .strip-chip { font-size: 14px; padding: 5px 12px; }
 
 html.m .art .ph { font-size: 36px; }
-html.m .slide .pcard-head { padding: 6px 12px; }
-html.m .slide .pcard-head h3 { font-size: 17px; }
-html.m .slide .pcard-head p { font-size: 14px; }
-html.m .slide .pcard-foot { padding: 3px; font-size: 11px; }
 html.m .lv-name { font-size: 16px; }
 html.m .lv.next { grid-template-columns: 30px minmax(0, 1fr); padding: 6px 8px; }
 html.m .lv.next .lv-badge { grid-row: auto; width: 30px; height: 30px; font-size: 14px; border-radius: 8px; }
@@ -363,23 +357,20 @@ html.m .lv.next > div:nth-child(2) { display: flex; flex-wrap: wrap; align-items
 html.m .levels { padding: 6px 8px 8px; gap: 5px; }
 html.m .out { padding: 5px 8px; gap: 0 8px; }
 html.m .out .why { grid-column: 2; }
-html.m .pcard.dense .peekline { display: none; }
+html.m .tcard.dense .peekline { display: none; }
 /* dense: ชื่อทางเลือกกับ chips อยู่บรรทัดเดียวกันถ้าพอดี */
-html.m .pcard.dense .out { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; }
-html.m .pcard.dense .out .ab { width: 24px; height: 24px; font-size: 12px; }
-html.m .pcard.dense .out .why { flex-basis: 100%; padding-left: 32px; }
-html.m .pcard.dense .levels { gap: 4px; padding: 4px 6px 6px; }
-html.m .pcard.dense .lv { padding: 4px 6px; }
-html.m .pcard.dense .pcard-head { padding: 4px 12px; }
-html.m .pcard.dense .lv.row .lv-badge, html.m .pcard.dense .lv.next .lv-badge { width: 26px; height: 26px; }
+html.m .tcard.dense .out { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; }
+html.m .tcard.dense .out .ab { width: 24px; height: 24px; font-size: 12px; }
+html.m .tcard.dense .out .why { flex-basis: 100%; padding-left: 32px; }
+html.m .tcard.dense .levels { gap: 4px; padding: 4px 6px 6px; }
+html.m .tcard.dense .lv { padding: 4px 6px; }
+html.m .tcard.dense .pcard-head { padding: 4px 12px; }
+html.m .tcard.dense .lv.row .lv-badge, html.m .tcard.dense .lv.next .lv-badge { width: 26px; height: 26px; }
 /* จอเตี้ย (ตั้ง class จาก ui.js) */
 html.m.short .flow { display: none; }
 html.m.short .topbar-row { padding: 4px 10px; }
 html.m.short .resbar { padding: 2px 10px 4px; }
-html.m.short .strip { padding: 4px 10px; }
-html.m.short .strip-chip { padding: 3px 10px; }
 html.m.short .dock { padding: 4px 6px; }
-.res .net { font-size: 11px; font-weight: 500; opacity: .85; margin-left: 2px; }
 html.m .out b { font-size: 15px; }
 html.m .chip { font-size: 14px; }
 html.m .chosen, html.m .peek { font-size: 13px; }
@@ -401,3 +392,11 @@ html.m .hero h1 { font-size: 30px; }
 html.m .pickgrid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding-bottom: 4px; }
 html.m .pick { flex: 0 0 78%; scroll-snap-align: start; }
 html.m .pick p { font-size: 14px; }
+html.m .lv.next .outs { grid-column: 1 / -1; grid-row: auto; padding-left: 0; border-left: 0; }
+/* dense ของการ์ดเหตุการณ์: ชื่อทางเลือกกับ chips อยู่บรรทัดเดียวกันถ้าพอดี */
+.tcard.dense .story { padding: 6px 12px 0; }
+.tcard.dense .eopts { gap: 4px; padding: 6px 10px 8px; }
+.tcard.dense .opt { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; padding: 6px 10px; }
+.tcard.dense .opt .why { flex-basis: 100%; }
+/* จอเตี้ย: แผงขวาไม่พอสำหรับ log ให้ใช้ปุ่ม 📔 ที่แถบบนแทน */
+@media (max-height: 860px) { .side-log { display: none; } }

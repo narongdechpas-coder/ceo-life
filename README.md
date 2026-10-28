@@ -11,7 +11,7 @@
 | `docs/design-v0.2.md` | Design doc กติกาและเหตุผล |
 | `src/data/cards.js` | ข้อมูลการ์ดทั้งหมด (แก้ตัวเลขที่นี่) |
 | `src/game.js` | Game engine ใช้ร่วมกันทั้งเบราว์เซอร์และ Node |
-| `src/ui.js`, `src/style.css` | หน้าเกม (Style 2 Flat Vector) แบบหน้าเดียว การ์ดเลื่อนเป็น carousel |
+| `src/ui.js`, `src/style.css` | หน้าเกม (Style 2) แบบโต๊ะ: บนโต๊ะมีเฉพาะการ์ดที่ต้องตัดสินใจตอนนั้น |
 | `assets/art/<id>.webp` | ภาพประกอบการ์ด ถ้าไม่มีไฟล์จะใช้ไอคอนแทน |
 
 ## ตรวจ
