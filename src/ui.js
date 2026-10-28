@@ -499,6 +499,11 @@
     row.classList.remove('art-fixed', 'no-art');
     row.style.removeProperty('--art-h');
     if (!all.length) return;
+    // หัวการ์ดสูงเท่ากันทั้งแถว (ชื่อยาวตัด 2 บรรทัดได้) ช่องภาพจะได้เริ่มที่ระดับเดียวกัน
+    const heads = all.map(c => c.querySelector('.pcard-head')).filter(Boolean);
+    heads.forEach(h => { h.style.minHeight = ''; });
+    const headH = Math.max(0, ...heads.map(h => h.offsetHeight));
+    heads.forEach(h => { h.style.minHeight = `${headH}px`; });
     const content = c => {
       const body = c.querySelector('.pbody');
       const kids = [...body.children].filter(k => !k.classList.contains('art'));
@@ -697,6 +702,8 @@
 
   // ฟอนต์จริงโหลดตามมาทีหลังทำให้ตัวหนังสือสูงขึ้น และแถบเบราว์เซอร์มือถือหด/ขยายได้ จึงคำนวณขนาดการ์ดใหม่
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitCards());
+  // ฟอนต์บางน้ำหนัก (เช่น Kanit ตัวหนาในหัวการ์ด) โหลดทีหลังตอนเริ่มใช้จริง จึงจัดใหม่ทุกครั้งที่โหลดเสร็จ
+  if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => fitCards());
   if (window.ResizeObserver) {
     let fitT = null;
     const ro = new ResizeObserver(() => { cancelAnimationFrame(fitT); fitT = requestAnimationFrame(fitCards); });

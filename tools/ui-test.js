@@ -39,6 +39,8 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
         .map(el => `${el.querySelector('h3') ? el.querySelector('h3').textContent : el.className} +${el.scrollHeight - el.clientHeight}px`),
       desk: document.documentElement.classList.contains('desk'),
       // ภาพบนการ์ดที่แสดงอยู่ต้องสูงเท่ากันทุกใบ (เผื่อทำภาพจริงสัดส่วนเดียว)
+      // ช่องภาพต้องเริ่มที่ระดับเดียวกันด้วย (หัวการ์ดสูงเท่ากัน)
+      artTops: [...new Set([...document.querySelectorAll('.table .tcard .art')].filter(a => a.offsetParent).map(a => Math.round(a.getBoundingClientRect().top - a.closest('.tcard').getBoundingClientRect().top)))],
       artHeights: [...new Set([...document.querySelectorAll('.table .tcard .art')].filter(a => a.offsetParent).map(a => Math.round(a.getBoundingClientRect().height)))],
       showAll: (document.querySelector('[data-do="showall"]') || {}).textContent === 'ดูเฉพาะที่เล่นได้',
       // ทุก Project บนโต๊ะต้องมีทางเลือกที่กดได้ (เว้นแต่อยู่ในโหมดดูทั้งหมด)
@@ -57,6 +59,7 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       if (g.vh > 0 || g.hx > 0) problem(`${phase}@${round} page scroll v${g.vh} h${g.hx}`);
       if (g.scrolly) problem(`${phase}@${round} ${g.scrolly} card(s) needed in-card scroll`);
       if (g.over.length) problem(`${phase}@${round} overflow ${g.over.join(', ')}`);
+      if (!g.showAll && g.artTops.length > 1) problem(`${phase}@${round} art starts at different heights ${g.artTops.join('/')}`);
       if (!g.showAll && g.artHeights.length > 1) problem(`${phase}@${round} art heights differ ${g.artHeights.join('/')}`);
       if (g.desk !== wantDesk) problem(`layout desk=${g.desk} expected ${wantDesk}`);
       if (g.cardsScroll > 1 && !g.showAll) problem(`${phase}@${round} table needs horizontal scroll ${g.cardsScroll}px`);

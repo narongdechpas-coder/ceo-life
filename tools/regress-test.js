@@ -96,6 +96,30 @@ const st = page => page.evaluate(() => { const s = window.__lifeceo.state; retur
     await page.close();
   }
 
+  // ---------- 3b) ฟอนต์หัวการ์ดโหลดทีหลัง ทำให้ชื่อการ์ดบางใบตัด 2 บรรทัด
+  {
+    const page = await browser.newPage({ viewport: { width: 1600, height: 900 } });
+    page.on('dialog', d => d.accept());
+    await start(page);
+    await page.locator('.opt:not([disabled])').first().click(); await page.waitForTimeout(800);
+    await page.evaluate(() => { const s = window.__lifeceo.state; s.cash = 60; s.energy = 7; s.time = 4; s.flags.advanced = [];
+      s.projects = { P08: { level: 0, choices: [] }, P07: { level: 0, choices: [] }, P11: { level: 0, choices: [] } }; s.market = ['P10', 'P02'];
+      window.__lifeceo.render(); });
+    // ฟอนต์จริงกว้างกว่า → หัวการ์ดตัดบรรทัด แล้วเบราว์เซอร์แจ้งว่าโหลดฟอนต์เสร็จ
+    await page.addStyleTag({ content: '.pcard-head h3 { letter-spacing: .12em !important; }' });
+    await page.evaluate(() => document.fonts.dispatchEvent(new Event('loadingdone')));
+    await page.waitForTimeout(200);
+    const r = await page.evaluate(() => {
+      const arts = [...document.querySelectorAll('.table .tcard .art')].filter(a => a.offsetParent);
+      const card = a => a.closest('.tcard').getBoundingClientRect().top;
+      return { tops: [...new Set(arts.map(a => Math.round(a.getBoundingClientRect().top - card(a))))],
+        heights: [...new Set(arts.map(a => Math.round(a.getBoundingClientRect().height)))],
+        over: [...document.querySelectorAll('.table .tcard')].filter(c => c.scrollHeight > c.clientHeight + 1).length };
+    });
+    check('late heading font: art aligned and same height', r.tops.length <= 1 && r.heights.length <= 1 && r.over === 0, JSON.stringify(r));
+    await page.close();
+  }
+
   // ---------- 4) ปุ่มสุ่มใหม่หน้าเริ่มเกม
   {
     const page = await browser.newPage({ viewport: { width: 393, height: 660 }, hasTouch: true });
