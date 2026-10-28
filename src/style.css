@@ -552,3 +552,18 @@ html.m .tcard.dense .lv.next { gap: 2px 8px; }
 .dock-note { background: var(--mustard); color: var(--ink); font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, .25); }
 html.m .dock-lead { display: none; }
 html.m .dock-acts .act b { font-size: 14px; }
+
+/* วิธีเล่น */
+.ecard.rules { width: min(560px, 100%); }
+.ecard.rules .ecard-body { font-size: 14px; line-height: 1.6; color: var(--ink); max-height: min(70vh, 640px); overflow-y: auto; }
+.ecard.rules p { margin: 0 0 10px; }
+.ecard.rules h4 { font-family: Kanit, sans-serif; font-weight: 600; font-size: 15px; color: var(--sage); margin: 14px 0 6px; }
+.ecard.rules ol { margin: 0 0 10px; padding-left: 22px; }
+.ecard.rules li { margin-bottom: 4px; }
+.ecard.rules .btn { margin-top: 6px; width: 100%; }
+@media (min-width: 900px) {
+  .ecard.rules { width: min(920px, 100%); }
+  .ecard.rules .ecard-body { max-height: calc(100vh - 120px); }
+  .rcols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
+  .ecard.rules .btn { width: auto; min-width: 160px; display: block; margin-left: auto; }
+}
