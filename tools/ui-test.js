@@ -38,6 +38,8 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       // ทุก Project บนโต๊ะต้องมีทางเลือกที่กดได้ (เว้นแต่อยู่ในโหมดดูทั้งหมด)
       deadCards: [...document.querySelectorAll('.table .pcard')].filter(c => !c.querySelector('.out:not([disabled])')).length,
       endDisabled: document.querySelector('[data-do="end"]').disabled,
+      // จอที่ไม่ใช่มือถือ: การ์ดบนโต๊ะต้องเห็นครบโดยไม่ต้องเลื่อน
+      cardsScroll: document.documentElement.classList.contains('m') ? 0 : (r => r ? r.scrollWidth - r.clientWidth : 0)(document.getElementById('cards')),
     }));
     const wantDesk = name.startsWith('desktop');
     const shots = new Set();
@@ -49,6 +51,7 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       if (g.vh > 0 || g.hx > 0) problem(`${phase}@${round} page scroll v${g.vh} h${g.hx}`);
       if (g.over.length) problem(`${phase}@${round} overflow ${g.over.join(', ')}`);
       if (g.desk !== wantDesk) problem(`layout desk=${g.desk} expected ${wantDesk}`);
+      if (g.cardsScroll > 1 && !g.showAll) problem(`${phase}@${round} table needs horizontal scroll ${g.cardsScroll}px`);
       if (phase !== 'actions' && !g.endDisabled) problem(`end button enabled during ${phase}`);
       if (phase === 'actions' && !g.showAll && g.deadCards) problem(`${g.deadCards} unplayable card(s) on table @${round}`);
       const shot = async key => { if (!shots.has(key)) { shots.add(key); await page.screenshot({ path: `${OUT}/t-${name}-${key}.png` }); } };
@@ -100,6 +103,7 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       if (await tryAct('rest')) continue;
       await page.click('[data-do="end"]');
     }
+    await page.screenshot({ path: `${OUT}/t-${name}-end.png`, fullPage: true });
     const final = await st();
     console.log(name, final.phase, '| errors', errors.length ? errors : 'none', '| problems', problems.length ? problems.slice(0, 8) : 'none');
     await page.close();

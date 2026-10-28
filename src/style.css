@@ -216,7 +216,9 @@ html.desk .topbar-row, html.desk .resbar, html.desk .flow { max-width: none; }
 .info-btns .icon-btn { position: relative; padding: 6px 8px; font-size: 15px; line-height: 1; }
 .badge { position: absolute; top: -4px; right: -4px; background: var(--mustard); color: var(--ink); font-style: normal; font-size: 10px; font-weight: 700; border-radius: 999px; min-width: 16px; height: 16px; display: grid; place-items: center; padding: 0 3px; }
 /* จอคอมมีแผงขวาแล้ว ไม่ต้องมีปุ่มซ้ำ */
-html.desk .info-btns [data-sheet="goal"], html.desk .info-btns [data-sheet="career"], html.desk .info-btns [data-sheet="echo"] { display: none; }
+@media (min-width: 1500px) {
+  html.desk .info-btns [data-sheet="goal"], html.desk .info-btns [data-sheet="career"], html.desk .info-btns [data-sheet="echo"] { display: none; }
+}
 
 /* ---------------------------------------------------------------- table (โต๊ะเขียว) */
 .board { flex: 1; min-height: 0; display: flex; }
@@ -400,3 +402,75 @@ html.m .lv.next .outs { grid-column: 1 / -1; grid-row: auto; padding-left: 0; bo
 .tcard.dense .opt .why { flex-basis: 100%; }
 /* จอเตี้ย: แผงขวาไม่พอสำหรับ log ให้ใช้ปุ่ม 📔 ที่แถบบนแทน */
 @media (max-height: 860px) { .side-log { display: none; } }
+
+/* ---------------------------------------------------------------- พื้นโต๊ะแบบภาพ (สลับเป็นสีเรียบได้จากเมนู ☰) */
+.table { position: relative; isolation: isolate; overflow: hidden; }
+.table::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background: url('../assets/bg/table.webp') center 60% / cover no-repeat;
+  /* ลดความสดและเลื่อนสีเข้าหาโทนเขียว sage ของเกม ให้การ์ดเด่นกว่าฉาก */
+  filter: saturate(.62) hue-rotate(-8deg) brightness(.92) blur(1.5px);
+  transform: scale(1.03);
+}
+.table::after {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, rgba(31, 62, 45, .62) 0%, rgba(31, 62, 45, .28) 45%, rgba(24, 48, 35, .55) 100%);
+}
+html.bg-plain .table::before, html.bg-plain .table::after { display: none; }
+.table-head b, .table-head span { text-shadow: 0 1px 3px rgba(0, 0, 0, .45); }
+
+/* ---------------------------------------------------------------- หน้าสรุปชีวิต */
+.hero.end { max-width: 980px; }
+.hero.end .big { font-family: 'Kanit', sans-serif; font-size: 22px; color: var(--sage-dark); margin: 0 8px; }
+.era-story { padding: 12px 0; border-bottom: 1px dashed var(--line); }
+.era-story:last-child { border-bottom: 0; }
+.era-story h3 { font-size: 18px; color: var(--sage-dark); margin-bottom: 6px; }
+.era-story h3 small { font-family: 'Noto Sans Thai', sans-serif; font-weight: 500; font-size: 13px; color: var(--muted); margin-left: 6px; }
+.era-story p { margin: 0; line-height: 1.9; font-size: 15px; }
+.era-close { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--muted); }
+.era-close i { font-style: normal; font-size: 12px; }
+.era-close i.up { color: var(--sage); }
+.era-close i.down { color: var(--coral); }
+.chains { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.chains li {
+  display: grid; grid-template-columns: minmax(0, 1.2fr) auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center;
+  background: #fff; border: 1px solid var(--line); border-left: 4px solid var(--sage); border-radius: 10px; padding: 8px 12px; font-size: 14px;
+}
+.chains li.good { border-left-color: var(--teal); }
+.chains li.bad { border-left-color: var(--coral); }
+.chains li.ongoing { border-left-color: var(--mustard); }
+.chains .arrow { color: var(--muted); font-weight: 700; }
+.chains em { font-style: normal; color: var(--muted); }
+.chains em.neg { color: var(--coral); font-weight: 600; }
+.score-table td small { display: block; font-size: 12px; color: var(--muted); }
+html.m .chains li { grid-template-columns: 1fr; gap: 2px; }
+html.m .chains .arrow { transform: rotate(90deg); justify-self: start; line-height: 1; }
+.table-cards.two-rows { flex-wrap: wrap; align-content: center; overflow-x: hidden; }
+/* โหมดย่อ (การ์ดเยอะ 2 แถวบนจอเตี้ย): เหลือหัวการ์ดกับขั้นที่ต้องเลือกตอนนี้ */
+.tcard.compact .art, .tcard.compact .lv.row, .tcard.compact .pcard-foot, .tcard.compact .pcard-head h3:not(.th) { display: none; }
+.tcard.compact .pcard-head { padding: 6px 12px; }
+.tcard.compact .pcard-head p { font-size: 16px; font-weight: 600; font-family: 'Kanit', sans-serif; }
+.tcard.compact .pbody { justify-content: center; }
+.tcard.compact .levels { padding: 4px 8px 6px; gap: 4px; }
+.tcard.compact .lv.next { padding: 6px 8px; }
+.tcard.compact .out { padding: 4px 8px; }
+.tcard.compact .outs { gap: 4px; }
+html.m .tcard.dense .outs { gap: 4px; }
+html.m .tcard.dense .out { padding: 3px 8px; }
+html.m .tcard.dense .lv.next { gap: 2px 8px; }
+/* การ์ดที่เล่นไม่ได้มีป้ายเหตุผลที่มุมแล้ว ไม่ต้องซ้ำทุกปุ่ม */
+.tcard.unplayable .out .why { display: none; }
+/* คำอธิบายรองของปุ่มกิจกรรมย้ายไปเป็น tooltip แถบล่างจะได้เตี้ย */
+.dock-acts .act .note { display: none; }
+.table-cards.browse { justify-content: flex-start; }
+/* จอคอมที่เตี้ย: แถบบนกระชับขึ้น (ชื่อทรัพยากรดูได้จาก tooltip, ยอดสุทธิอยู่ในช่อง 🪙) */
+@media (max-height: 860px) {
+  html:not(.m) .res .k, html:not(.m) .flow { display: none; }
+  html:not(.m) .resbar { padding-top: 4px; padding-bottom: 8px; }
+  html:not(.m) .res { padding: 3px 6px; }
+}
+.tcard.tight .out b, .tcard.tight .lv-name { font-size: 14px; }
+.tcard.tight .chip { font-size: 12px; }
+.tcard.tight .lv { padding: 4px 6px; }
+.era-story p + p { margin-top: 4px; }
+.era-story .rnd { display: inline-block; min-width: 64px; font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 13px; color: var(--sage); }

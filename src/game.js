@@ -95,16 +95,24 @@
       s[k] += v; // lp
     }
   }
-  function applyOutcome(s, o, src) {
+  // ctx = ข้อความสั้นว่าผลนี้มาจากการตัดสินใจไหน (ใช้เล่าเรื่องตอนจบเกม)
+  function applyOutcome(s, o, src, ctx) {
     if (o.clearOngoing) s.ongoing = s.ongoing.filter(x => x.src !== src);
     applyGain(s, o.gain, src);
-    if (o.echo) plantEcho(s, o.echo.id);
+    if (o.echo) plantEcho(s, o.echo.id, ctx);
   }
-  function plantEcho(s, id) {
+  function plantEcho(s, id, ctx) {
     const target = Math.min(4, eraOf(s.round) + 1);
     s.echoQueue[target].push(id);
     s.echoesPlanted += 1;
+    s.echoLinks.push({ id, planted: s.round, from: ctx || '', resolved: null });
     log(s, `มีผลสะท้อนบางอย่างรออยู่ในยุค ${target}`, 'echo');
+  }
+  // บันทึกเรื่องราวแบบมีโครงสร้าง สำหรับหน้าสรุปชีวิต
+  function story(s, entry) { s.story.push({ round: s.round, ...entry }); }
+  function snapshot(s) {
+    s.snaps.push({ round: s.round, cash: s.cash, portfolio: s.portfolio, debt: s.debt, health: s.health, rel: s.rel,
+      skills: s.skills, stress: s.stress, lp: s.lp, tier: s.careerTier, passive: passive(s), cost: livingCost(s) });
   }
 
   // ---------------------------------------------------------------- เริ่มเกม
@@ -117,7 +125,7 @@
       eventDecks: {}, echoQueue: { 1: [], 2: [], 3: [], 4: [] }, echoesPlanted: 0,
       oppDeck: [], oppChoices: [], oppAccepted: 0,
       pending: [], flags: {}, crisis: false, burnouts: 0, regrets: 0,
-      gameOver: null, log: [],
+      gameOver: null, log: [], story: [], echoLinks: [], snaps: [],
     };
     s.goalChoices = shuffle(s, D.GOALS.map(g => g.id)).slice(0, 3);
     s.careerChoices = shuffle(s, D.CAREERS.map(c => c.id)).slice(0, 3);
@@ -133,6 +141,7 @@
     if (!s.goalChoices.includes(goalId) || !s.careerChoices.includes(careerId)) return 'ตัวเลือกไม่ถูกต้อง';
     s.goalId = goalId; s.careerId = careerId;
     log(s, `เริ่มชีวิตในอาชีพ${CAREER[careerId].name} ตั้งเป้าหมาย "${GOAL[goalId].name}"`, 'key');
+    snapshot(s);
     startRound(s);
     return null;
   }
@@ -180,8 +189,13 @@
     const why = blocker(s, o.cost || {}, o.require);
     if (why) return why;
     payCost(s, o.cost || {});
-    applyOutcome(s, o, card.id);
+    applyOutcome(s, o, card.id, `“${card.title}” แล้วเลือก${o.label}`);
     if (kind === 'echo' && o.regret) s.regrets += 1;
+    if (kind === 'echo') {
+      const link = s.echoLinks.find(l => l.id === card.id && !l.resolved);
+      if (link) link.resolved = { round: s.round, label: o.label, regret: !!o.regret };
+      story(s, { kind: 'echo', id: card.id, good: card.kind === 'good', title: card.title, label: o.label, regret: !!o.regret, from: link ? link.from : '', planted: link ? link.planted : null });
+    } else story(s, { kind: 'event', title: card.title, label: o.label, echo: !!o.echo });
     log(s, `${kind === 'echo' ? 'Echo' : 'เหตุการณ์'} "${card.title}" → ${o.label}`, kind === 'echo' ? (card.kind === 'good' ? 'good' : (o.regret ? 'bad' : 'key')) : 'key');
     s.pending.shift();
     if (!s.pending.length) s.phase = 'actions';
@@ -235,6 +249,7 @@
         case 'promote': {
           s.careerTier += 1; s.expenses += 1;
           log(s, `เลื่อนเป็น ${tier(s).name} เงินเดือน ${tier(s).salary} เริ่มรอบหน้า ค่าครองชีพ +1`, 'key');
+          story(s, { kind: 'promote', title: tier(s).name, salary: tier(s).salary });
           break;
         }
         case 'explore': {
@@ -281,8 +296,10 @@
     const o = lv.outcomes[outIdx];
     payCost(s, sumCost(lv.cost, o.cost));
     applyGain(s, lv.gain, pid);
-    applyOutcome(s, o, pid);
+    applyOutcome(s, o, pid, `${p.name}: ${o.label}`);
     prog.level += 1;
+    story(s, { kind: 'project', id: pid, name: p.name, level: prog.level, step: lv.name, label: o.label,
+      ongoing: (o.gain && o.gain.ongoing) || null, echo: !!o.echo, done: prog.level === 3 });
     prog.choices.push(outIdx);
     s.flags.advanced.push(pid);
     s.time -= 1;
@@ -302,8 +319,9 @@
       const why = blocker(s, o.cost || {}, o.require);
       if (why) return why;
       payCost(s, o.cost || {});
-      applyOutcome(s, o, oid);
+      applyOutcome(s, o, oid, `รับโอกาส “${o.title}”`);
       s.oppAccepted += 1;
+      story(s, { kind: 'opp', title: o.title });
       log(s, `รับโอกาส "${o.title}"`, 'key');
     } else log(s, 'ปล่อยผ่านโอกาสที่เห็น');
     s.oppChoices = [];
@@ -316,15 +334,17 @@
     if (s.phase !== 'actions') return 'ยังจบรอบไม่ได้';
     const e = era(s);
     if (s.energy >= 3) { applyGain(s, { stress: -1 }); log(s, 'มีแรงเหลือได้พักจริง 💢 −1'); }
-    if ((e.decay || []).includes('rel') && !s.flags.relate) { applyGain(s, { rel: -1 }); log(s, 'ไม่ได้ใช้เวลากับคนสำคัญ 👥 −1', 'bad'); }
-    if ((e.decay || []).includes('health') && !s.flags.exercise) { applyGain(s, { health: -1 }); log(s, 'ไม่ได้ออกกำลังกาย ❤️ −1', 'bad'); }
+    if ((e.decay || []).includes('rel') && !s.flags.relate) { applyGain(s, { rel: -1 }); log(s, 'ไม่ได้ใช้เวลากับคนสำคัญ 👥 −1', 'bad'); story(s, { kind: 'decay', stat: 'rel' }); }
+    if ((e.decay || []).includes('health') && !s.flags.exercise) { applyGain(s, { health: -1 }); log(s, 'ไม่ได้ออกกำลังกาย ❤️ −1', 'bad'); story(s, { kind: 'decay', stat: 'health' }); }
     if (s.stress >= 7) {
       s.burnouts += 1;
       s.stress = 4;
       applyGain(s, { health: -2 });
       log(s, 'Burnout! ❤️ −2', 'bad');
-      plantEcho(s, 'E01');
+      story(s, { kind: 'burnout' });
+      plantEcho(s, 'E01', 'Burnout ในบทที่ ' + s.round);
     }
+    if (era(s).rounds[1] === s.round) snapshot(s);
     if (s.health <= 0) {
       if (s.crisis) { finish(s, 'crisis'); return null; }
       s.crisis = true;

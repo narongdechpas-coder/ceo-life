@@ -15,6 +15,15 @@
   // showAll = เลขบทที่กด "ดูทั้งหมด" (รีเซ็ตเองเมื่อขึ้นบทใหม่)
   let ui = { modal: null, sheet: null, showAll: 0, pickGoal: null, pickCareer: null };
 
+  // ---------------------------------------------------------------- พื้นโต๊ะ (ค่าส่วนตัวของผู้เล่นแต่ละเครื่อง)
+  const BG_KEY = 'lifeceo.bg';
+  const bgPlain = () => document.documentElement.classList.contains('bg-plain');
+  function applyBg(plain) {
+    document.documentElement.classList.toggle('bg-plain', plain);
+    try { localStorage.setItem(BG_KEY, plain ? 'plain' : 'image'); } catch (e) { /* โหมดส่วนตัว */ }
+  }
+  try { document.documentElement.classList.toggle('bg-plain', localStorage.getItem(BG_KEY) === 'plain'); } catch (e) { /* ใช้ค่าเริ่มต้น */ }
+
   // ---------------------------------------------------------------- save
   function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(s)); } catch (e) { /* โหมดส่วนตัว */ } }
   function load() { try { const t = localStorage.getItem(SAVE_KEY); return t ? JSON.parse(t) : null; } catch (e) { return null; } }
@@ -93,7 +102,8 @@
       } else if (a.id === 'explore') detail = `${chips({ energy: 1 })}<span class="note">เปิดโอกาส ${2 + ((G.career(s).perk || {}).extraOpportunity || 0)} ใบ เลือกได้ 1</span>`;
       else if (a.id === 'invest') detail = `<span class="note">ย้าย 🪙 เข้า 📈 (ขั้นต่ำ 2) ได้ +1/รอบ ต่อทุก 4</span>`;
       else if (a.id === 'repay') detail = `<span class="note">ลด 🔗 ดอกเบี้ย 1 ต่อหนี้ทุก 4</span>`;
-      return `<button class="act" data-act="${a.id}" ${why ? 'disabled' : ''}><b>${esc(a.label)}</b>${detail}${whyTag(why)}</button>`;
+      const tip = (detail.match(/<span class="note">(.*?)<\/span>/) || [])[1] || '';
+      return `<button class="act" data-act="${a.id}" ${why ? 'disabled' : ''} title="${tip.replace(/"/g, '&quot;')}"><b>${esc(a.label)}</b>${detail}${whyTag(why)}</button>`;
     }).join('');
     const live = s.phase === 'actions';
     return `<section class="dock ${live ? '' : 'waiting'}">
@@ -174,7 +184,9 @@
       const logs = s.log.slice(-80).map(l => `<p class="${l.tone}">${l.tone === 'era' ? '' : `<small>บท ${l.round}</small> `}${esc(l.text)}</p>`).join('');
       return `<h3>📔 Life Log</h3><div class="log" id="log">${logs}</div>`;
     }
-    return `<h3>เมนู</h3><button class="btn ghost" data-do="rules">สรุปกติกา</button><button class="btn ghost" data-do="new">เริ่มเกมใหม่</button>`;
+    return `<h3>เมนู</h3><button class="btn ghost" data-do="rules">สรุปกติกา</button>
+      <button class="btn ghost" data-do="bg">พื้นโต๊ะ: ${bgPlain() ? 'สีเรียบ' : 'ภาพวิว'} (กดเพื่อสลับ)</button>
+      <button class="btn ghost" data-do="new">เริ่มเกมใหม่</button>`;
   }
   function sheetModal(kind) {
     return `<div class="overlay sheet-overlay" data-do="close"><div class="sheet mini" role="dialog" aria-modal="true">
@@ -257,20 +269,112 @@
     </main>`;
   }
 
+  // ---------------------------------------------------------------- end: เล่าชีวิต + ผลสืบเนื่อง
+  const ongoingText = g => Object.entries(g).map(([k, v]) => `${ICON[k]}${sign(v)}`).join(' ');
+  // ผลต่อเนื่องที่เป็นรายจ่ายล้วน เล่าว่า "ต้องจ่าย" แทน "ได้"
+  const ongoingVerb = g => (Object.values(g).every(v => v < 0) && 'cash' in g
+    ? `ต้องจ่าย ${Object.entries(g).map(([k, v]) => `${ICON[k]}${Math.abs(v)}`).join(' ')} ทุกรอบ`
+    : `ได้ ${ongoingText(g)} ทุกรอบ`);
+  const quoteFrom = t => t.replace(/ แล้วเลือก/, ' แล้วคุณเลือก');
+
+  function eraSentences(entries) {
+    const out = [];
+    let round = null;
+    const decay = { rel: 0, health: 0 };
+    for (const e of entries) {
+      if (e.kind !== 'decay' && e.round !== round) { round = e.round; out.push({ round }); }
+      if (e.kind === 'event') out.push(`เจอเรื่อง “${esc(e.title)}” คุณเลือก${esc(e.label)}${e.echo ? ' เรื่องนี้ยังไม่จบแค่นี้ มันจะย้อนกลับมาในยุคถัดไป' : ''}`);
+      else if (e.kind === 'echo') {
+        const back = e.planted ? `ผลจากบทที่ ${e.planted} (${esc(quoteFrom(e.from))}) ย้อนกลับมา` : 'อดีตย้อนกลับมา';
+        out.push(`${back}เป็น${e.good ? 'ข่าวดี' : 'เรื่องที่ต้องรับมือ'} “${esc(e.title)}” คุณ${esc(e.label)}${e.regret ? ' แต่เรื่องนี้ยังค้างอยู่ในใจ' : ''}`);
+      } else if (e.kind === 'project') {
+        let t = e.level === 1 ? `เริ่ม${esc(e.name)} ด้วยขั้น “${esc(e.step)}” เลือก${esc(e.label)}` : `${esc(e.name)} ก้าวสู่ขั้น “${esc(e.step)}” เลือก${esc(e.label)}`;
+        if (e.ongoing) t += ` ทำให้${ongoingVerb(e.ongoing)}ต่อจากนั้น`;
+        if (e.done) t += ` จน${esc(e.name)}สำเร็จครบทุกขั้น`;
+        out.push(t);
+      } else if (e.kind === 'opp') out.push(`คว้าโอกาส “${esc(e.title)}” ไว้ได้`);
+      else if (e.kind === 'promote') out.push(`ได้เลื่อนเป็น ${esc(e.title)} เงินเดือน ${e.salary} (ค่าครองชีพก็ขยับตาม)`);
+      else if (e.kind === 'burnout') out.push('งานหนักจนร่างกายรับไม่ไหว เกิด Burnout');
+      else if (e.kind === 'decay') decay[e.stat] += 1;
+    }
+    // สรุปสิ่งที่ละเลยทั้งยุคไว้บรรทัดท้าย (ไม่ผูกกับบทใดบทหนึ่ง)
+    if (decay.rel || decay.health) out.push({ round: 0 });
+    if (decay.rel) out.push(`มี ${decay.rel} บทที่ไม่ได้ใช้เวลากับคนสำคัญ ความสัมพันธ์จึงค่อยๆ ห่างออก`);
+    if (decay.health) out.push(`มี ${decay.health} บทที่ไม่ได้ออกกำลังกาย สุขภาพก็ถดถอยตามอายุ`);
+    return out;
+  }
+  function eraClose(prev, cur) {
+    if (!prev || !cur) return '';
+    const d = (k, inv) => { const v = cur[k] - prev[k]; if (!v) return ''; const up = inv ? v < 0 : v > 0; return ` <i class="${up ? 'up' : 'down'}">${v > 0 ? '▲' : '▼'}${Math.abs(v)}</i>`; };
+    const item = (k, inv) => `<span>${ICON[k]} ${cur[k]}${d(k, inv)}</span>`;
+    return `<div class="era-close">ปิดยุคด้วย ${item('cash')}${item('portfolio')}${item('health')}${item('rel')}${item('skills')}${item('stress', true)}${cur.debt ? item('debt', true) : ''}</div>`;
+  }
+  function chains() {
+    const items = (s.echoLinks || []).map(l => {
+      const card = G.ECHO[l.id];
+      const end = l.resolved
+        ? `<b>บท ${l.resolved.round}</b> คุณ${esc(l.resolved.label)}${l.resolved.regret ? ' <em class="neg">Regret −2</em>' : ''}`
+        : (card.kind === 'bad' ? '<em class="neg">ชีวิตจบก่อนได้แก้ นับเป็น Regret −2</em>' : '<em>ชีวิตจบก่อนได้รับผลดีนี้</em>');
+      return `<li class="${card.kind}"><span><b>บท ${l.planted}</b> ${esc(quoteFrom(l.from))}</span><span class="arrow">→</span>
+        <span>กลับมาเป็น <b>“${esc(card.title)}”</b> ${card.kind === 'good' ? '(ผลดี)' : '(ผลร้าย)'}</span><span class="arrow">→</span><span>${end}</span></li>`;
+    });
+    for (const e of (s.story || [])) {
+      if (e.kind !== 'project' || !e.ongoing) continue;
+      const left = G.ROUNDS - e.round;
+      items.push(`<li class="ongoing"><span><b>บท ${e.round}</b> ${esc(e.name)}: ${esc(e.label)}</span><span class="arrow">→</span>
+        <span>${ongoingVerb(e.ongoing)}</span><span class="arrow">→</span><span>${left ? `ต่อเนื่องอีก ${left} บท` : 'เกมจบก่อนได้รับผลนี้'}</span></li>`);
+    }
+    return items.length ? `<ul class="chains">${items.join('')}</ul>` : '<p class="note">ชีวิตนี้แทบไม่มีการตัดสินใจที่ย้อนกลับมาให้ผลภายหลัง</p>';
+  }
+  function scoreReasons() {
+    const sum = G.summary(s), g = G.GOAL[s.goalId];
+    return [
+      'จาก Life Project เหตุการณ์ และ Echo ที่ดี',
+      `❤️ จบที่ ${s.health} (7 ขึ้นไปได้เต็ม 6)`,
+      `👥 จบที่ ${s.rel} (7 ขึ้นไปได้เต็ม 6)`,
+      `🪙${s.cash} + 📈${s.portfolio} − 🔗${s.debt} = ${s.cash + s.portfolio - s.debt} หาร 5`,
+      `Passive ${sum.passive} เทียบค่าใช้จ่าย ${sum.expenses} ต่อรอบ`,
+      `เต็ม: ${g.full} · บางส่วน: ${g.partial}`,
+      'เรื่องที่ปล่อยค้าง รวมผลร้ายที่ยังไม่ได้แก้ตอนจบ',
+      `💢 จบที่ ${s.stress} (6 ขึ้นไปหัก 3)`,
+    ];
+  }
   function endScreen() {
     const f = s.final;
-    const rows = f.rows.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v > 0 ? '+' : ''}${v}</td></tr>`).join('');
-    let story = '', cur = '';
-    for (const l of s.log) {
-      if (l.tone === 'era') { story += `${cur ? '</div>' : ''}<h3 style="margin-top:12px;color:var(--sage-dark)">${esc(l.text)}</h3><div class="log" style="max-height:none">`; cur = 1; continue; }
-      if (['key', 'good', 'bad', 'echo'].includes(l.tone)) story += `<p class="${l.tone}"><small>บท ${l.round}</small> ${esc(l.text)}</p>`;
+    const c = G.CAREER[s.careerId], g = G.GOAL[s.goalId];
+    const reasons = scoreReasons();
+    const rows = f.rows.map(([k, v], i) => `<tr><td>${esc(k)}<small>${esc(reasons[i] || '')}</small></td><td>${v > 0 ? '+' : ''}${v}</td></tr>`).join('');
+    let eras = '';
+    if (s.story) {
+      const snaps = s.snaps || [];
+      D.ERAS.forEach((e, i) => {
+        const entries = s.story.filter(x => e.rounds.includes(x.round));
+        if (!entries.length && s.round < e.rounds[0]) return;
+        const sent = eraSentences(entries);
+        if (i === 0) sent.unshift(`อายุ 22 คุณเริ่มทำงานเป็น${esc(c.tiers[0].name)}ในสาย${esc(c.name)} ตั้งใจไว้ว่าอยากเป็น “${esc(g.name)}”`);
+        const prev = i === 0 ? snaps[0] : snaps.find(x => x.round === D.ERAS[i - 1].rounds[1]);
+        const cur = snaps.find(x => x.round === e.rounds[1]);
+        // แต่ละบทขึ้นบรรทัดใหม่ ประโยคในบทเดียวกันคั่นด้วย ·
+        const lines = [];
+        for (const t of sent) {
+          if (typeof t === 'object') lines.push({ round: t.round, parts: [] });
+          else if (!lines.length || (i === 0 && lines.length === 0)) lines.push({ round: null, parts: [t] });
+          else lines[lines.length - 1].parts.push(t);
+        }
+        const body = lines.filter(l => l.parts.length).map(l => `<p>${l.round ? `<b class="rnd">บทที่ ${l.round}</b>` : ''}${l.parts.join(' · ')}</p>`).join('');
+        eras += `<article class="era-story"><h3>ยุค ${ROMAN[e.id]} ${esc(e.name)} <small>อายุ ${esc(e.age)}</small></h3>
+          ${body || '<p>ยุคนี้ผ่านไปอย่างเงียบๆ</p>'}${eraClose(prev, cur)}</article>`;
+      });
+    } else {
+      eras = s.log.filter(l => ['key', 'good', 'bad', 'echo', 'era'].includes(l.tone)).map(l => `<p class="${l.tone}">${esc(l.text)}</p>`).join('');
     }
-    if (cur) story += '</div>';
-    return `<main class="hero">
-      <div><h1>${s.gameOver === 'crisis' ? 'ชีวิตต้องเริ่มต้นใหม่' : 'จบชีวิตทั้ง 8 บท'}</h1>
-        <p><span class="tier-badge">${esc(f.tier)}</span> <span class="note">ช่วงคะแนนของแต่ละระดับยังเป็นค่าชั่วคราว</span></p></div>
-      <section class="panel"><table class="score-table">${rows}<tr class="total"><td>รวม</td><td>${f.total}</td></tr></table></section>
-      <section class="panel"><div class="section-title"><h2>เรื่องราวชีวิตของคุณ</h2></div>${story}</section>
+    return `<main class="hero end">
+      <div><h1>${s.gameOver === 'crisis' ? 'ชีวิตต้องเริ่มต้นใหม่' : 'ชีวิตของคุณ'}</h1>
+        <p class="story">${esc(c.name)} · ตั้งใจเป็น “${esc(g.name)}” · ${f.goal === 'full' ? 'ทำได้ตามที่ตั้งใจ' : f.goal === 'partial' ? 'ทำได้บางส่วน' : 'ยังไปไม่ถึง'}</p>
+        <p><span class="tier-badge">${esc(f.tier)}</span> <b class="big">${f.total} คะแนน</b> <span class="note">ช่วงคะแนนของแต่ละระดับยังเป็นค่าชั่วคราว</span></p></div>
+      <section class="panel"><div class="section-title"><h2>เรื่องเล่า 4 ยุค</h2></div>${eras}</section>
+      <section class="panel"><div class="section-title"><h2>การตัดสินใจที่ส่งผลต่อเนื่อง</h2><small>เลือกวันนั้น → ผลที่กลับมา → สิ่งที่คุณทำ</small></div>${chains()}</section>
+      <section class="panel"><div class="section-title"><h2>คะแนนมาจากไหน</h2></div><table class="score-table">${rows}<tr class="total"><td>รวม</td><td>${f.total}</td></tr></table></section>
       <div><button class="btn" data-do="new">เริ่มชีวิตใหม่</button> <span class="note">seed ${s.seed}</span></div>
     </main>`;
   }
@@ -324,9 +428,9 @@
       <div class="board">
         <main class="table">
           <div class="table-head">${v.head}</div>
-          <div class="table-cards" id="cards">${v.cards.join('') || `<p class="table-empty">${esc(v.empty || '')}</p>`}</div>
+          <div class="table-cards ${s.phase === 'actions' && ui.showAll === s.round ? 'browse' : ''}" id="cards">${v.cards.join('') || `<p class="table-empty">${esc(v.empty || '')}</p>`}</div>
         </main>
-        ${isDesk() ? sidePanel() : ''}
+        ${isDesk() && innerWidth / (parseFloat(document.documentElement.style.getPropertyValue('--z')) || 1) >= 1500 ? sidePanel() : ''}
       </div>
       ${actionDock()}
     </div>`;
@@ -334,11 +438,40 @@
 
   // ---------------------------------------------------------------- fit: ข้อความต้องครบ ไม่มี scroll
   function fitCards() {
-    document.querySelectorAll('.tcard').forEach(c => {
-      c.classList.remove('dense');
-      // ภาพหดได้เอง จึงซ่อนภาพ (dense) เฉพาะตอนที่ข้อความยังล้นจริง
-      if (c.scrollHeight > c.clientHeight + 1) c.classList.add('dense');
-    });
+    const over = c => c.scrollHeight > c.clientHeight + 1;
+    const all = [...document.querySelectorAll('.tcard')];
+    all.forEach(c => c.classList.remove('dense', 'compact', 'tight'));
+    const row = document.getElementById('cards');
+    if (!row || isMobile() || row.classList.contains('browse')) {
+      // มือถือ และโหมดดูทั้งหมด: การ์ดขนาดปกติ เลื่อนดูได้ แก้แค่ซ่อนภาพเมื่อข้อความล้น
+      if (row) row.classList.remove('two-rows');
+      all.forEach(c => { if (over(c)) c.classList.add('dense'); });
+      all.forEach(c => { if (over(c)) c.classList.add('compact'); });
+      if (!isMobile()) all.forEach(c => { if (over(c)) c.classList.add('tight'); });
+      return;
+    }
+    // จอคอม/แท็บเล็ต: ทุกใบต้องเห็นครบโดยไม่ต้องเลื่อน
+    const cs = getComputedStyle(row);
+    const W = row.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const H = row.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    const gap = parseFloat(cs.columnGap) || 0;
+    const n = all.length;
+    const fitW = per => (W - gap * (per - 1)) / per;
+    // แถวเดียวไม่พอ (การ์ดจะแคบกว่า 260px) ให้ขึ้น 2 แถว
+    const rows = n > 1 && fitW(n) < 260 ? 2 : 1;
+    const per = Math.ceil(n / rows);
+    const h = rows === 2 ? (H - gap) / 2 : H;
+    const maxW = Math.max(200, Math.min(560, fitW(per)));
+    row.classList.toggle('two-rows', rows === 2);
+    const size = w => all.forEach(c => { c.style.width = `${Math.floor(w)}px`; c.style.height = rows === 2 ? `${Math.floor(h)}px` : ''; });
+    // แถวเตี้ยเกินกว่าจะใส่การ์ดเต็มใบ ให้ย่อทุกใบตั้งแต่แรก
+    if (rows === 2 && h < 420) all.forEach(c => c.classList.add('compact'));
+    size(Math.max(200, Math.min(480, h * 5 / 7, fitW(per))));
+    // แก้ทีละขั้นเฉพาะใบที่ยังล้น: ซ่อนภาพ → ขยายความกว้าง → โหมดย่อ → ตัวหนังสือเล็กลง 1px (จอคอมเท่านั้น)
+    all.forEach(c => { if (over(c)) c.classList.add('dense'); });
+    if (all.some(over)) size(maxW);
+    all.forEach(c => { if (over(c)) c.classList.add('compact'); });
+    all.forEach(c => { if (over(c)) c.classList.add('tight'); });
   }
 
   // ---------------------------------------------------------------- device mode
@@ -406,6 +539,7 @@
     if (!el || el.disabled) return;
     const d = el.dataset;
     if (d.sheet) { ui.sheet = d.sheet; render(); return; }
+    if (d.do === 'bg') { applyBg(!bgPlain()); render(); return; }
     if (d.do === 'showall') { ui.showAll = ui.showAll === s.round ? 0 : s.round; render(); return; }
     if (d.do === 'new') { ui.sheet = null; if (s.phase === 'setup' || s.phase === 'end' || confirm('เริ่มเกมใหม่? เกมที่เล่นอยู่จะหายไป')) newGame(); return; }
     if (d.do === 'rules') { ui.sheet = null; ui.modal = 'rules'; render(); return; }
