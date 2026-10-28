@@ -207,7 +207,7 @@
     return `<article class="tcard ecard2 ${tone}" data-id="ev-${card.id}">
       <header class="pcard-head"><div class="ttl"><small>${label}</small><h3 class="th">${esc(card.title)}</h3></div></header>
       <div class="pbody">
-        <div class="art"><span class="ph">${kind === 'echo' ? '🔮' : ERA_ICON[card.era]}</span></div>
+        <div class="art"><span class="ph">${kind === 'echo' ? '🔮' : ERA_ICON[card.era]}</span><img src="assets/art/${kind === 'echo' ? `echo-${card.kind}` : `era-${card.era}`}.webp" alt="" loading="lazy" onerror="this.remove()"></div>
         <p class="story">${esc(card.story)}</p>
         <div class="eopts">${opts}</div>
       </div>
@@ -258,7 +258,7 @@
     const goals = s.goalChoices.map(id => { const g = G.GOAL[id];
       return `<button class="pick ${ui.pickGoal === id ? 'sel' : ''}" data-pick-goal="${id}"><h3>🎯 ${esc(g.name)}</h3><p>เต็ม +10: ${esc(g.full)}</p><p>บางส่วน +4: ${esc(g.partial)}</p></button>`; }).join('');
     const careers = s.careerChoices.map(id => { const c = G.CAREER[id];
-      return `<button class="pick ${ui.pickCareer === id ? 'sel' : ''}" data-pick-career="${id}"><h3>💼 ${esc(c.name)}</h3>
+      return `<button class="pick ${ui.pickCareer === id ? 'sel' : ''}" data-pick-career="${id}"><span class="pick-art"><img src="assets/art/${id}.webp" alt="" loading="lazy" onerror="this.parentElement.remove()"></span><h3>💼 ${esc(c.name)}</h3>
         <p>${c.tiers.map(t => `${esc(t.name)} 🪙${t.salary}`).join(' → ')}</p><p>${esc(c.perkText)}</p></button>`; }).join('');
     return `<main class="hero">
       <div><h1>LIFE <span>CEO</span></h1><p class="story">ชีวิตที่คุณออกแบบได้ · เกมจำลองชีวิตสำหรับผู้เล่นคนเดียว 8 บท</p></div>

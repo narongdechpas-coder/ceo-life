@@ -12,7 +12,7 @@
 | `src/data/cards.js` | ข้อมูลการ์ดทั้งหมด (แก้ตัวเลขที่นี่) |
 | `src/game.js` | Game engine ใช้ร่วมกันทั้งเบราว์เซอร์และ Node |
 | `src/ui.js`, `src/style.css` | หน้าเกม (Style 2) แบบโต๊ะ: บนโต๊ะมีเฉพาะการ์ดที่ต้องตัดสินใจตอนนั้น |
-| `assets/art/<id>.webp` | ภาพประกอบการ์ด ถ้าไม่มีไฟล์จะใช้ไอคอนแทน |
+| `assets/art/<id>.webp` | ภาพประกอบการ์ด 26 ภาพ (prompt และสเปกอยู่ที่ `docs/image-prompts.md`, ตรวจด้วย `node tools/check-art.js`) ถ้าไม่มีไฟล์จะใช้ไอคอนแทน |
 
 ## ตรวจ
 ```bash

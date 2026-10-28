@@ -509,3 +509,6 @@ html.m .tcard.dense .lv.next { gap: 2px 8px; }
 .art img { object-position: center 45%; }
 .table-cards.no-art .tcard { align-self: center; }
 .table-cards.two-rows { align-content: center; }
+/* ภาพอาชีพบนการ์ดตัวเลือก (ถ้ายังไม่มีไฟล์ ช่องนี้จะหายไปเอง) */
+.pick-art { display: block; aspect-ratio: 16 / 9; margin: -14px -14px 4px; border-radius: 12px 12px 0 0; overflow: hidden; background: var(--sage-soft); }
+.pick-art img { width: 100%; height: 100%; object-fit: cover; object-position: center 45%; display: block; }
