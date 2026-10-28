@@ -129,6 +129,7 @@
     if (!s.echoQueue) s.echoQueue = { 1: [], 2: [], 3: [], 4: [] };
     if (typeof s.impactLp !== 'number') s.impactLp = 0;
     if (typeof s.rerolls !== 'number') s.rerolls = 0;
+    if (typeof s.name !== 'string') s.name = '';
     return s;
   }
 
@@ -137,7 +138,7 @@
     const s = {
       v: 2, seed: seed >>> 0, rng: seed >>> 0, round: 1, phase: 'setup',
       ...D.START, energy: 0, impactLp: 0, salaryMod: 0, ongoing: [],
-      careerId: null, careerTier: 0, goalId: null,
+      careerId: null, careerTier: 0, goalId: null, name: '',
       projects: {}, completed: [], market: [], projectDeck: [],
       eventDecks: {}, echoQueue: { 1: [], 2: [], 3: [], 4: [] }, echoesPlanted: 0,
       oppDeck: [], oppChoices: [], oppAccepted: 0,
@@ -172,10 +173,11 @@
     return null;
   }
 
-  function chooseSetup(s, goalId, careerId) {
+  const cleanName = n => String(n || '').replace(/[<>\u0000-\u001f]/g, '').trim().slice(0, 20);
+  function chooseSetup(s, goalId, careerId, name) {
     if (s.phase !== 'setup') return 'ไม่ได้อยู่ในช่วงเตรียมเกม';
     if (!s.goalChoices.includes(goalId) || !s.careerChoices.includes(careerId)) return 'ตัวเลือกไม่ถูกต้อง';
-    s.goalId = goalId; s.careerId = careerId;
+    s.goalId = goalId; s.careerId = careerId; s.name = cleanName(name);
     log(s, `เริ่มชีวิตในอาชีพ${CAREER[careerId].name} ตั้งเป้าหมาย "${GOAL[goalId].name}"`, 'key');
     snapshot(s);
     startRound(s);

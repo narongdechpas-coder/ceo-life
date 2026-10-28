@@ -27,8 +27,9 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
     await page.evaluate(() => localStorage.clear()); await page.reload();
     const picks = await page.locator('[data-pick-goal]').count() + 'x' + await page.locator('[data-pick-career]').count();
     if (picks !== '3x3') problem(`setup choices ${picks}`);
-    await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
+    await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]'); await page.fill('#pname', 'แจ็ค'); await page.click('#name-form [type=submit]');
 
+    if (!(await page.locator('.topbar .who').textContent().catch(() => '')).includes('แจ็ค')) problem('player name missing from top bar');
     const st = () => page.evaluate(() => { const s = window.__lifeceo.state; return { phase: s.phase, round: s.round, time: s.time }; });
     const geom = () => page.evaluate(() => ({
       vh: document.documentElement.scrollHeight - innerHeight, hx: document.documentElement.scrollWidth - innerWidth,
@@ -119,6 +120,7 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       await page.click('[data-do="end"]');
     }
     await page.screenshot({ path: `${OUT}/t-${name}-end.png`, fullPage: true });
+    if (!(await page.locator('main.end h1').textContent()).includes('แจ็ค')) problem('player name missing from end screen');
     const final = await st();
     console.log(name, final.phase, '| errors', errors.length ? errors : 'none', '| problems', problems.length ? problems.slice(0, 8) : 'none');
     await page.close();
@@ -128,7 +130,7 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
   page.on('dialog', d => d.accept());
   await page.goto(URL);
   await page.evaluate(() => localStorage.clear()); await page.reload();
-  await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
+  await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]'); await page.fill('#pname', 'แจ็ค'); await page.click('#name-form [type=submit]');
   await page.click('[data-sheet="career"]');
   await page.click('.sheet-overlay', { position: { x: 20, y: 20 } });
   console.log('sheet closes on backdrop:', await page.locator('.sheet').count() === 0);

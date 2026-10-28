@@ -68,7 +68,7 @@
     return `<header class="topbar">
       <div class="topbar-row">
         <div class="brand">LIFE <span>CEO</span></div>
-        <div class="chapter"><b>บทที่ ${s.round}/8</b> · ยุค ${ROMAN[e.id]} ${e.name} <span class="long">· อายุ ${e.age}</span></div>
+        <div class="chapter">${s.name ? `<b class="who">${esc(s.name)}</b> · ` : ''}<b>บทที่ ${s.round}/8</b> · ยุค ${ROMAN[e.id]} ${e.name} <span class="long">· อายุ ${e.age}</span></div>
         <div class="time" title="เวลาที่เหลือในรอบนี้">⏳ ${pips}</div>
         <nav class="info-btns">
           <button class="icon-btn" data-sheet="goal" title="เป้าหมายชีวิต">🎯</button>
@@ -280,6 +280,26 @@
         <button class="btn" data-do="close">ปิด</button></div></div></div>`;
   }
 
+  // ชื่อตัวละคร ถามตอนกดเริ่มชีวิต (จำชื่อล่าสุดไว้ในเครื่องให้ไม่ต้องพิมพ์ซ้ำ)
+  const lastName = () => { try { return localStorage.getItem('lifeceo.name') || ''; } catch (e) { return ''; } };
+  function nameModal() {
+    return `<div class="overlay"><form class="ecard name-card" role="dialog" aria-modal="true" id="name-form">
+      <div class="ecard-head"><small>ก่อนเริ่มชีวิต</small><h3>ตัวละครของคุณชื่ออะไร</h3></div>
+      <div class="ecard-body">
+        <input id="pname" type="text" maxlength="20" autocomplete="off" placeholder="เว้นว่างไว้ เกมจะเรียกว่า “คุณ”" value="${esc(lastName())}">
+        <p class="note">ชื่อนี้จะขึ้นบนแถบด้านบนและในเรื่องเล่าตอนจบ</p>
+        <button class="btn" type="submit">เริ่มชีวิต →</button>
+        <button class="btn ghost" type="button" data-do="close">ย้อนกลับ</button>
+      </div></form></div>`;
+  }
+  function startWithName() {
+    const el = document.getElementById('pname');
+    const name = el ? el.value : '';
+    ui.modal = null;
+    run(safely(() => G.chooseSetup(s, ui.pickGoal, ui.pickCareer, name)));
+    try { localStorage.setItem('lifeceo.name', s.name || ''); } catch (e) { /* ไม่มีที่เก็บก็เล่นต่อได้ */ }
+  }
+
   // ---------------------------------------------------------------- screens
   function setupScreen() {
     const goals = s.goalChoices.map(id => { const g = G.GOAL[id];
@@ -287,7 +307,7 @@
     const careers = s.careerChoices.map(id => { const c = G.CAREER[id];
       return `<button class="pick ${ui.pickCareer === id ? 'sel' : ''}" data-pick-career="${id}"><span class="pick-art"><img src="assets/art/${id}.webp" alt="" loading="lazy" onerror="this.parentElement.remove()"></span><h3>💼 ${esc(c.name)}</h3>
         <p>${c.tiers.map(t => `${esc(t.name)} 🪙${t.salary}`).join(' → ')}</p><p>${esc(c.perkText)}</p></button>`; }).join('');
-    return `<main class="hero">
+    return `<main class="hero setup">
       <div><h1>LIFE <span>CEO</span></h1><p class="story">ชีวิตที่คุณออกแบบได้ · เกมจำลองชีวิตสำหรับผู้เล่นคนเดียว 8 บท</p></div>
       <section><div class="section-title"><h2>เลือกเป้าหมายชีวิต</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${goals}</div></section>
       <section><div class="section-title"><h2>เลือกอาชีพเริ่มต้น</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${careers}</div></section>
@@ -393,7 +413,7 @@
         const entries = s.story.filter(x => e.rounds.includes(x.round));
         if (!entries.length && s.round < e.rounds[0]) return;
         const sent = eraSentences(entries);
-        if (i === 0) sent.unshift(`อายุ 22 คุณเริ่มทำงานสาย${esc(c.name)}ในตำแหน่ง${esc(gapIfLatin(c.tiers[0].name))} ตั้งเป้าชีวิตไว้ที่ “${esc(g.name)}”`);
+        if (i === 0) sent.unshift(`อายุ 22 ${s.name ? esc(s.name) + ' ' : 'คุณ'}เริ่มทำงานสาย${esc(c.name)}ในตำแหน่ง${esc(gapIfLatin(c.tiers[0].name))} ตั้งเป้าชีวิตไว้ที่ “${esc(g.name)}”`);
         // แต่ละบทขึ้นบรรทัดใหม่ ประโยคในบทเดียวกันคั่นด้วย ·
         const lines = [];
         for (const t of sent) {
@@ -409,7 +429,7 @@
       eras = s.log.filter(l => ['key', 'good', 'bad', 'echo', 'era'].includes(l.tone)).map(l => `<p class="${l.tone}">${esc(l.text)}</p>`).join('');
     }
     return `<main class="hero end">
-      <div><h1>${s.gameOver === 'crisis' ? 'ชีวิตต้องเริ่มต้นใหม่' : 'ชีวิตของคุณ'}</h1>
+      <div><h1>${s.gameOver === 'crisis' ? 'ชีวิตต้องเริ่มต้นใหม่' : `ชีวิตของ${s.name ? esc(gapIfLatin(s.name)) : 'คุณ'}`}</h1>
         <p class="story">${esc(c.name)} · ตั้งใจเป็น “${esc(g.name)}” · ${f.goal === 'full' ? 'ทำได้ตามที่ตั้งใจ' : f.goal === 'partial' ? 'ทำได้บางส่วน' : 'ยังไปไม่ถึง'}</p>
         <p><span class="tier-badge">${esc(f.tier)}</span> <b class="big">${f.total} คะแนน</b> <span class="note">ช่วงคะแนนของแต่ละระดับยังเป็นค่าชั่วคราว</span></p></div>
       <section class="panel"><div class="section-title"><h2>เรื่องเล่า 4 ยุค</h2></div>${eras}</section>
@@ -598,12 +618,15 @@
     document.body.classList.toggle('in-game', s.phase !== 'setup' && s.phase !== 'end');
     let m = '';
     if (ui.modal === 'rules') m = rulesModal();
+    else if (ui.modal === 'name' && s.phase === 'setup') m = nameModal();
     else if (ui.sheet && s.phase !== 'setup' && s.phase !== 'end') m = sheetModal(ui.sheet);
     else if (ui.modal === 'invest' || ui.modal === 'repay') m = amountModal(ui.modal);
     modalRoot.innerHTML = m;
     const lg = document.getElementById('log'); if (lg) lg.scrollTop = lg.scrollHeight;
     const cards = document.getElementById('cards'); if (cards) cards.scrollLeft = 0;
     fitCards();
+    const pname = document.getElementById('pname');
+    if (pname) { pname.focus(); pname.select(); document.getElementById('name-form').onsubmit = ev => { ev.preventDefault(); startWithName(); }; }
     const amt = document.getElementById('amt');
     if (amt) amt.oninput = () => { document.getElementById('amt-out').textContent = amt.value; };
     save();
@@ -696,7 +719,7 @@
       if (!err) document.querySelectorAll('.pick').forEach(el => el.classList.add('fx-enter'));
       return;
     }
-    if (d.do === 'start') { run(safely(() => G.chooseSetup(s, ui.pickGoal, ui.pickCareer))); return; }
+    if (d.do === 'start') { if (ui.pickGoal && ui.pickCareer) { ui.modal = 'name'; render(); } return; }
     if (d.do === 'end') {
       if (s.time > 0 && !confirm(`ยังเหลือเวลา ${s.time} ช่อง จบรอบเลยไหม`)) return;
       run(safely(() => G.endRound(s))); return;
