@@ -119,8 +119,8 @@
       pending: [], flags: {}, crisis: false, burnouts: 0, regrets: 0,
       gameOver: null, log: [],
     };
-    s.goalChoices = shuffle(s, D.GOALS.map(g => g.id)).slice(0, 2);
-    s.careerChoices = shuffle(s, D.CAREERS.map(c => c.id)).slice(0, 2);
+    s.goalChoices = shuffle(s, D.GOALS.map(g => g.id)).slice(0, 3);
+    s.careerChoices = shuffle(s, D.CAREERS.map(c => c.id)).slice(0, 3);
     s.projectDeck = shuffle(s, D.PROJECTS.map(p => p.id));
     s.market = s.projectDeck.splice(0, 3);
     for (const e of [1, 2, 3, 4]) s.eventDecks[e] = shuffle(s, D.EVENTS.filter(v => v.era === e).map(v => v.id));

@@ -1,19 +1,46 @@
-// ทดสอบหน้าเกมใน Chromium ครบ 8 บท 3 ขนาดจอ — รัน: node tools/ui-test.js [โฟลเดอร์เก็บ screenshot]
+// ทดสอบหน้าเกมใน Chromium ครบ 8 บท 4 แบบจอ (รวมมือถือที่เบราว์เซอร์บังคับโหมดเดสก์ท็อป) — รัน: node tools/ui-test.js [โฟลเดอร์เก็บ screenshot]
 const { chromium } = require('playwright');
 const path = require('path');
 const OUT = process.argv[2] || require('os').tmpdir();
 const URL = 'file://' + path.resolve(__dirname, '../index.html');
 (async () => {
   const browser = await chromium.launch();
-  for (const [name, vp] of [['desktop', { width: 1280, height: 800 }], ['tablet', { width: 768, height: 1000 }], ['mobile', { width: 375, height: 740 }]]) {
-    const page = await browser.newPage({ viewport: vp, hasTouch: name === 'mobile' });
+  const CASES = [
+    ['desktop', { viewport: { width: 1280, height: 800 } }],
+    ['tablet', { viewport: { width: 768, height: 1000 } }],
+    ['mobile', { viewport: { width: 375, height: 740 }, hasTouch: true }],
+    // มือถือจอกว้าง 393px ที่เบราว์เซอร์วาดหน้า 980px แล้วย่อให้พอดีจอ (เคสที่เจอบนเครื่องจริง)
+    ['phone-desktop-mode', { viewport: { width: 980, height: 2122 }, screen: { width: 393, height: 851 }, hasTouch: true }],
+  ];
+  for (const [name, opts] of CASES) {
+    const page = await browser.newPage(opts);
     const errors = [], problems = [];
     page.on('pageerror', e => errors.push(e.message));
     page.on('console', m => { if (m.type() === 'error' && !/fonts\.g|net::|ERR_/.test(m.text())) errors.push(m.text()); });
     page.on('dialog', d => d.accept());
     await page.goto(URL);
     await page.evaluate(() => localStorage.clear()); await page.reload();
+    const picks = await page.locator('[data-pick-goal]').count() + 'x' + await page.locator('[data-pick-career]').count();
+    if (picks !== '3x3') problems.push(`setup choices ${picks}`);
+    await page.screenshot({ path: `${OUT}/c-${name}-setup.png` });
     await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
+    await page.locator('.opt:not([disabled])').first().click();
+    // ขนาดตัวหนังสือที่ตาเห็นจริงบนจอ และที่ว่างใต้ขั้นสุดท้ายของการ์ด
+    const look = await page.evaluate(() => {
+      const z = Number(getComputedStyle(document.documentElement).getPropertyValue('--z')) || 1;
+      const shrink = Math.min(1, screen.width / innerWidth);
+      const px = sel => { const el = document.querySelector(sel); return el ? +(parseFloat(getComputedStyle(el).fontSize) * z * shrink).toFixed(1) : null; };
+      const lv = document.querySelector('.slide .levels'); const last = lv.lastElementChild;
+      return { mobile: document.documentElement.classList.contains('m'), z: +z.toFixed(2),
+        outText: px('.out b'), chip: px('.chip'), act: px('.dock-acts .act'),
+        gapUnderLast: Math.round((lv.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom) / z) };
+    });
+    console.log(name, 'look', JSON.stringify(look));
+    if (name.startsWith('phone') || name === 'mobile') {
+      if (!look.mobile) problems.push('mobile layout not applied');
+      if (look.outText < 14 || look.chip < 14 || look.act < 14) problems.push(`text too small ${JSON.stringify(look)}`);
+    }
+    if (look.gapUnderLast > 24) problems.push(`empty space under last level ${look.gapUnderLast}px`);
     const st = () => page.evaluate(() => { const s = window.__lifeceo.state; return { phase: s.phase, round: s.round, time: s.time }; });
     const geom = () => page.evaluate(() => ({ vh: document.documentElement.scrollHeight - innerHeight, hx: document.documentElement.scrollWidth - innerWidth }));
     let shot = 0, focusChecks = 0;

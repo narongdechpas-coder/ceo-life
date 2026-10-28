@@ -208,7 +208,8 @@ button:disabled { cursor: not-allowed; }
 
 /* ---------------------------------------------------------------- one-screen game (carousel) */
 body.in-game { overflow: hidden; }
-.game { height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+html.zoomed body { zoom: var(--z); }
+.game { height: calc(100vh / var(--z, 1)); height: calc(100dvh / var(--z, 1)); display: flex; flex-direction: column; overflow: hidden; }
 .topbar { position: static; flex: none; }
 .info-btns { display: flex; gap: 4px; }
 .info-btns .icon-btn { position: relative; padding: 6px 8px; font-size: 15px; line-height: 1; }
@@ -229,9 +230,10 @@ body.in-game { overflow: hidden; }
   scroll-snap-type: x mandatory; padding: 12px 16px; scroll-padding: 0 16px; scrollbar-width: thin;
   overscroll-behavior-x: contain;
 }
-.slide { flex: 0 0 360px; height: 100%; scroll-snap-align: start; min-width: 0; }
-.slide .pcard { height: 100%; }
-.slide .pcard .levels { flex: 1; min-height: 0; overflow-y: auto; align-content: start; }
+.slide { flex: 0 0 360px; height: 100%; scroll-snap-align: start; min-width: 0; display: flex; flex-direction: column; }
+/* การ์ดสูงตามเนื้อหา เลื่อนในการ์ดเฉพาะเมื่อยาวเกินจอ */
+.slide .pcard { height: auto; max-height: 100%; min-height: 0; }
+.slide .pcard .levels { flex: 0 1 auto; min-height: 0; overflow-y: auto; align-content: start; }
 .slide .art { aspect-ratio: auto; height: clamp(64px, 16vh, 170px); flex: none; }
 .slide .pcard-head, .slide .tagrow, .slide .pcard-foot { flex: none; }
 .nav-arrow {
@@ -251,37 +253,64 @@ body.in-game { overflow: hidden; }
 .dock-end small { display: block; font-family: 'Noto Sans Thai', sans-serif; font-weight: 500; font-size: 11px; opacity: .85; }
 
 .sheet-overlay { place-items: end center; padding: 0; }
-.sheet { width: min(520px, 100%); max-height: 80dvh; overflow: auto; background: var(--paper); border-radius: 18px 18px 0 0; padding: 10px 16px 18px; display: grid; gap: 8px; box-shadow: 0 -10px 40px rgba(0, 0, 0, .25); }
+.sheet { width: min(520px, 100%); max-height: calc(80dvh / var(--z, 1)); overflow: auto; background: var(--paper); border-radius: 18px 18px 0 0; padding: 10px 16px 18px; display: grid; gap: 8px; box-shadow: 0 -10px 40px rgba(0, 0, 0, .25); }
 .sheet .grab { justify-self: center; width: 40px; height: 4px; border-radius: 4px; background: var(--line); }
 .sheet .log { max-height: 55dvh; }
 
-/* ---------------------------------------------------------------- responsive */
+/* ---------------------------------------------------------------- responsive
+   layout มือถือใช้ class html.m (ตั้งจาก ui.js) แทน media query
+   เพื่อให้ทำงานได้แม้เบราว์เซอร์บนมือถือวาดหน้ากว้างแบบเดสก์ท็อป */
 @media (max-width: 900px) {
   .layout { grid-template-columns: minmax(0, 1fr); }
 }
-@media (max-width: 700px) {
-  .slide { flex-basis: calc(100% - 28px); scroll-snap-align: center; }
-  .carousel { gap: 10px; padding: 10px 14px; }
-  .nav-arrow { display: none; }
-}
-@media (max-width: 600px) {
-  .resbar { gap: 3px; padding: 4px 8px 6px; }
-  .res { padding: 2px 0; border-radius: 6px; }
-  .res .v { font-size: 12px; }
-  .res .k { display: none; }
-  .topbar-row { padding: 6px 10px; gap: 8px; }
-  .flow { padding: 0 10px 6px; font-size: 11px; }
-  .dock-acts .act { flex-basis: 124px; }
-  .dock-acts .act .note { display: none; }
-  .slide .art { height: clamp(44px, 10vh, 120px); }
-  .slide .art .ph { font-size: 36px; }
-  .slide .tagrow { display: none; }
-  .slide .pcard-head { padding: 6px 12px; }
-  .slide .pcard-head h3 { font-size: 16px; }
-  .slide .pcard-foot { padding: 3px; font-size: 10px; }
-  .topbar-row { flex-wrap: wrap; row-gap: 4px; }
-  .chapter { order: 5; flex-basis: 100%; }
-  .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .cards { grid-template-columns: minmax(0, 1fr); }
-  .brand { font-size: 16px; }
-}
+html.m body { font-size: 15px; }
+html.m .slide { flex-basis: calc(100% - 28px); scroll-snap-align: center; }
+html.m .carousel { gap: 10px; padding: 10px 14px; }
+html.m .nav-arrow { display: none; }
+
+html.m .topbar-row { padding: 6px 10px; gap: 8px; flex-wrap: wrap; row-gap: 4px; }
+html.m .brand { font-size: 17px; }
+/* บรรทัด 1: โลโก้ + ปุ่มไอคอน · บรรทัด 2: บท/ยุค + เวลา */
+html.m .info-btns { margin-left: auto; }
+html.m .chapter { order: 5; flex: 1 1 calc(100% - 110px); font-size: 14px; }
+html.m .time { order: 6; }
+html.m .info-btns .icon-btn { font-size: 16px; padding: 6px 8px; }
+html.m .resbar { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; padding: 4px 10px 6px; }
+html.m .res { padding: 2px 0; border-radius: 8px; }
+html.m .res .v { font-size: 15px; }
+html.m .res .k { display: none; }
+html.m .flow { padding: 0 10px 6px; font-size: 12px; }
+
+html.m .strip { padding: 6px 10px; }
+html.m .strip-label { font-size: 12px; }
+html.m .strip-chip { font-size: 14px; padding: 5px 12px; }
+
+html.m .slide .art { height: clamp(44px, 9vh, 110px); }
+html.m .slide .art .ph { font-size: 36px; }
+html.m .slide .tagrow { display: none; }
+html.m .slide .pcard-head { padding: 6px 12px; }
+html.m .slide .pcard-head h3 { font-size: 17px; }
+html.m .slide .pcard-head p { font-size: 14px; }
+html.m .slide .pcard-foot { padding: 3px; font-size: 11px; }
+html.m .lv-name { font-size: 16px; }
+html.m .out b { font-size: 15px; }
+html.m .chip { font-size: 14px; }
+html.m .chosen, html.m .peek { font-size: 13px; }
+html.m .out .why, html.m .act .why, html.m .opt .why, html.m .note { font-size: 12px; }
+
+html.m .dock { padding: 6px 8px; padding-bottom: max(6px, env(safe-area-inset-bottom)); }
+html.m .dock-acts .act { flex-basis: 140px; font-size: 14px; }
+html.m .dock-acts .act .note { display: none; }
+html.m .dock-end { font-size: 16px; padding: 6px 12px; }
+html.m .dock-end small { font-size: 12px; }
+
+html.m .ecard-head h3 { font-size: 21px; }
+html.m .opt b { font-size: 16px; }
+html.m .story { font-size: 15px; }
+
+/* หน้าเริ่มเกม: ตัวเลือกเลื่อนแนวนอน 1 แถว */
+html.m .hero { padding: 16px 12px; gap: 14px; }
+html.m .hero h1 { font-size: 30px; }
+html.m .pickgrid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding-bottom: 4px; }
+html.m .pick { flex: 0 0 78%; scroll-snap-align: start; }
+html.m .pick p { font-size: 14px; }

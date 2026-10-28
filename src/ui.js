@@ -19,7 +19,7 @@
   function load() { try { const t = localStorage.getItem(SAVE_KEY); return t ? JSON.parse(t) : null; } catch (e) { return null; } }
 
   const esc = t => String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const sign = v => (v > 0 ? `+${v}` : `−${Math.abs(v)}`);
+  const sign = v => (v > 0 ? `+${v}` : v < 0 ? `−${Math.abs(v)}` : '0');
 
   // ---------------------------------------------------------------- chips
   function chips(cost, gain, extra) {
@@ -228,8 +228,8 @@
         <p>${c.tiers.map(t => `${esc(t.name)} 🪙${t.salary}`).join(' → ')}</p><p>${esc(c.perkText)}</p></button>`; }).join('');
     return `<main class="hero">
       <div><h1>LIFE <span>CEO</span></h1><p class="story">ชีวิตที่คุณออกแบบได้ · เกมจำลองชีวิตสำหรับผู้เล่นคนเดียว 8 บท</p></div>
-      <section><div class="section-title"><h2>เลือกเป้าหมายชีวิต</h2><small>จั่วมา 2 ใบ เลือก 1</small></div><div class="pickgrid">${goals}</div></section>
-      <section><div class="section-title"><h2>เลือกอาชีพเริ่มต้น</h2><small>จั่วมา 2 ใบ เลือก 1</small></div><div class="pickgrid">${careers}</div></section>
+      <section><div class="section-title"><h2>เลือกเป้าหมายชีวิต</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${goals}</div></section>
+      <section><div class="section-title"><h2>เลือกอาชีพเริ่มต้น</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${careers}</div></section>
       <div><button class="btn" data-do="start" ${ui.pickGoal && ui.pickCareer ? '' : 'disabled'}>เริ่มชีวิต →</button>
       <p class="note">เริ่มต้น: 🪙 ${D.START.cash} · ❤️ ${D.START.health} · 👥 ${D.START.rel} · 📖 ${D.START.skills} · ค่าครองชีพ ${D.START.expenses}/รอบ</p></div>
     </main>`;
@@ -283,11 +283,31 @@
     </div>`;
   }
 
+  // ---------------------------------------------------------------- device mode
+  // บางเบราว์เซอร์บนมือถือ (โหมดเดสก์ท็อป, in-app browser) ไม่สน viewport meta แล้ววาดหน้ากว้าง ~980px
+  // ถ้าเจอแบบนั้น ให้ zoom ทั้งหน้ากลับมาเท่าความกว้างจริงของจอ และใช้ layout มือถือ
+  const isMobile = () => document.documentElement.classList.contains('m');
+  function applyDeviceMode() {
+    const root = document.documentElement;
+    const phone = matchMedia('(pointer: coarse)').matches && screen.width <= 700;
+    const forced = phone && innerWidth > screen.width * 1.25;
+    const z = forced ? innerWidth / screen.width : 1;
+    root.style.setProperty('--z', z);
+    root.classList.toggle('zoomed', forced);
+    root.classList.toggle('m', phone || innerWidth / z <= 700);
+  }
+  applyDeviceMode();
+  let resizeT = null;
+  addEventListener('resize', () => {
+    clearTimeout(resizeT);
+    resizeT = setTimeout(() => { const was = isMobile() + document.documentElement.style.getPropertyValue('--z'); applyDeviceMode(); if (s && was !== isMobile() + document.documentElement.style.getPropertyValue('--z')) render(); }, 150);
+  });
+
   // ---------------------------------------------------------------- carousel position
   function slideEl(id) { return document.querySelector(`.slide[data-id="${id}"]`); }
   function scrollToSlide(id, smooth) {
     const car = document.getElementById('car'), el = slideEl(id);
-    if (car && el) car.scrollTo({ left: el.offsetLeft - car.offsetLeft - (car.clientWidth - el.clientWidth) / 2 * (window.innerWidth < 700 ? 1 : 0), behavior: smooth ? 'smooth' : 'auto' });
+    if (car && el) car.scrollTo({ left: el.offsetLeft - car.offsetLeft - (car.clientWidth - el.clientWidth) / 2 * (isMobile() ? 1 : 0), behavior: smooth ? 'smooth' : 'auto' });
   }
   function markFocus(id) {
     ui.focus = id;
@@ -303,11 +323,13 @@
     car.addEventListener('scroll', () => {
       clearTimeout(t);
       t = setTimeout(() => {
-        const mid = car.getBoundingClientRect().left + (window.innerWidth < 700 ? car.clientWidth / 2 : 40);
+        // ใช้ getBoundingClientRect ทั้งคู่ จะได้อยู่หน่วยเดียวกันแม้มี zoom
+        const cr = car.getBoundingClientRect();
+        const mid = isMobile() ? cr.left + cr.width / 2 : cr.left + 40;
         let best = null, dist = Infinity;
         car.querySelectorAll('.slide').forEach(el => {
           const r = el.getBoundingClientRect();
-          const d = Math.abs((window.innerWidth < 700 ? r.left + r.width / 2 : r.left) - mid);
+          const d = Math.abs((isMobile() ? r.left + r.width / 2 : r.left) - mid);
           if (d < dist) { dist = d; best = el.dataset.id; }
         });
         if (best && best !== ui.focus) markFocus(best);
