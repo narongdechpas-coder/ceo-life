@@ -274,56 +274,70 @@
   // ---------------------------------------------------------------- end: เล่าชีวิต + ผลสืบเนื่อง
   const ongoingText = g => Object.entries(g).map(([k, v]) => `${ICON[k]}${sign(v)}`).join(' ');
   // ผลต่อเนื่องที่เป็นรายจ่ายล้วน เล่าว่า "ต้องจ่าย" แทน "ได้"
-  const ongoingVerb = g => (Object.values(g).every(v => v < 0) && 'cash' in g
-    ? `ต้องจ่าย ${Object.entries(g).map(([k, v]) => `${ICON[k]}${Math.abs(v)}`).join(' ')} ทุกรอบ`
-    : `ได้ ${ongoingText(g)} ทุกรอบ`);
+  const ongoingVerb = g => {
+    const parts = [];
+    if (g.cash < 0) parts.push(`ต้องจ่าย ${ICON.cash}${-g.cash}`);
+    else if (g.cash > 0) parts.push(`ได้ ${ICON.cash}+${g.cash}`);
+    const rest = Object.entries(g).filter(([k]) => k !== 'cash').map(([k, v]) => `${ICON[k]}${sign(v)}`).join(' ');
+    if (rest) parts.push(parts.length ? `และ ${rest}` : `ได้ ${rest}`);
+    return `${parts.join(' ')} ทุกรอบ`;
+  };
+  // ชื่อภาษาอังกฤษต่อท้ายคำไทยต้องเว้นวรรค ("ตำแหน่ง Sales")
+  const gapIfLatin = t => (/^[A-Za-z]/.test(t) ? ` ${t}` : t);
   const quoteFrom = t => t.replace(/ แล้วเลือก/, ' แล้วคุณเลือก');
 
+  // เล่าเป็นประโยคธรรมดา: ฉากสั้น + สิ่งที่คุณทำ (scene/tell มาจาก cards.js)
+  const scene = e => esc(e.scene || `เจอเรื่อง “${e.title}”`);
+  const did = e => esc(e.tell || e.label);
+  function backFrom(e) {
+    if (!e.planted) return '';
+    if (e.cause) return `ผลจากบทที่ ${e.planted} ที่คุณ${esc(e.cause)}`;
+    return `ผลจากบทที่ ${e.planted}`;
+  }
   function eraSentences(entries) {
     const out = [];
     let round = null;
     const decay = { rel: 0, health: 0 };
     for (const e of entries) {
       if (e.kind !== 'decay' && e.round !== round) { round = e.round; out.push({ round }); }
-      if (e.kind === 'event') out.push(`เจอเรื่อง “${esc(e.title)}” คุณเลือก${esc(e.label)}${e.echo ? ' เรื่องนี้ยังไม่จบแค่นี้ มันจะย้อนกลับมาในยุคถัดไป' : ''}`);
-      else if (e.kind === 'echo') {
-        const back = e.planted ? `ผลจากบทที่ ${e.planted} (${esc(quoteFrom(e.from))}) ย้อนกลับมา` : 'อดีตย้อนกลับมา';
-        out.push(`${back}เป็น${e.good ? 'ข่าวดี' : 'เรื่องที่ต้องรับมือ'} “${esc(e.title)}” คุณ${esc(e.label)}${e.regret ? ' แต่เรื่องนี้ยังค้างอยู่ในใจ' : ''}`);
+      if (e.kind === 'event') {
+        out.push(`${scene(e)} คุณ${did(e)}${e.echo ? ' เรื่องนี้จะย้อนกลับมาหาคุณอีกในยุคหน้า' : ''}`);
+      } else if (e.kind === 'echo') {
+        const back = backFrom(e);
+        let t = `${scene(e)}${back ? ` (${back})` : ''} คุณ${did(e)}`;
+        if (e.regret) t += ' แต่เรื่องนี้ก็ยังค้างคาใจไปอีกนาน';
+        out.push(t);
       } else if (e.kind === 'project') {
-        let t = e.level === 1 ? `เริ่ม${esc(e.name)} ด้วยขั้น “${esc(e.step)}” เลือก${esc(e.label)}` : `${esc(e.name)} ก้าวสู่ขั้น “${esc(e.step)}” เลือก${esc(e.label)}`;
-        if (e.ongoing) t += ` ทำให้${ongoingVerb(e.ongoing)}ต่อจากนั้น`;
+        let t = e.level === 1
+          ? `คุณเริ่ม${esc(e.name)} ขั้นแรกคือ${esc(e.step)} และเลือก${esc(e.label)}`
+          : `${esc(e.name)}เดินมาถึงขั้น${esc(e.step)} คุณเลือก${esc(e.label)}`;
+        if (e.ongoing) t += ` ทำให้${ongoingVerb(e.ongoing)}นับจากนั้น`;
         if (e.done) t += ` จน${esc(e.name)}สำเร็จครบทุกขั้น`;
         out.push(t);
-      } else if (e.kind === 'opp') out.push(`คว้าโอกาส “${esc(e.title)}” ไว้ได้`);
-      else if (e.kind === 'promote') out.push(`ได้เลื่อนเป็น ${esc(e.title)} เงินเดือน ${e.salary} (ค่าครองชีพก็ขยับตาม)`);
-      else if (e.kind === 'burnout') out.push('งานหนักจนร่างกายรับไม่ไหว เกิด Burnout');
+      } else if (e.kind === 'opp') out.push(`คุณคว้าโอกาส “${esc(e.title)}” ไว้ได้`);
+      else if (e.kind === 'promote') out.push(`คุณได้เลื่อนเป็น${esc(gapIfLatin(e.title))} เงินเดือนขึ้นเป็น ${e.salary} แต่ค่าครองชีพก็ขยับตาม`);
+      else if (e.kind === 'burnout') out.push('งานหนักจนร่างกายรับไม่ไหว คุณ Burnout');
       else if (e.kind === 'decay') decay[e.stat] += 1;
     }
     // สรุปสิ่งที่ละเลยทั้งยุคไว้บรรทัดท้าย (ไม่ผูกกับบทใดบทหนึ่ง)
     if (decay.rel || decay.health) out.push({ round: 0 });
-    if (decay.rel) out.push(`มี ${decay.rel} บทที่ไม่ได้ใช้เวลากับคนสำคัญ ความสัมพันธ์จึงค่อยๆ ห่างออก`);
-    if (decay.health) out.push(`มี ${decay.health} บทที่ไม่ได้ออกกำลังกาย สุขภาพก็ถดถอยตามอายุ`);
+    if (decay.rel) out.push(`ยุคนี้มี ${decay.rel} บทที่คุณไม่ได้ใช้เวลากับคนสำคัญ ความสัมพันธ์จึงค่อยๆ ห่างออก`);
+    if (decay.health) out.push(`และมี ${decay.health} บทที่ไม่ได้ออกกำลังกาย สุขภาพจึงถดถอยไปตามอายุ`);
     return out;
-  }
-  function eraClose(prev, cur) {
-    if (!prev || !cur) return '';
-    const d = (k, inv) => { const v = cur[k] - prev[k]; if (!v) return ''; const up = inv ? v < 0 : v > 0; return ` <i class="${up ? 'up' : 'down'}">${v > 0 ? '▲' : '▼'}${Math.abs(v)}</i>`; };
-    const item = (k, inv) => `<span>${ICON[k]} ${cur[k]}${d(k, inv)}</span>`;
-    return `<div class="era-close">ปิดยุคด้วย ${item('cash')}${item('portfolio')}${item('health')}${item('rel')}${item('skills')}${item('stress', true)}${cur.debt ? item('debt', true) : ''}</div>`;
   }
   function chains() {
     const items = (s.echoLinks || []).map(l => {
       const card = G.ECHO[l.id];
       const end = l.resolved
-        ? `<b>บท ${l.resolved.round}</b> คุณ${esc(l.resolved.label)}${l.resolved.regret ? ' <em class="neg">Regret −2</em>' : ''}`
-        : (card.kind === 'bad' ? '<em class="neg">ชีวิตจบก่อนได้แก้ นับเป็น Regret −2</em>' : '<em>ชีวิตจบก่อนได้รับผลดีนี้</em>');
-      return `<li class="${card.kind}"><span><b>บท ${l.planted}</b> ${esc(quoteFrom(l.from))}</span><span class="arrow">→</span>
-        <span>กลับมาเป็น <b>“${esc(card.title)}”</b> ${card.kind === 'good' ? '(ผลดี)' : '(ผลร้าย)'}</span><span class="arrow">→</span><span>${end}</span></li>`;
+        ? `<b>บท ${l.resolved.round}</b> คุณ${esc((card.options.find(o => o.label === l.resolved.label) || {}).tell || l.resolved.label)}${l.resolved.regret ? ' <em class="neg">Regret −2</em>' : ''}`
+        : (card.kind === 'bad' ? '<em class="neg">เกมจบก่อนได้แก้ นับเป็น Regret −2</em>' : '<em>เกมจบก่อนผลดีนี้จะมาถึง</em>');
+      return `<li class="${card.kind}"><span><b>บท ${l.planted}</b> ${l.cause ? `คุณ${esc(l.cause)}` : esc(quoteFrom(l.from))}</span><span class="arrow">→</span>
+        <span>${esc(card.scene || card.title)} <b>${card.kind === 'good' ? '(ผลดี)' : '(ผลร้าย)'}</b></span><span class="arrow">→</span><span>${end}</span></li>`;
     });
     for (const e of (s.story || [])) {
       if (e.kind !== 'project' || !e.ongoing) continue;
       const left = G.ROUNDS - e.round;
-      items.push(`<li class="ongoing"><span><b>บท ${e.round}</b> ${esc(e.name)}: ${esc(e.label)}</span><span class="arrow">→</span>
+      items.push(`<li class="ongoing"><span><b>บท ${e.round}</b> คุณเลือก${esc(e.label)}ตอน${esc(e.name)}</span><span class="arrow">→</span>
         <span>${ongoingVerb(e.ongoing)}</span><span class="arrow">→</span><span>${left ? `ต่อเนื่องอีก ${left} บท` : 'เกมจบก่อนได้รับผลนี้'}</span></li>`);
     }
     return items.length ? `<ul class="chains">${items.join('')}</ul>` : '<p class="note">ชีวิตนี้แทบไม่มีการตัดสินใจที่ย้อนกลับมาให้ผลภายหลัง</p>';
@@ -348,14 +362,11 @@
     const rows = f.rows.map(([k, v], i) => `<tr><td>${esc(k)}<small>${esc(reasons[i] || '')}</small></td><td>${v > 0 ? '+' : ''}${v}</td></tr>`).join('');
     let eras = '';
     if (s.story) {
-      const snaps = s.snaps || [];
       D.ERAS.forEach((e, i) => {
         const entries = s.story.filter(x => e.rounds.includes(x.round));
         if (!entries.length && s.round < e.rounds[0]) return;
         const sent = eraSentences(entries);
-        if (i === 0) sent.unshift(`อายุ 22 คุณเริ่มทำงานเป็น${esc(c.tiers[0].name)}ในสาย${esc(c.name)} ตั้งใจไว้ว่าอยากเป็น “${esc(g.name)}”`);
-        const prev = i === 0 ? snaps[0] : snaps.find(x => x.round === D.ERAS[i - 1].rounds[1]);
-        const cur = snaps.find(x => x.round === e.rounds[1]);
+        if (i === 0) sent.unshift(`อายุ 22 คุณเริ่มทำงานสาย${esc(c.name)}ในตำแหน่ง${esc(gapIfLatin(c.tiers[0].name))} ตั้งเป้าชีวิตไว้ที่ “${esc(g.name)}”`);
         // แต่ละบทขึ้นบรรทัดใหม่ ประโยคในบทเดียวกันคั่นด้วย ·
         const lines = [];
         for (const t of sent) {
@@ -363,9 +374,9 @@
           else if (!lines.length || (i === 0 && lines.length === 0)) lines.push({ round: null, parts: [t] });
           else lines[lines.length - 1].parts.push(t);
         }
-        const body = lines.filter(l => l.parts.length).map(l => `<p>${l.round ? `<b class="rnd">บทที่ ${l.round}</b>` : ''}${l.parts.join(' · ')}</p>`).join('');
+        const body = lines.filter(l => l.parts.length).map(l => `<p>${l.round ? `<b class="rnd">บทที่ ${l.round}</b>` : ''}${l.parts.join(' ')}</p>`).join('');
         eras += `<article class="era-story"><h3>ยุค ${ROMAN[e.id]} ${esc(e.name)} <small>อายุ ${esc(e.age)}</small></h3>
-          ${body || '<p>ยุคนี้ผ่านไปอย่างเงียบๆ</p>'}${eraClose(prev, cur)}</article>`;
+          ${body || '<p>ยุคนี้ผ่านไปอย่างเงียบๆ</p>'}</article>`;
       });
     } else {
       eras = s.log.filter(l => ['key', 'good', 'bad', 'echo', 'era'].includes(l.tone)).map(l => `<p class="${l.tone}">${esc(l.text)}</p>`).join('');
@@ -442,14 +453,17 @@
   function fitCards() {
     const over = c => c.scrollHeight > c.clientHeight + 1;
     const all = [...document.querySelectorAll('.table .tcard')];
-    all.forEach(c => c.classList.remove('dense', 'compact', 'tight', 'scrolly'));
+    all.forEach(c => { c.classList.remove('dense', 'compact', 'tight', 'scrolly'); c.style.height = ''; });
     const row = document.getElementById('cards');
+    // ล้างผลจากรอบก่อน (ResizeObserver เรียกซ้ำกับแถวเดิมได้) ไม่ให้ภาพสูงคงที่ค้างอยู่ระหว่างคำนวณ
+    if (row) { row.classList.remove('art-fixed', 'no-art'); row.style.removeProperty('--art-h'); }
     if (!row || isMobile() || row.classList.contains('browse')) {
       // มือถือ และโหมดดูทั้งหมด: การ์ดขนาดปกติ เลื่อนดูได้ แก้แค่ซ่อนภาพเมื่อข้อความล้น
       if (row) row.classList.remove('two-rows');
       all.forEach(c => { if (over(c)) c.classList.add('dense'); });
       all.forEach(c => { if (over(c)) c.classList.add('compact'); });
       if (!isMobile()) all.forEach(c => { if (over(c)) c.classList.add('tight'); });
+      uniformArt(all, row);
       lastResort(all);
       return;
     }
@@ -475,7 +489,44 @@
     if (all.some(over)) size(maxW);
     all.forEach(c => { if (over(c)) c.classList.add('compact'); });
     all.forEach(c => { if (over(c)) c.classList.add('tight'); });
+    uniformArt(all, row);
     lastResort(all);
+  }
+  // ภาพบนการ์ดทุกใบสูงเท่ากัน = พื้นที่ที่เหลือน้อยที่สุดในแถว (ไม่เกิน 56% ของความกว้างการ์ด ≈ 16:9)
+  // แล้วหดการ์ดทุกใบให้สูงเท่ากันพอดีเนื้อหา ไม่เหลือที่ว่างใต้ L3
+  function uniformArt(all, row) {
+    if (!row) return;
+    row.classList.remove('art-fixed', 'no-art');
+    row.style.removeProperty('--art-h');
+    if (!all.length) return;
+    const content = c => {
+      const body = c.querySelector('.pbody');
+      const kids = [...body.children].filter(k => !k.classList.contains('art'));
+      return c.offsetHeight - body.offsetHeight + kids.reduce((t, k) => t + k.offsetHeight, 0);
+    };
+    const shrink = h => {
+      const orig = all.map(c => c.style.height);
+      all.forEach(c => { if (h < c.clientHeight) c.style.height = `${Math.ceil(h + (c.offsetHeight - c.clientHeight))}px`; });
+      // วัดเนื้อหาพลาดไปบ้าง (margin ฯลฯ) ถ้ามีใบไหนล้น เพิ่มความสูงให้ทุกใบเท่ากัน หรือคืนค่าเดิมถ้ายังไม่พอ
+      const extra = Math.max(0, ...all.map(c => c.scrollHeight - c.clientHeight));
+      if (extra) all.forEach(c => { c.style.height = `${c.offsetHeight + extra}px`; });
+      if (all.some(c => c.scrollHeight > c.clientHeight + 1)) all.forEach((c, i) => { c.style.height = orig[i]; });
+    };
+    // ถ้ามีใบไหนต้องซ่อนภาพไปแล้ว ซ่อนทุกใบให้แถวดูเท่ากัน
+    if (all.some(c => c.classList.contains('dense') || c.classList.contains('compact'))) {
+      row.classList.add('no-art');
+      shrink(Math.max(...all.map(content)) + 1);
+      return;
+    }
+    const need = all.map(content);
+    const room = Math.min(...all.map((c, i) => c.clientHeight - need[i]));
+    const ideal = all[0].clientWidth * 0.56;
+    const art = Math.floor(Math.min(ideal, room));
+    // ภาพเตี้ยกว่า 56px ไม่ได้ช่วยอะไร ซ่อนทุกใบพร้อมกัน
+    if (art < 56) { row.classList.add('no-art'); shrink(Math.max(...need) + 1); return; }
+    row.style.setProperty('--art-h', `${art}px`);
+    row.classList.add('art-fixed');
+    shrink(Math.max(...need) + art + 1);
   }
   // ตาข่ายสุดท้าย: ทางเลือกที่กดไม่ถึงแย่กว่าการเลื่อน ให้เนื้อการ์ดเลื่อนได้และมีเงาบอกว่ามีต่อ
   function lastResort(all) {

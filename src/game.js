@@ -96,7 +96,9 @@
       s[k] += v; // lp
     }
   }
-  // ctx = ข้อความสั้นว่าผลนี้มาจากการตัดสินใจไหน (ใช้เล่าเรื่องตอนจบเกม)
+  // ctx = ผลนี้มาจากการตัดสินใจไหน (ใช้เล่าเรื่องตอนจบเกม)
+  //   from  : ข้อความสั้นแบบเดิม (ใช้ในรายการผลสืบเนื่อง)
+  //   cause : ส่วนท้ายประโยค "...ที่คุณ<cause>" เช่น 'รูดเลย'
   function applyOutcome(s, o, src, ctx) {
     if (o.clearOngoing) s.ongoing = s.ongoing.filter(x => x.src !== src);
     applyGain(s, o.gain, src);
@@ -106,7 +108,8 @@
     const target = Math.min(4, eraOf(s.round) + 1);
     s.echoQueue[target].push(id);
     s.echoesPlanted += 1;
-    (s.echoLinks = s.echoLinks || []).push({ id, planted: s.round, from: ctx || '', resolved: null });
+    const c = typeof ctx === 'string' ? { from: ctx } : (ctx || {});
+    (s.echoLinks = s.echoLinks || []).push({ id, planted: s.round, from: c.from || '', cause: c.cause || '', resolved: null });
     log(s, `มีผลสะท้อนบางอย่างรออยู่ในยุค ${target}`, 'echo');
   }
   // บันทึกเรื่องราวแบบมีโครงสร้าง สำหรับหน้าสรุปชีวิต
@@ -222,13 +225,15 @@
     const why = blocker(s, o.cost || {}, o.require);
     if (why) return why;
     payCost(s, o.cost || {});
-    applyOutcome(s, o, card.id, `“${card.title}” แล้วเลือก${o.label}`);
+    const said = o.tell || o.label;
+    applyOutcome(s, o, card.id, { from: `“${card.title}” แล้วเลือก${o.label}`, cause: said });
     if (kind === 'echo' && o.regret) s.regrets += 1;
     if (kind === 'echo') {
       const link = (s.echoLinks || []).find(l => l.id === card.id && !l.resolved);
       if (link) link.resolved = { round: s.round, label: o.label, regret: !!o.regret };
-      story(s, { kind: 'echo', id: card.id, good: card.kind === 'good', title: card.title, label: o.label, regret: !!o.regret, from: link ? link.from : '', planted: link ? link.planted : null });
-    } else story(s, { kind: 'event', title: card.title, label: o.label, echo: !!o.echo });
+      story(s, { kind: 'echo', id: card.id, good: card.kind === 'good', title: card.title, scene: card.scene || '', label: o.label, tell: said, regret: !!o.regret,
+        from: link ? link.from : '', cause: link ? link.cause || '' : '', planted: link ? link.planted : null });
+    } else story(s, { kind: 'event', title: card.title, scene: card.scene || '', label: o.label, tell: said, echo: !!o.echo });
     log(s, `${kind === 'echo' ? 'Echo' : 'เหตุการณ์'} "${card.title}" → ${o.label}`, kind === 'echo' ? (card.kind === 'good' ? 'good' : (o.regret ? 'bad' : 'key')) : 'key');
     s.pending.shift();
     if (!s.pending.length) s.phase = 'actions';
@@ -329,7 +334,7 @@
     const o = lv.outcomes[outIdx];
     payCost(s, sumCost(lv.cost, o.cost));
     applyGain(s, lv.gain, pid);
-    applyOutcome(s, o, pid, `${p.name}: ${o.label}`);
+    applyOutcome(s, o, pid, { from: `${p.name}: ${o.label}`, cause: `เลือก${o.label}ตอน${p.name}` });
     prog.level += 1;
     story(s, { kind: 'project', id: pid, name: p.name, level: prog.level, step: lv.name, label: o.label,
       ongoing: (o.gain && o.gain.ongoing) || null, echo: !!o.echo, done: prog.level === 3 });
@@ -352,7 +357,7 @@
       const why = blocker(s, o.cost || {}, o.require);
       if (why) return why;
       payCost(s, o.cost || {});
-      applyOutcome(s, o, oid, `รับโอกาส “${o.title}”`);
+      applyOutcome(s, o, oid, { from: `รับโอกาส “${o.title}”`, cause: `รับโอกาส “${o.title}”` });
       s.oppAccepted += 1;
       story(s, { kind: 'opp', title: o.title });
       log(s, `รับโอกาส "${o.title}"`, 'key');
@@ -375,7 +380,7 @@
       applyGain(s, { health: -2 });
       log(s, 'Burnout! ❤️ −2', 'bad');
       story(s, { kind: 'burnout' });
-      plantEcho(s, 'E01', 'Burnout ในบทที่ ' + s.round);
+      plantEcho(s, 'E01', { from: 'Burnout ในบทที่ ' + s.round, cause: 'หักโหมจน Burnout' });
     }
     if (era(s).rounds[1] === s.round) snapshot(s);
     if (s.health <= 0) {
