@@ -6,9 +6,11 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
 (async () => {
   const browser = await chromium.launch();
   const CASES = [
+    ['desktop-1920', { viewport: { width: 1920, height: 910 } }],
     ['desktop', { viewport: { width: 1280, height: 800 } }],
     ['tablet', { viewport: { width: 768, height: 1000 } }],
     ['mobile', { viewport: { width: 375, height: 740 }, hasTouch: true }],
+    ['mobile-small', { viewport: { width: 360, height: 640 }, hasTouch: true }],
     // มือถือจอกว้าง 393px ที่เบราว์เซอร์วาดหน้า 980px แล้วย่อให้พอดีจอ (เคสที่เจอบนเครื่องจริง)
     ['phone-desktop-mode', { viewport: { width: 980, height: 2122 }, screen: { width: 393, height: 851 }, hasTouch: true }],
   ];
@@ -30,7 +32,7 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       const z = Number(getComputedStyle(document.documentElement).getPropertyValue('--z')) || 1;
       const shrink = Math.min(1, screen.width / innerWidth);
       const px = sel => { const el = document.querySelector(sel); return el ? +(parseFloat(getComputedStyle(el).fontSize) * z * shrink).toFixed(1) : null; };
-      const lv = document.querySelector('.slide .levels'); const last = lv.lastElementChild;
+      const lv = document.querySelector('.pcard .levels'); const last = lv.lastElementChild;
       return { mobile: document.documentElement.classList.contains('m'), z: +z.toFixed(2),
         outText: px('.out b'), chip: px('.chip'), act: px('.dock-acts .act'),
         gapUnderLast: Math.round((lv.getBoundingClientRect().bottom - last.getBoundingClientRect().bottom) / z) };
@@ -40,26 +42,36 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       if (!look.mobile) problems.push('mobile layout not applied');
       if (look.outText < 14 || look.chip < 14 || look.act < 14) problems.push(`text too small ${JSON.stringify(look)}`);
     }
-    if (look.gapUnderLast > 24) problems.push(`empty space under last level ${look.gapUnderLast}px`);
     const st = () => page.evaluate(() => { const s = window.__lifeceo.state; return { phase: s.phase, round: s.round, time: s.time }; });
-    const geom = () => page.evaluate(() => ({ vh: document.documentElement.scrollHeight - innerHeight, hx: document.documentElement.scrollWidth - innerWidth }));
-    let shot = 0, focusChecks = 0;
+    const geom = () => page.evaluate(() => ({
+      vh: document.documentElement.scrollHeight - innerHeight, hx: document.documentElement.scrollWidth - innerWidth,
+      // การ์ดและแผงข้างต้องไม่มีเนื้อหาล้น (ข้อความครบ ไม่มี scroll)
+      over: [...document.querySelectorAll('.pcard, .apanel, .plist')].filter(el => el.scrollHeight > el.clientHeight + 1)
+        .map(el => `${el.className.split(' ')[0]}${el.closest('.slide') ? ':' + el.closest('.slide').dataset.id : ''} +${el.scrollHeight - el.clientHeight}px`),
+      desk: document.documentElement.classList.contains('desk'),
+    }));
+    const wantDesk = name.startsWith('desktop');
+    let shot = 0, focusChecks = 0, shotPlay = false;
     for (let step = 0; step < 500; step++) {
       const { phase, round, time } = await st();
       if (phase === 'end') break;
       const g = await geom();
-      if (phase !== 'end' && (g.vh > 0 || g.hx > 0)) problems.push(`${phase}@${round} vScroll ${g.vh} hScroll ${g.hx}`);
+      if (g.vh > 0 || g.hx > 0) problems.push(`${phase}@${round} vScroll ${g.vh} hScroll ${g.hx}`);
+      if (g.over.length) problems.push(`${phase}@${round} overflow ${g.over.join(', ')}`);
+      if (g.desk !== wantDesk) problems.push(`layout desk=${g.desk} expected ${wantDesk}`);
       if (phase === 'event') { if (!shot++) await page.screenshot({ path: `${OUT}/c-${name}-event.png` }); await page.locator('.opt:not([disabled])').first().click(); continue; }
       if (phase === 'opportunity') { await page.locator('[data-opp]:not([disabled])').first().click(); continue; }
-      if (round === 3 && shot === 1) { shot++; await page.screenshot({ path: `${OUT}/c-${name}-play.png` }); }
+      if (round === 4 && !shotPlay) { shotPlay = true; await page.screenshot({ path: `${OUT}/c-${name}-play.png` }); }
       const outs = page.locator('.out[data-proj]:not([disabled])');
       if (time > 0 && await outs.count() && step % 3 === 0) {
         const btn = outs.last();
         const pid = await btn.getAttribute('data-proj');
-        await page.click(`.strip-chip[data-goto="${pid}"]`); await page.waitForTimeout(400);
-        await btn.click(); await page.waitForTimeout(150);
-        // หลังเลือก carousel ต้องยังโชว์การ์ดเดิม
-        const visible = await page.evaluate(id => { const el = document.querySelector(`.slide[data-id="${id}"]`); const c = document.getElementById('car').getBoundingClientRect(); const r = el.getBoundingClientRect(); return r.left >= c.left - 2 && r.right <= c.right + 2; }, pid);
+        await page.click(`[data-goto="${pid}"]`); await page.waitForTimeout(400);
+        await page.locator(`.out[data-proj="${pid}"]:not([disabled])`).last().click(); await page.waitForTimeout(150);
+        // หลังเลือก การ์ดเดิมต้องยังอยู่ในจอ (desktop: เป็นการ์ดตรงกลาง · carousel: อยู่ในกรอบ)
+        const visible = await page.evaluate(id => {
+          if (document.documentElement.classList.contains('desk')) return window.__lifeceo.state && document.querySelector('.pitem.active').dataset.goto === id;
+          const el = document.querySelector(`.slide[data-id="${id}"]`); const c = document.getElementById('car').getBoundingClientRect(); const r = el.getBoundingClientRect(); return r.left >= c.left - 2 && r.right <= c.right + 2; }, pid);
         focusChecks++; if (!visible) problems.push(`card ${pid} not in view after choosing (round ${round})`);
         continue;
       }

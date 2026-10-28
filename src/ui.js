@@ -48,11 +48,12 @@
     const e = G.era(s);
     const pips = Array.from({ length: s.crisis ? 3 : 4 }, (_, i) => `<span class="pip ${i < s.time ? 'on' : ''}"></span>`).join('');
     const cap = G.energyCap(s);
+    const net = G.salary(s) + G.passive(s) - G.livingCost(s) - G.interest(s);
     const res = [
       ['cash', s.cash], ['energy', `${s.energy}/${cap}`], ['health', s.health, s.health <= 3],
       ['rel', s.rel, s.rel <= 3], ['skills', s.skills], ['stress', s.stress, s.stress >= 5],
       ['debt', s.debt, s.debt > 0], ['portfolio', s.portfolio], ['lp', s.lp],
-    ].map(([k, v, warn]) => `<div class="res ${warn ? 'warn' : ''}" title="${NAME[k]}"><span class="v">${ICON[k]} ${v}</span><span class="k">${NAME[k]}</span></div>`).join('');
+    ].map(([k, v, warn]) => `<div class="res ${warn ? 'warn' : ''}" title="${NAME[k]}"><span class="v">${ICON[k]} ${v}${k === 'cash' ? `<span class="net">${sign(net)}</span>` : ''}</span><span class="k">${NAME[k]}</span></div>`).join('');
     const nextIncome = G.salary(s) + G.passive(s);
     return `<header class="topbar">
       <div class="topbar-row">
@@ -91,7 +92,7 @@
       } else if (a.id === 'explore') detail = `${chips({ energy: 1 })}<span class="note">เปิดโอกาส ${2 + ((G.career(s).perk || {}).extraOpportunity || 0)} ใบ เลือกได้ 1</span>`;
       else if (a.id === 'invest') detail = `<span class="note">ย้าย 🪙 เข้า 📈 (ขั้นต่ำ 2) ได้ +1/รอบ ต่อทุก 4</span>`;
       else if (a.id === 'repay') detail = `<span class="note">ลด 🔗 ดอกเบี้ย 1 ต่อหนี้ทุก 4</span>`;
-      return `<button class="act" data-act="${a.id}" ${why ? 'disabled' : ''}><b>${esc(a.label)}</b>${detail}${why ? `<span class="why">${esc(why)}</span>` : ''}</button>`;
+      return `<button class="act" data-act="${a.id}" ${why ? 'disabled' : ''}><b>${esc(a.label)}</b>${detail}${whyTag(why)}</button>`;
     }).join('');
     return `<section class="dock">
       <div class="dock-acts">${btns}</div>
@@ -100,40 +101,45 @@
   }
 
   // ---------------------------------------------------------------- project card
-  function projectCard(pid) {
+  // ขั้นที่ทำแล้วและขั้นที่ล็อกย่อเหลือบรรทัดเดียว ขั้นที่เล่นอยู่แสดง A/B เต็ม
+  const ROUND_WIDE = ['หมดเวลาในรอบนี้', 'ไม่ได้อยู่ในช่วงใช้เวลา'];
+  const whyTag = why => (why && !ROUND_WIDE.includes(why) ? `<span class="why">${esc(why)}</span>` : '');
+  const plain = (cost, gain) => chips(cost, gain).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  function projectCard(pid, opts) {
     const p = G.PROJECT[pid];
     const prog = s.projects[pid] || { level: 0, choices: [] };
     const complete = prog.level >= 3;
     const levels = p.levels.map((lv, i) => {
       const n = i + 1;
-      const state = i < prog.level ? 'done' : i === prog.level ? 'next' : 'locked';
-      let body = '';
-      if (state === 'done') {
-        const o = lv.outcomes[prog.choices[i]];
-        body = `<span class="chosen">✓ ${'AB'[prog.choices[i]]} · ${esc(o.label)}</span>`;
-      } else if (state === 'next' && s.phase === 'actions') {
-        body = `<div class="outs">${lv.outcomes.map((o, j) => {
-          const why = G.projectStatus(s, pid, j);
-          return `<button class="out" data-proj="${pid}" data-out="${j}" ${why ? 'disabled' : ''}>
-            <span class="ab">${'AB'[j]}</span><b>${esc(o.label)}</b>
-            ${chips(o.cost, o.gain, o)}${why ? `<span class="why">${esc(why)}</span>` : ''}</button>`;
-        }).join('')}</div>`;
-      } else {
-        body = `<details class="peek"><summary>${lv.outcomes.map((o, j) => `${'AB'[j]} · ${esc(o.label)}`).join('  /  ')}</summary>
-          <div class="outs">${lv.outcomes.map((o, j) => `<div class="out static"><span class="ab">${'AB'[j]}</span><b>${esc(o.label)}</b>${chips(o.cost, o.gain, o)}</div>`).join('')}</div></details>`;
+      if (i < prog.level) {
+        const j = prog.choices[i];
+        return `<li class="lv row done"><span class="lv-badge">L${n}</span>
+          <div class="row-text"><b>${esc(lv.name)}</b> <span class="chosen">✓ ${'AB'[j]} · ${esc(lv.outcomes[j].label)}</span></div></li>`;
       }
-      return `<li class="lv ${state}">
-        <span class="lv-badge">L${n}</span>
+      if (i > prog.level) {
+        const peek = lv.outcomes.map((o, j) => `<span title="${esc(plain(o.cost, o.gain))}">${'AB'[j]} · ${esc(o.label)}</span>`).join(' / ');
+        return `<li class="lv row locked"><span class="lv-badge">L${n}</span>
+          <div class="row-text"><b>${esc(lv.name)}</b> ${chips(lv.cost, lv.gain, { require: lv.require })}<div class="peekline">${peek}</div></div></li>`;
+      }
+      const live = s.phase === 'actions';
+      const outs = lv.outcomes.map((o, j) => {
+        const why = live ? G.projectStatus(s, pid, j) : null;
+        const tag = live ? `button class="out" data-proj="${pid}" data-out="${j}" ${why ? 'disabled' : ''}` : 'div class="out static"';
+        return `<${tag}><span class="ab">${'AB'[j]}</span><b>${esc(o.label)}</b>
+          ${chips(o.cost, o.gain, o)}${whyTag(why)}</${live ? 'button' : 'div'}>`;
+      }).join('');
+      return `<li class="lv next"><span class="lv-badge">L${n}</span>
         <div><div class="lv-name">${esc(lv.name)}</div>${chips(lv.cost, lv.gain, { require: lv.require })}</div>
-        ${body}
-      </li>`;
+        <div class="outs">${outs}</div></li>`;
     }).join('');
     const t = p.tags[0];
-    return `<article class="pcard ${complete ? 'complete' : ''}">
-      <header class="pcard-head"><span class="ico">${TAG_ICON[t]}</span><div><h3>${esc(p.en)}</h3><p>${esc(p.name)}</p></div></header>
-      <div class="art t-${t}"><span class="ph">${TAG_ICON[t]}</span><img src="assets/art/${pid}.webp" alt="" loading="lazy" onerror="this.remove()"></div>
-      <div class="tagrow">${p.tags.map(x => `<span class="tag">${TAG_ICON[x]} ${TAG_TH[x]}</span>`).join('')}</div>
-      <ol class="levels">${levels}</ol>
+    const tags = p.tags.map(x => `<span title="${TAG_TH[x]}">${TAG_ICON[x]}</span>`).join('');
+    return `<article class="pcard ${complete ? 'complete' : ''} ${opts && opts.wide ? 'wide' : ''}">
+      <header class="pcard-head"><span class="ico">${TAG_ICON[t]}</span><div class="ttl"><h3>${esc(p.en)}</h3><p>${esc(p.name)}</p></div><span class="tags">${tags}</span></header>
+      <div class="pbody">
+        <div class="art t-${t}"><span class="ph">${TAG_ICON[t]}</span><img src="assets/art/${pid}.webp" alt="" loading="lazy" onerror="this.remove()"></div>
+        <ol class="levels">${levels}</ol>
+      </div>
       <footer class="pcard-foot">${complete ? 'COMPLETED' : 'LIFE PROJECT'}</footer>
     </article>`;
   }
@@ -270,6 +276,10 @@
   function gameScreen() {
     const list = slides();
     if (!list.some(x => x.id === ui.focus)) ui.focus = list.length ? list[0].id : null;
+    return isDesk() ? deskScreen(list) : carouselScreen(list);
+  }
+
+  function carouselScreen(list) {
     const dock = s.phase === 'actions' ? actionDock() : '<section class="dock dock-wait">รอเลือกเหตุการณ์…</section>';
     return `<div class="game">
       ${topbar()}
@@ -281,6 +291,79 @@
       </div>
       ${dock}
     </div>`;
+  }
+
+  // ---------------------------------------------------------------- desktop layout B
+  function projectState(id) {
+    const prog = s.projects[id];
+    const lv = prog ? prog.level : 0;
+    if (lv >= 3) return ['done', 'สำเร็จแล้ว'];
+    if (s.phase !== 'actions') return ['', ''];
+    if (s.flags.advanced.includes(id)) return ['wait', 'ทำแล้วรอบนี้'];
+    const why = [0, 1].map(j => G.projectStatus(s, id, j));
+    if (why.some(w => !w)) return ['ready', `พร้อมทำ L${lv + 1}`];
+    return ['blocked', why[0]];
+  }
+  function projectList(list) {
+    let html = '', group = null;
+    for (const x of list) {
+      if (x.mine !== group) { group = x.mine; html += `<h4>${x.mine ? 'ของฉัน' : 'ตลาด'}</h4>`; }
+      const p = G.PROJECT[x.id];
+      const lv = s.projects[x.id] ? s.projects[x.id].level : 0;
+      const dots = [0, 1, 2].map(i => `<i class="${i < lv ? 'on' : ''}"></i>`).join('');
+      const [cls, label] = projectState(x.id);
+      html += `<button class="pitem ${ui.focus === x.id ? 'active' : ''}" data-goto="${x.id}">
+        <span class="pi-ico">${TAG_ICON[p.tags[0]]}</span>
+        <span class="pi-name">${esc(p.name)}<small class="pi-st ${cls}">${esc(label)}</small></span>
+        <span class="lvdots">${dots}</span></button>`;
+    }
+    return `<nav class="plist">${html}</nav>`;
+  }
+  function actionPanel() {
+    const g = G.GOAL[s.goalId];
+    const sum = G.summary(s);
+    const goalNow = g.checkFull(sum) ? '✅ บรรลุแล้ว' : g.checkPartial(sum) ? '◐ บางส่วน' : '○ ยังไม่บรรลุ';
+    const echo = [1, 2, 3, 4].map(e => `<span>ยุค ${ROMAN[e]} <b>${s.echoQueue[e].length}</b></span>`).join('');
+    const pips = Array.from({ length: s.crisis ? 3 : 4 }, (_, i) => `<span class="pip ${i < s.time ? 'on' : ''}"></span>`).join('');
+    let acts = '<p class="note wait">รอเลือกเหตุการณ์…</p>';
+    if (s.phase === 'actions') {
+      acts = D.ACTIONS.filter(a => a.id !== 'project').map(a => {
+        const why = G.actionStatus(s, a.id);
+        let detail;
+        if (ACTION_DESC[a.id]) { const d = ACTION_DESC[a.id](); detail = chips(d.cost, d.gain); }
+        else if (a.id === 'promote') { const next = G.career(s).tiers[s.careerTier + 1]; detail = next ? chips({ energy: 1 }, {}, { require: next.require }) : ''; }
+        else if (a.id === 'explore') detail = chips({ energy: 1 });
+        else if (a.id === 'invest') detail = '<span class="note">🪙 → 📈</span>';
+        else detail = '<span class="note">🪙 → ลด 🔗</span>';
+        return `<button class="arow" data-act="${a.id}" ${why ? 'disabled' : ''}><b>${esc(a.label)}</b>${detail}${whyTag(why)}</button>`;
+      }).join('') + `<button class="btn" data-do="end">${s.time > 0 ? `จบรอบ (เหลือ ${s.time} ช่อง)` : 'จบรอบ →'}</button>`;
+    }
+    return `<aside class="apanel">
+      <div class="ap-head"><h4>ใช้เวลา</h4><span class="time">⏳ ${pips}</span></div>
+      <div class="ap-acts">${acts}</div>
+      <button class="ap-goal" data-sheet="goal"><b>🎯 ${esc(g.name)}</b><span>${goalNow}</span></button>
+      <button class="ap-echo" data-sheet="echo">🔮 ${echo}</button>
+    </aside>`;
+  }
+  function deskScreen(list) {
+    return `<div class="game">
+      ${topbar()}
+      <div class="desk-main">
+        ${projectList(list)}
+        <main class="focus">${ui.focus ? projectCard(ui.focus, { wide: true }) : ''}</main>
+        ${actionPanel()}
+      </div>
+    </div>`;
+  }
+
+  // ---------------------------------------------------------------- fit: ข้อความต้องครบ ไม่มี scroll
+  function fitCards() {
+    document.querySelectorAll('.pcard').forEach(c => {
+      c.classList.remove('dense');
+      const art = c.querySelector('.art');
+      const overflow = c.scrollHeight > c.clientHeight + 1;
+      if (overflow || (art && !c.classList.contains('wide') && art.getBoundingClientRect().height < 40)) c.classList.add('dense');
+    });
   }
 
   // ---------------------------------------------------------------- device mode
@@ -295,12 +378,16 @@
     root.style.setProperty('--z', z);
     root.classList.toggle('zoomed', forced);
     root.classList.toggle('m', phone || innerWidth / z <= 700);
+    root.classList.toggle('desk', !root.classList.contains('m') && innerWidth / z >= 1024);
+    root.classList.toggle('short', innerHeight / z < 700);
   }
+  const isDesk = () => document.documentElement.classList.contains('desk');
+  const modeKey = () => document.documentElement.className + document.documentElement.style.getPropertyValue('--z');
   applyDeviceMode();
   let resizeT = null;
   addEventListener('resize', () => {
     clearTimeout(resizeT);
-    resizeT = setTimeout(() => { const was = isMobile() + document.documentElement.style.getPropertyValue('--z'); applyDeviceMode(); if (s && was !== isMobile() + document.documentElement.style.getPropertyValue('--z')) render(); }, 150);
+    resizeT = setTimeout(() => { const was = modeKey(); applyDeviceMode(); if (s && was !== modeKey()) render(); else fitCards(); }, 150);
   });
 
   // ---------------------------------------------------------------- carousel position
@@ -353,6 +440,7 @@
     modalRoot.innerHTML = m;
     const lg = document.getElementById('log'); if (lg) lg.scrollTop = lg.scrollHeight;
     bindCarousel();
+    fitCards();
     const amt = document.getElementById('amt');
     if (amt) amt.oninput = () => { document.getElementById('amt-out').textContent = amt.value; };
     save();
@@ -379,7 +467,10 @@
     if (!el || el.disabled) return;
     const d = el.dataset;
     if (d.sheet) { ui.sheet = d.sheet; render(); return; }
-    if (d.goto) { markFocus(d.goto); scrollToSlide(d.goto, true); return; }
+    if (d.goto) {
+      if (isDesk()) { ui.focus = d.goto; render(); return; }
+      markFocus(d.goto); scrollToSlide(d.goto, true); return;
+    }
     if (d.nav) {
       const list = slides(); const i = list.findIndex(x => x.id === ui.focus);
       const next = list[Math.max(0, Math.min(list.length - 1, i + Number(d.nav)))];
@@ -407,6 +498,13 @@
       run(G.doAction(s, d.act)); return;
     }
     if (d.proj) { ui.focus = d.proj; run(G.doAction(s, 'project', { id: d.proj, outcome: Number(d.out) })); }
+  });
+
+  document.addEventListener('keydown', ev => {
+    if (!s || !isDesk() || modalRoot.innerHTML || !['ArrowUp', 'ArrowDown'].includes(ev.key)) return;
+    const list = slides(); const i = list.findIndex(x => x.id === ui.focus);
+    const next = list[Math.max(0, Math.min(list.length - 1, i + (ev.key === 'ArrowDown' ? 1 : -1)))];
+    if (next && next.id !== ui.focus) { ev.preventDefault(); ui.focus = next.id; render(); }
   });
 
   // ---------------------------------------------------------------- boot
