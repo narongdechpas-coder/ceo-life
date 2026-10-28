@@ -10,9 +10,11 @@
  *             salary  = ปรับเงินเดือนถาวร
  *             ongoing = { ... } ผลที่เกิดทุกต้นรอบ (ช่วงรายได้และภาระ)
  *   require : เงื่อนไขขั้นต่ำ เช่น { skills: 3 } หมายถึง 📖 ≥ 3
- *   echo    : { id, era: '+1' } สอด Echo ลงกองยุคถัดไป (สูงสุดยุค IV)
- *             ถ้าไม่มีรอบเหลือแล้ว Echo ร้ายนับเป็น Regret ทันที
+ *   echo    : { id, era: '+1' } ใส่ Echo ลงคิวของยุคถัดไป (สูงสุดยุค IV)
+ *             รอบแรกของยุคเปิดครึ่งคิว (ปัดขึ้น) รอบที่สองเปิดที่เหลือทั้งหมด
+ *             Echo ร้ายที่ยังไม่ถูกเปิดตอนจบเกมนับเป็น Regret
  *   regret  : 1 = เลือกทางนี้ใน Echo ร้ายแล้วค้างเป็น Regret (−2 คะแนนปลายเกม)
+ *   clearOngoing : true = ล้างผล Ongoing ทั้งหมดที่โปรเจกต์นี้สร้างไว้ ก่อนใส่ gain ใหม่
  */
 (function (root) {
   const ERAS = [
@@ -112,7 +114,7 @@
         { label: 'ขยายสาขา', gain: { ongoing: { cash: 2 } }, echo: { id: 'E15', era: '+1' } },
         { label: 'สร้างทีม', gain: { lp: 2, stress: -1 } } ] },
       { name: 'อนาคตของกิจการ', cost: { cash: 4, energy: 2 }, outcomes: [
-        { label: 'ขายกิจการ', gain: { cash: 12, lp: 2, ongoing: { cash: -2 } }, note: 'รายได้ Ongoing จากสาขาหยุด' },
+        { label: 'ขายกิจการ', clearOngoing: true, gain: { cash: 12, lp: 2 }, note: 'ผล Ongoing ของโปรเจกต์นี้หยุด' },
         { label: 'ส่งต่อรุ่นถัดไป', gain: { lp: 4, rel: 1 } } ] },
     ] },
     { id: 'P02', name: 'ปริญญาโท', en: 'Master Degree', tags: ['Skill'], levels: [
@@ -167,8 +169,8 @@
         { label: 'ทำห้องทำงาน', gain: { skills: 1, lp: 1 } },
         { label: 'ทำสวน', gain: { health: 1, stress: -1, lp: 1 } } ] },
       { name: 'ปิดหนี้บ้าน', cost: { cash: 8, energy: 1 }, outcomes: [
-        { label: 'อยู่เองอย่างสบายใจ', gain: { lp: 3, ongoing: { cash: 2 } }, note: 'ยกเลิกค่าผ่อนแบบคอนโด' },
-        { label: 'ปล่อยเช่า ย้ายไปที่เล็กลง', gain: { lp: 2, ongoing: { cash: 3 } } } ] },
+        { label: 'อยู่เองอย่างสบายใจ', clearOngoing: true, gain: { lp: 3 }, note: 'ภาระผ่อนบ้านหมด' },
+        { label: 'ปล่อยเช่า ย้ายไปที่เล็กลง', clearOngoing: true, gain: { lp: 2, ongoing: { cash: 3 } }, note: 'ภาระผ่อนบ้านหมด' } ] },
     ] },
     { id: 'P07', name: 'สตาร์ทอัพ', en: 'Startup', tags: ['Wealth', 'Impact'], levels: [
       { name: 'ทดลองไอเดีย', cost: { cash: 2, energy: 2 }, outcomes: [
@@ -178,7 +180,7 @@
         { label: 'รับเงินนักลงทุน', gain: { cash: 6, stress: 1 }, echo: { id: 'E16', era: '+1' } },
         { label: 'โตด้วยเงินตัวเอง', cost: { cash: 4 }, gain: { lp: 1, ongoing: { cash: 1 } } } ] },
       { name: 'ทางออกของบริษัท', cost: { energy: 2 }, outcomes: [
-        { label: 'ขายบริษัท', gain: { cash: 15, lp: 2 } },
+        { label: 'ขายบริษัท', clearOngoing: true, gain: { cash: 15, lp: 2 }, note: 'ผล Ongoing ของโปรเจกต์นี้หยุด' },
         { label: 'เป็นกิจการเพื่อสังคม', gain: { impact: 4, ongoing: { cash: 2 } } } ] },
     ] },
     { id: 'P08', name: 'อาสาสมัครชุมชน', en: 'Community Volunteer', tags: ['Impact'], levels: [
