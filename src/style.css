@@ -474,3 +474,25 @@ html.m .tcard.dense .lv.next { gap: 2px 8px; }
 .tcard.tight .lv { padding: 4px 6px; }
 .era-story p + p { margin-top: 4px; }
 .era-story .rnd { display: inline-block; min-width: 64px; font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 13px; color: var(--sage); }
+
+/* ---------------------------------------------------------------- dissolve: การ์ดที่เลือกแล้วสลายออกจากโต๊ะ */
+#fx { position: fixed; inset: 0; pointer-events: none; z-index: 40; }
+.fx-clone { position: fixed; margin: 0; pointer-events: none; aspect-ratio: auto; max-width: none; }
+.fx-clone.go {
+  animation: dissolve .7s cubic-bezier(.4, 0, .2, 1) forwards;
+  /* สลายกระจายออกจากจุดที่กด */
+  -webkit-mask-image: radial-gradient(circle at var(--ox, 50%) var(--oy, 50%), transparent var(--hole, 0%), #000 calc(var(--hole, 0%) + 30%));
+  mask-image: radial-gradient(circle at var(--ox, 50%) var(--oy, 50%), transparent var(--hole, 0%), #000 calc(var(--hole, 0%) + 30%));
+}
+@property --hole { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
+@keyframes dissolve {
+  0% { opacity: 1; transform: none; filter: blur(0); --hole: 0%; }
+  60% { opacity: .55; }
+  100% { opacity: 0; transform: translateY(-12px) scale(.94); filter: blur(6px) saturate(.4); --hole: 120%; }
+}
+.fx-enter { animation: fx-enter .25s ease-out both; }
+@keyframes fx-enter { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .fx-clone { display: none; }
+  .fx-enter { animation: none; }
+}

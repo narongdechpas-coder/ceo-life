@@ -148,7 +148,7 @@
     const t = p.tags[0];
     const tags = p.tags.map(x => `<span title="${TAG_TH[x]}">${TAG_ICON[x]}</span>`).join('');
     const why = opts && opts.why;
-    return `<article class="tcard pcard ${complete ? 'complete' : ''} ${why ? 'unplayable' : ''}">
+    return `<article class="tcard pcard ${complete ? 'complete' : ''} ${why ? 'unplayable' : ''}" data-id="${pid}">
       ${why ? `<span class="why-badge">${esc(why)}</span>` : ''}
       <header class="pcard-head"><span class="ico">${TAG_ICON[t]}</span><div class="ttl"><h3>${esc(p.en)}</h3><p>${esc(p.name)}</p></div><span class="tags">${tags}</span></header>
       <div class="pbody">
@@ -204,7 +204,7 @@
       const why = G.blocker(s, o.cost || {}, o.require);
       return `<button class="opt ${o.regret ? 'regret' : ''}" data-opt="${i}" ${why ? 'disabled' : ''}><b>${esc(o.label)}</b>${chips(o.cost, o.gain, o)}${whyTag(why)}</button>`;
     }).join('');
-    return `<article class="tcard ecard2 ${tone}">
+    return `<article class="tcard ecard2 ${tone}" data-id="ev-${card.id}">
       <header class="pcard-head"><div class="ttl"><small>${label}</small><h3 class="th">${esc(card.title)}</h3></div></header>
       <div class="pbody">
         <div class="art"><span class="ph">${kind === 'echo' ? '🔮' : ERA_ICON[card.era]}</span></div>
@@ -217,7 +217,7 @@
   function oppCard(id) {
     const o = G.OPP[id];
     const why = G.blocker(s, o.cost || {}, o.require);
-    return `<article class="tcard ecard2 opp">
+    return `<article class="tcard ecard2 opp" data-id="opp-${id}">
       <header class="pcard-head"><div class="ttl"><small>OPPORTUNITY</small><h3 class="th">${esc(o.title)}</h3></div></header>
       <div class="pbody">
         <div class="art"><span class="ph">✨</span></div>
@@ -439,7 +439,7 @@
   // ---------------------------------------------------------------- fit: ข้อความต้องครบ ไม่มี scroll
   function fitCards() {
     const over = c => c.scrollHeight > c.clientHeight + 1;
-    const all = [...document.querySelectorAll('.tcard')];
+    const all = [...document.querySelectorAll('.table .tcard')];
     all.forEach(c => c.classList.remove('dense', 'compact', 'tight'));
     const row = document.getElementById('cards');
     if (!row || isMobile() || row.classList.contains('browse')) {
@@ -518,6 +518,49 @@
     save();
   }
 
+  // ---------------------------------------------------------------- dissolve
+  // engine ทำงานทันที แล้วเล่นแอนิเมชันกับสำเนาของการ์ดที่ออกจากโต๊ะ (state ไม่มีช่วงค้าง)
+  const calm = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function withFx(leaving, ev, fn) {
+    leaving = leaving.filter(Boolean);
+    if (calm() || !leaving.length) { fn(); return; }
+    const fx = document.getElementById('fx');
+    const z = parseFloat(document.documentElement.style.getPropertyValue('--z')) || 1;
+    // ตำแหน่งการ์ดทุกใบก่อนวาดใหม่ (ใช้เลื่อนการ์ดที่เหลือเข้าที่แบบนุ่ม)
+    const before = new Map([...document.querySelectorAll('.table .tcard')].map(c => [c.dataset.id, c.getBoundingClientRect()]));
+    const clones = leaving.map(c => {
+      const r = c.getBoundingClientRect();
+      const k = c.cloneNode(true);
+      k.classList.add('fx-clone');
+      k.removeAttribute('data-id');
+      // getBoundingClientRect อยู่ในหน่วยจอ ส่วน style อยู่ในหน่วย CSS ที่ถูก zoom
+      Object.assign(k.style, { left: `${r.left / z}px`, top: `${r.top / z}px`, width: `${r.width / z}px`, height: `${r.height / z}px` });
+      const ox = ev ? ((ev.clientX - r.left) / r.width) * 100 : 50, oy = ev ? ((ev.clientY - r.top) / r.height) * 100 : 50;
+      k.style.setProperty('--ox', `${Math.max(0, Math.min(100, ox))}%`);
+      k.style.setProperty('--oy', `${Math.max(0, Math.min(100, oy))}%`);
+      fx.appendChild(k);
+      k.addEventListener('animationend', () => k.remove(), { once: true });
+      setTimeout(() => k.remove(), 1200);
+      return k;
+    });
+    fn();
+    clones.forEach(k => k.classList.add('go'));
+    document.querySelectorAll('.table .tcard').forEach(c => {
+      const old = before.get(c.dataset.id);
+      if (!old) { c.classList.add('fx-enter'); return; }
+      const r = c.getBoundingClientRect();
+      const dx = (old.left - r.left) / z, dy = (old.top - r.top) / z;
+      if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+      c.style.transition = 'none';
+      c.style.transform = `translate(${dx}px, ${dy}px)`;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        c.style.transition = 'transform .32s cubic-bezier(.2, .8, .2, 1)';
+        c.style.transform = '';
+        c.addEventListener('transitionend', () => { c.style.transition = ''; }, { once: true });
+      }));
+    });
+  }
+
   function toast(msg) {
     const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
     document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
@@ -551,8 +594,12 @@
     }
     if (d.pickGoal) { ui.pickGoal = d.pickGoal; render(); return; }
     if (d.pickCareer) { ui.pickCareer = d.pickCareer; render(); return; }
-    if (d.opt !== undefined) { run(G.chooseOption(s, Number(d.opt))); return; }
-    if (d.opp !== undefined) { run(G.takeOpportunity(s, d.opp || null)); return; }
+    if (d.opt !== undefined) { withFx([el.closest('.tcard')], ev, () => run(G.chooseOption(s, Number(d.opt)))); return; }
+    if (d.opp !== undefined) {
+      // รับโอกาสหรือปล่อยผ่าน การ์ดโอกาสทุกใบออกจากโต๊ะพร้อมกัน
+      withFx([...document.querySelectorAll('.table .ecard2.opp')], ev, () => run(G.takeOpportunity(s, d.opp || null)));
+      return;
+    }
     if (d.amount) {
       const v = Number(document.getElementById('amt').value);
       ui.modal = null; run(G.doAction(s, d.amount, { amount: v })); return;
@@ -562,14 +609,17 @@
       run(G.doAction(s, d.act)); return;
     }
     if (d.proj) {
-      const err = G.doAction(s, 'project', { id: d.proj, outcome: Number(d.out) });
-      render();
-      // การ์ดจะออกจากโต๊ะ (ทำได้ 1 ขั้นต่อรอบ) จึงบอกผลสั้นๆ
-      toast(err || s.log[s.log.length - 1].text);
+      withFx([el.closest('.tcard')], ev, () => {
+        const err = G.doAction(s, 'project', { id: d.proj, outcome: Number(d.out) });
+        render();
+        // การ์ดจะออกจากโต๊ะ (ทำได้ 1 ขั้นต่อรอบ) จึงบอกผลสั้นๆ
+        toast(err || s.log[s.log.length - 1].text);
+      });
     }
   });
 
   // ---------------------------------------------------------------- boot
+  if (!document.getElementById('fx')) { const fx = document.createElement('div'); fx.id = 'fx'; document.body.appendChild(fx); }
   const saved = load();
   if (saved && saved.v === 2) { s = saved; render(); } else newGame();
   window.__lifeceo = { get state() { return s; }, newGame, render };

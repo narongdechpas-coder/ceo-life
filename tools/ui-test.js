@@ -92,6 +92,10 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       if (time > 0 && await outs.count() && step % 3 === 0) {
         const pid = await outs.last().getAttribute('data-proj');
         await outs.last().click();
+        // dissolve: ต้องมีสำเนาการ์ดลอยอยู่ และหายเองภายใน 1.2 วินาที (ไม่ค้างทับโต๊ะ)
+        if (!await page.locator('.fx-clone').count()) problem('no dissolve clone after choosing a project');
+        await page.waitForTimeout(1200);
+        if (await page.locator('.fx-clone').count()) problem('dissolve clone left on screen');
         const still = await page.locator(`.out[data-proj="${pid}"]`).count();
         if (still && !(await geom()).showAll) problem(`card ${pid} still on table after playing it`);
         continue;
