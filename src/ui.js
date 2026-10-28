@@ -264,7 +264,9 @@
       <div><h1>LIFE <span>CEO</span></h1><p class="story">ชีวิตที่คุณออกแบบได้ · เกมจำลองชีวิตสำหรับผู้เล่นคนเดียว 8 บท</p></div>
       <section><div class="section-title"><h2>เลือกเป้าหมายชีวิต</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${goals}</div></section>
       <section><div class="section-title"><h2>เลือกอาชีพเริ่มต้น</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${careers}</div></section>
-      <div><button class="btn" data-do="start" ${ui.pickGoal && ui.pickCareer ? '' : 'disabled'}>เริ่มชีวิต →</button>
+      <div class="setup-actions"><button class="btn" data-do="start" ${ui.pickGoal && ui.pickCareer ? '' : 'disabled'}>เริ่มชีวิต →</button>
+        <button class="btn ghost" data-do="reroll" ${s.rerolls > 0 ? '' : 'disabled'}>${s.rerolls > 0 ? `🎲 สุ่มใหม่ (เหลือ ${s.rerolls} ครั้ง)` : 'ใช้สุ่มใหม่ไปแล้ว'}</button></div>
+      <div>
       <p class="note">เริ่มต้น: 🪙 ${D.START.cash} · ❤️ ${D.START.health} · 👥 ${D.START.rel} · 📖 ${D.START.skills} · ค่าครองชีพ ${D.START.expenses}/รอบ</p></div>
     </main>`;
   }
@@ -604,6 +606,13 @@
     if (d.do === 'new') { ui.sheet = null; if (s.phase === 'setup' || s.phase === 'end' || confirm('เริ่มเกมใหม่? เกมที่เล่นอยู่จะหายไป')) newGame(); return; }
     if (d.do === 'rules') { ui.sheet = null; ui.modal = 'rules'; render(); return; }
     if (d.do === 'close') { ui.modal = null; ui.sheet = null; render(); return; }
+    if (d.do === 'reroll') {
+      const err = safely(() => G.reroll(s));
+      if (!err) { ui.pickGoal = null; ui.pickCareer = null; }
+      run(err);
+      if (!err) document.querySelectorAll('.pick').forEach(el => el.classList.add('fx-enter'));
+      return;
+    }
     if (d.do === 'start') { run(safely(() => G.chooseSetup(s, ui.pickGoal, ui.pickCareer))); return; }
     if (d.do === 'end') {
       if (s.time > 0 && !confirm(`ยังเหลือเวลา ${s.time} ช่อง จบรอบเลยไหม`)) return;

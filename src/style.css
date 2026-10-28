@@ -504,3 +504,4 @@ html.m .tcard.dense .lv.next { gap: 2px 8px; }
   content: ''; position: absolute; left: 0; right: 0; bottom: 28px; height: 28px; pointer-events: none;
   background: linear-gradient(transparent, rgba(35, 48, 42, .18));
 }
+.setup-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }

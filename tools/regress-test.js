@@ -96,6 +96,25 @@ const st = page => page.evaluate(() => { const s = window.__lifeceo.state; retur
     await page.close();
   }
 
+  // ---------- 4) ปุ่มสุ่มใหม่หน้าเริ่มเกม
+  {
+    const page = await browser.newPage({ viewport: { width: 393, height: 660 }, hasTouch: true });
+    page.on('pageerror', e => errors.push(e.message)); page.on('dialog', d => d.accept());
+    await page.goto(URL); await page.evaluate(() => localStorage.clear()); await page.reload();
+    const ids = () => page.evaluate(() => [...document.querySelectorAll('[data-pick-goal],[data-pick-career]')].map(b => b.dataset.pickGoal || b.dataset.pickCareer));
+    const before = await ids();
+    await page.click('[data-pick-goal]');
+    await page.click('[data-do="reroll"]');
+    const after = await ids();
+    check('reroll: 3+3 new cards, none repeated', after.length === 6 && after.every(id => !before.includes(id)), `${before} → ${after}`);
+    check('reroll: earlier pick cleared', await page.locator('.pick.sel').count() === 0);
+    check('reroll: button disabled after use', await page.locator('[data-do="reroll"]').isDisabled());
+    await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
+    check('reroll: game starts with a rerolled goal', await page.evaluate(a => a.includes(window.__lifeceo.state.goalId), after));
+    await page.screenshot({ path: require('os').tmpdir() + '/reroll.png' });
+    await page.close();
+  }
+
   check('no page errors', !errors.length, errors.join(' | '));
   console.log(results.join('\n'));
   await browser.close();

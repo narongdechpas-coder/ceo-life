@@ -10,6 +10,7 @@
   const CAREER = byId(D.CAREERS), GOAL = byId(D.GOALS), PROJECT = byId(D.PROJECTS);
   const EVENT = byId(D.EVENTS), ECHO = byId(D.ECHOES), OPP = byId(D.OPPORTUNITIES);
   const ROUNDS = 8;
+  const REROLLS = 1; // สุ่มเป้าหมาย/อาชีพใหม่ได้กี่ครั้งต่อเกม
   const CLAMP10 = ['health', 'rel', 'skills', 'stress'];
 
   // ---------------------------------------------------------------- RNG (mulberry32 เก็บใน state)
@@ -124,6 +125,7 @@
     if (!Array.isArray(s.flags.advanced)) s.flags.advanced = [];
     if (!s.echoQueue) s.echoQueue = { 1: [], 2: [], 3: [], 4: [] };
     if (typeof s.impactLp !== 'number') s.impactLp = 0;
+    if (typeof s.rerolls !== 'number') s.rerolls = 0;
     return s;
   }
 
@@ -141,11 +143,30 @@
     };
     s.goalChoices = shuffle(s, D.GOALS.map(g => g.id)).slice(0, 3);
     s.careerChoices = shuffle(s, D.CAREERS.map(c => c.id)).slice(0, 3);
+    s.rerolls = REROLLS;
+    s.seenChoices = [...s.goalChoices, ...s.careerChoices];
     s.projectDeck = shuffle(s, D.PROJECTS.map(p => p.id));
     s.market = s.projectDeck.splice(0, 3);
     for (const e of [1, 2, 3, 4]) s.eventDecks[e] = shuffle(s, D.EVENTS.filter(v => v.era === e).map(v => v.id));
     s.oppDeck = shuffle(s, D.OPPORTUNITIES.map(o => o.id));
     return s;
+  }
+
+  // สุ่มเป้าหมายและอาชีพชุดใหม่ เลือกจากใบที่ยังไม่เคยเห็นก่อน (ถ้าไม่พอค่อยเติมจากใบที่เคยเห็น)
+  function reroll(s) {
+    if (s.phase !== 'setup') return 'สุ่มใหม่ได้เฉพาะตอนเริ่มเกม';
+    if (!(s.rerolls > 0)) return 'ใช้สุ่มใหม่ครบแล้ว';
+    const seen = new Set(s.seenChoices || [...s.goalChoices, ...s.careerChoices]);
+    const draw = (ids, prev) => {
+      const fresh = shuffle(s, ids.filter(id => !seen.has(id)));
+      const old = shuffle(s, ids.filter(id => seen.has(id) && !prev.includes(id)));
+      return [...fresh, ...old].slice(0, 3);
+    };
+    s.goalChoices = draw(D.GOALS.map(g => g.id), s.goalChoices);
+    s.careerChoices = draw(D.CAREERS.map(c => c.id), s.careerChoices);
+    s.seenChoices = [...seen, ...s.goalChoices, ...s.careerChoices];
+    s.rerolls -= 1;
+    return null;
   }
 
   function chooseSetup(s, goalId, careerId) {
@@ -411,7 +432,7 @@
 
   const API = {
     D, CAREER, GOAL, PROJECT, EVENT, ECHO, OPP, ROUNDS,
-    newGame, migrate, chooseSetup, chooseOption, doAction, takeOpportunity, endRound,
+    newGame, migrate, reroll, chooseSetup, chooseOption, doAction, takeOpportunity, endRound,
     currentCard, actionStatus, actionCost, projectStatus, score, summary,
     eraOf, era, career, tier, energyCap, salary, passive, livingCost, interest, portfolioYield, blocker, sumCost,
   };
