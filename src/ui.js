@@ -109,7 +109,7 @@
       else if (a.id === 'repay') detail = `<span class="note">ลด 🔗 ดอกเบี้ย 1 ต่อหนี้ทุก 4</span>`;
       const tip = (detail.match(/<span class="note">(.*?)<\/span>/) || [])[1] || '';
       const [ico, kind] = ACT_LOOK[a.id] || ['•', 'work'];
-      return `<button class="act k-${kind}" data-act="${a.id}" ${why ? 'disabled' : ''} title="${tip.replace(/"/g, '&quot;')}"><b><i class="act-ico">${ico}</i>${esc(a.label)}</b>${detail}${whyTag(why)}</button>`;
+      return `<button class="act k-${kind}" data-act="${a.id}" ${why ? 'disabled' : ''} title="${tip.replace(/"/g, '&quot;')}"><i class="act-ico" aria-hidden="true">${ico}</i><span class="act-main"><b>${esc(a.label)}</b>${detail}${whyTag(why)}</span></button>`;
     }).join('');
     const live = s.phase === 'actions';
     const pips = Array.from({ length: s.crisis ? 3 : 4 }, (_, i) => `<i class="${i < s.time ? 'on' : ''}"></i>`).join('');

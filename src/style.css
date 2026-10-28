@@ -526,20 +526,31 @@ html.m .tcard.dense .lv.next { gap: 2px 8px; }
 .dock-pips i.on { background: var(--mustard); }
 .dock-acts { gap: 8px; padding: 2px 2px 4px; scrollbar-color: rgba(255, 255, 255, .35) transparent; }
 .dock-acts .act {
-  background: #fffdf8; border: 0; border-left: 5px solid var(--sage); border-radius: 12px;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, .12), 0 4px 12px rgba(0, 0, 0, .12); padding: 7px 10px; transition: transform .1s, box-shadow .1s;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; align-content: start; gap: 5px 9px; flex-basis: 164px;
+  background: #fffdf8; border: 0; border-radius: 14px; padding: 8px 10px 8px 8px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .14), 0 6px 14px rgba(0, 0, 0, .14); transition: transform .12s, box-shadow .12s;
 }
-.dock-acts .act b { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px; color: var(--ink); }
-.act-ico { font-style: normal; font-size: 17px; line-height: 1; }
-.dock-acts .act:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0, 0, 0, .22); }
+/* ไอคอนเป็นตัวนำ: ช่องสีตามประเภทกิจกรรม */
+.act-ico {
+  flex: none; width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center;
+  font-style: normal; font-size: 23px; line-height: 1; background: var(--sage-soft);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .06);
+}
+.act.k-work .act-ico { background: var(--coral-soft); }
+.act.k-grow .act-ico { background: #e1e8fb; }
+.act.k-care .act-ico { background: var(--teal-soft); }
+.act.k-money .act-ico { background: var(--mustard-soft); }
+/* ไอคอน + ชื่อเป็นแถวแรก ผลของกิจกรรมเต็มความกว้างแถวถัดไป */
+.act-main { display: contents; }
+.act-main > :not(b) { grid-column: 1 / -1; min-width: 0; }
+.dock-acts .act b { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 14px; line-height: 1.25; color: var(--ink); }
+.dock-acts .act:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 4px 0 rgba(0, 0, 0, .12), 0 10px 20px rgba(0, 0, 0, .22); }
+.dock-acts .act:hover:not(:disabled) .act-ico { transform: scale(1.06); }
+.act-ico { transition: transform .12s; }
 .dock-acts .act:active:not(:disabled) { transform: translateY(0); }
-.dock-acts .act.k-work { border-left-color: var(--coral); }
-.dock-acts .act.k-grow { border-left-color: var(--star); }
-.dock-acts .act.k-care { border-left-color: var(--teal); }
-.dock-acts .act.k-money { border-left-color: var(--mustard); }
-.dock-acts .act:disabled { opacity: 1; background: rgba(255, 255, 255, .14); box-shadow: none; }
+.dock-acts .act:disabled { opacity: 1; background: rgba(255, 255, 255, .12); box-shadow: none; }
 .dock-acts .act:disabled b, .dock-acts .act:disabled .chip, .dock-acts .act:disabled .note { color: rgba(255, 255, 255, .55) !important; }
-.dock-acts .act:disabled .act-ico { filter: grayscale(1) opacity(.6); }
+.dock-acts .act:disabled .act-ico { background: rgba(255, 255, 255, .1); box-shadow: none; filter: grayscale(1) opacity(.55); }
 .dock-acts .act:disabled .why { color: #ffd2c4; }
 .dock-acts .act:disabled .chip.req { background: rgba(255, 255, 255, .12); }
 .dock-end {
@@ -552,6 +563,8 @@ html.m .tcard.dense .lv.next { gap: 2px 8px; }
 .dock-note { background: var(--mustard); color: var(--ink); font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, .25); }
 html.m .dock-lead { display: none; }
 html.m .dock-acts .act b { font-size: 14px; }
+html.m .dock-acts .act { flex-basis: 146px; gap: 4px 7px; padding: 6px 8px 6px 6px; }
+html.m .act-ico { width: 32px; height: 32px; font-size: 20px; border-radius: 9px; }
 
 /* วิธีเล่น */
 .ecard.rules { width: min(560px, 100%); }
