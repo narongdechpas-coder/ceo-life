@@ -11,7 +11,7 @@
 | `docs/design-v0.2.md` | Design doc กติกาและเหตุผล |
 | `src/data/cards.js` | ข้อมูลการ์ดทั้งหมด (แก้ตัวเลขที่นี่) |
 | `src/game.js` | Game engine ใช้ร่วมกันทั้งเบราว์เซอร์และ Node |
-| `src/ui.js`, `src/style.css` | หน้าเกม (Style 2 Flat Vector) |
+| `src/ui.js`, `src/style.css` | หน้าเกม (Style 2 Flat Vector) แบบหน้าเดียว การ์ดเลื่อนเป็น carousel |
 | `assets/art/<id>.webp` | ภาพประกอบการ์ด ถ้าไม่มีไฟล์จะใช้ไอคอนแทน |
 
 ## ตรวจ
@@ -20,6 +20,9 @@ node tools/validate-cards.js
 ```
 ```bash
 node tools/smoke.js 2000
+```
+```bash
+node tools/ui-test.js
 ```
 
 ตัวเลขทุกตัวเป็นค่าตั้งต้นเพื่อทดสอบ ยังไม่ผ่านการปรับสมดุล

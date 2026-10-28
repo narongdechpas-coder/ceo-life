@@ -12,7 +12,7 @@
   const NAME = { cash: 'Cash', energy: 'Energy', health: 'Health', rel: 'Relations', skills: 'Skills', stress: 'Stress', debt: 'Debt', portfolio: 'Invest', lp: 'Life Pts' };
 
   let s = null;
-  let ui = { modal: null, showLog: false, pickGoal: null, pickCareer: null };
+  let ui = { modal: null, sheet: null, focus: null, pickGoal: null, pickCareer: null };
 
   // ---------------------------------------------------------------- save
   function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(s)); } catch (e) { /* โหมดส่วนตัว */ } }
@@ -59,8 +59,13 @@
         <div class="brand">LIFE <span>CEO</span></div>
         <div class="chapter"><b>บทที่ ${s.round}/8</b> · ยุค ${ROMAN[e.id]} ${e.name} <span class="long">· อายุ ${e.age}</span></div>
         <div class="time" title="เวลาที่เหลือในรอบนี้">⏳ ${pips}</div>
-        <button class="icon-btn" data-do="rules">กติกา</button>
-        <button class="icon-btn" data-do="new">เกมใหม่</button>
+        <nav class="info-btns">
+          <button class="icon-btn" data-sheet="goal" title="เป้าหมายชีวิต">🎯</button>
+          <button class="icon-btn" data-sheet="career" title="อาชีพ">💼</button>
+          <button class="icon-btn" data-sheet="echo" title="Echo ที่รออยู่">🔮${echoCount() ? `<i class="badge">${echoCount()}</i>` : ''}</button>
+          <button class="icon-btn" data-sheet="log" title="Life Log">📔</button>
+          <button class="icon-btn" data-sheet="menu" title="เมนู">☰</button>
+        </nav>
       </div>
       <div class="resbar">${res}</div>
       <div class="flow">ต่อรอบ: เงินเดือน ${G.salary(s)} + Passive ${G.passive(s)} − ค่าใช้จ่าย ${G.livingCost(s)}${G.interest(s) ? ` − ดอกเบี้ย ${G.interest(s)}` : ''} = <b>${sign(nextIncome - G.livingCost(s) - G.interest(s))}</b>${s.crisis ? ' · <b>ภาวะวิกฤต</b>' : ''}</div>
@@ -75,7 +80,7 @@
     relate: () => ({ cost: G.actionCost(s, 'relate'), gain: { rel: 1, stress: -1 } }),
     rest: () => ({ cost: {}, gain: { stress: -2 } }),
   };
-  function actionsPanel() {
+  function actionDock() {
     const btns = D.ACTIONS.filter(a => a.id !== 'project').map(a => {
       const why = G.actionStatus(s, a.id);
       let detail;
@@ -88,10 +93,9 @@
       else if (a.id === 'repay') detail = `<span class="note">ลด 🔗 ดอกเบี้ย 1 ต่อหนี้ทุก 4</span>`;
       return `<button class="act" data-act="${a.id}" ${why ? 'disabled' : ''}><b>${esc(a.label)}</b>${detail}${why ? `<span class="why">${esc(why)}</span>` : ''}</button>`;
     }).join('');
-    return `<section class="panel">
-      <div class="section-title"><h2>ใช้เวลา</h2><small>เหลือ ${s.time} ช่อง · กิจกรรมละ 1 ช่อง</small></div>
-      <div class="actions">${btns}</div>
-      <div class="end-row"><button class="btn" data-do="end">${s.time > 0 ? `จบรอบ (ยังเหลือ ${s.time} ช่อง)` : 'จบรอบ →'}</button></div>
+    return `<section class="dock">
+      <div class="dock-acts">${btns}</div>
+      <button class="btn dock-end" data-do="end">${s.time > 0 ? `จบรอบ<small>เหลือ ${s.time} ช่อง</small>` : 'จบรอบ →'}</button>
     </section>`;
   }
 
@@ -134,24 +138,36 @@
     </article>`;
   }
 
-  // ---------------------------------------------------------------- side
-  function side() {
-    const c = G.career(s), g = G.GOAL[s.goalId];
-    const tiers = c.tiers.map((t, i) => `<div class="${i === s.careerTier ? 'cur' : ''}"><span>${esc(t.name)}</span><span>🪙${t.salary}${t.perRound && t.perRound.stress ? ' 💢+1' : ''}</span></div>`).join('');
-    const sum = G.summary(s);
-    const goalNow = g.checkFull(sum) ? '✅ บรรลุแล้ว (ถ้าจบเกมตอนนี้)' : g.checkPartial(sum) ? '◐ บรรลุบางส่วน' : '○ ยังไม่บรรลุ';
-    const echo = [1, 2, 3, 4].map(e => `<div>ยุค ${ROMAN[e]}<b>${s.echoQueue[e].length}</b></div>`).join('');
-    const logs = s.log.slice(-60).map(l => `<p class="${l.tone}">${l.tone === 'era' ? '' : `<small>บท ${l.round}</small> `}${esc(l.text)}</p>`).join('');
-    return `<aside class="side">
-      <section class="panel mini"><h3>🎯 ${esc(g.name)}</h3>
+  // ---------------------------------------------------------------- info sheets
+  const echoCount = () => [1, 2, 3, 4].reduce((t, e) => t + s.echoQueue[e].length, 0);
+  function sheetBody(kind) {
+    if (kind === 'goal') {
+      const g = G.GOAL[s.goalId];
+      const sum = G.summary(s);
+      const now = g.checkFull(sum) ? '✅ บรรลุแล้ว (ถ้าจบเกมตอนนี้)' : g.checkPartial(sum) ? '◐ บรรลุบางส่วน' : '○ ยังไม่บรรลุ';
+      return `<h3>🎯 ${esc(g.name)}</h3>
         <div class="kv"><span>เต็ม (+10)</span><span>${esc(g.full)}</span></div>
         <div class="kv"><span>บางส่วน (+4)</span><span>${esc(g.partial)}</span></div>
-        <div class="note">${goalNow}</div></section>
-      <section class="panel mini"><h3>💼 ${esc(c.name)}</h3><div class="tiers">${tiers}</div><div class="note">${esc(c.perkText)}</div></section>
-      <section class="panel mini"><h3>🔮 Echo ที่รออยู่</h3><div class="echo-eras">${echo}</div>
-        <div class="note">รู้แค่ว่ามีผลรออยู่ ไม่รู้ว่าดีหรือร้าย</div></section>
-      <section class="panel mini"><h3>📔 Life Log</h3><div class="log" id="log">${logs}</div></section>
-    </aside>`;
+        <p class="note">${now}</p>`;
+    }
+    if (kind === 'career') {
+      const c = G.career(s);
+      const tiers = c.tiers.map((t, i) => `<div class="${i === s.careerTier ? 'cur' : ''}"><span>${esc(t.name)}</span><span>🪙${t.salary}${t.perRound && t.perRound.stress ? ' 💢+1' : ''}</span></div>`).join('');
+      return `<h3>💼 ${esc(c.name)}</h3><div class="tiers">${tiers}</div><p class="note">${esc(c.perkText)}</p>`;
+    }
+    if (kind === 'echo') {
+      const echo = [1, 2, 3, 4].map(e => `<div>ยุค ${ROMAN[e]}<b>${s.echoQueue[e].length}</b></div>`).join('');
+      return `<h3>🔮 Echo ที่รออยู่</h3><div class="echo-eras">${echo}</div><p class="note">รู้แค่ว่ามีผลรออยู่ ไม่รู้ว่าดีหรือร้าย รอบแรกของยุคเปิดครึ่งคิว รอบที่สองเปิดที่เหลือ</p>`;
+    }
+    if (kind === 'log') {
+      const logs = s.log.slice(-80).map(l => `<p class="${l.tone}">${l.tone === 'era' ? '' : `<small>บท ${l.round}</small> `}${esc(l.text)}</p>`).join('');
+      return `<h3>📔 Life Log</h3><div class="log" id="log">${logs}</div>`;
+    }
+    return `<h3>เมนู</h3><button class="btn ghost" data-do="rules">สรุปกติกา</button><button class="btn ghost" data-do="new">เริ่มเกมใหม่</button>`;
+  }
+  function sheetModal(kind) {
+    return `<div class="overlay sheet-overlay" data-do="close"><div class="sheet mini" role="dialog" aria-modal="true">
+      <span class="grab"></span>${sheetBody(kind)}<button class="btn ghost" data-do="close">ปิด</button></div></div>`;
   }
 
   // ---------------------------------------------------------------- modals
@@ -237,17 +253,66 @@
     </main>`;
   }
 
+  // การ์ดใน carousel: โปรเจกต์ของฉันก่อน แล้วตามด้วยตลาด
+  const slides = () => [...Object.keys(s.projects).map(id => ({ id, mine: true })), ...s.market.map(id => ({ id, mine: false }))];
+
+  function cardStrip(list) {
+    let html = '', group = null;
+    for (const x of list) {
+      if (x.mine !== group) { group = x.mine; html += `<span class="strip-label">${x.mine ? 'ของฉัน' : 'ตลาด'}</span>`; }
+      const lv = s.projects[x.id] ? s.projects[x.id].level : 0;
+      const dots = [0, 1, 2].map(i => `<i class="${i < lv ? 'on' : ''}"></i>`).join('');
+      html += `<button class="strip-chip ${ui.focus === x.id ? 'active' : ''}" data-goto="${x.id}">${TAG_ICON[G.PROJECT[x.id].tags[0]]} ${esc(G.PROJECT[x.id].name)}<span class="lvdots">${dots}</span></button>`;
+    }
+    return `<nav class="strip" id="strip">${html}</nav>`;
+  }
+
   function gameScreen() {
-    const mine = Object.keys(s.projects);
-    return `${topbar()}
-      <div class="layout">
-        <div class="main">
-          ${s.phase === 'actions' ? actionsPanel() : ''}
-          ${mine.length ? `<section><div class="section-title"><h2>Life Projects ของฉัน</h2><small>${s.completed.length} สำเร็จ</small></div><div class="cards">${mine.map(projectCard).join('')}</div></section>` : ''}
-          <section><div class="section-title"><h2>ตลาด Life Projects</h2><small>เริ่มโปรเจกต์ = ทำขั้น L1</small></div><div class="cards">${s.market.map(projectCard).join('')}</div></section>
-        </div>
-        ${side()}
-      </div>`;
+    const list = slides();
+    if (!list.some(x => x.id === ui.focus)) ui.focus = list.length ? list[0].id : null;
+    const dock = s.phase === 'actions' ? actionDock() : '<section class="dock dock-wait">รอเลือกเหตุการณ์…</section>';
+    return `<div class="game">
+      ${topbar()}
+      ${cardStrip(list)}
+      <div class="carousel-wrap">
+        <button class="nav-arrow prev" data-nav="-1" aria-label="การ์ดก่อนหน้า">‹</button>
+        <div class="carousel" id="car">${list.map(x => `<div class="slide" data-id="${x.id}">${projectCard(x.id)}</div>`).join('')}</div>
+        <button class="nav-arrow next" data-nav="1" aria-label="การ์ดถัดไป">›</button>
+      </div>
+      ${dock}
+    </div>`;
+  }
+
+  // ---------------------------------------------------------------- carousel position
+  function slideEl(id) { return document.querySelector(`.slide[data-id="${id}"]`); }
+  function scrollToSlide(id, smooth) {
+    const car = document.getElementById('car'), el = slideEl(id);
+    if (car && el) car.scrollTo({ left: el.offsetLeft - car.offsetLeft - (car.clientWidth - el.clientWidth) / 2 * (window.innerWidth < 700 ? 1 : 0), behavior: smooth ? 'smooth' : 'auto' });
+  }
+  function markFocus(id) {
+    ui.focus = id;
+    document.querySelectorAll('.strip-chip').forEach(b => b.classList.toggle('active', b.dataset.goto === id));
+    const chip = document.querySelector(`.strip-chip[data-goto="${id}"]`);
+    if (chip) chip.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
+  function bindCarousel() {
+    const car = document.getElementById('car');
+    if (!car) return;
+    scrollToSlide(ui.focus, false);
+    let t = null;
+    car.addEventListener('scroll', () => {
+      clearTimeout(t);
+      t = setTimeout(() => {
+        const mid = car.getBoundingClientRect().left + (window.innerWidth < 700 ? car.clientWidth / 2 : 40);
+        let best = null, dist = Infinity;
+        car.querySelectorAll('.slide').forEach(el => {
+          const r = el.getBoundingClientRect();
+          const d = Math.abs((window.innerWidth < 700 ? r.left + r.width / 2 : r.left) - mid);
+          if (d < dist) { dist = d; best = el.dataset.id; }
+        });
+        if (best && best !== ui.focus) markFocus(best);
+      }, 80);
+    }, { passive: true });
   }
 
   // ---------------------------------------------------------------- render
@@ -256,13 +321,16 @@
     if (s.phase === 'setup') app.innerHTML = setupScreen();
     else if (s.phase === 'end') app.innerHTML = endScreen();
     else app.innerHTML = gameScreen();
+    document.body.classList.toggle('in-game', s.phase !== 'setup' && s.phase !== 'end');
     let m = '';
     if (ui.modal === 'rules') m = rulesModal();
+    else if (ui.sheet && s.phase !== 'setup' && s.phase !== 'end') m = sheetModal(ui.sheet);
     else if (ui.modal === 'invest' || ui.modal === 'repay') m = amountModal(ui.modal);
     else if (s.phase === 'event') m = eventModal();
     else if (s.phase === 'opportunity') m = oppModal();
     modalRoot.innerHTML = m;
     const lg = document.getElementById('log'); if (lg) lg.scrollTop = lg.scrollHeight;
+    bindCarousel();
     const amt = document.getElementById('amt');
     if (amt) amt.oninput = () => { document.getElementById('amt-out').textContent = amt.value; };
     save();
@@ -276,23 +344,33 @@
 
   function newGame() {
     s = G.newGame((Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0);
-    ui = { modal: null, pickGoal: null, pickCareer: null };
+    ui = { modal: null, sheet: null, focus: null, pickGoal: null, pickCareer: null };
     window.scrollTo(0, 0);
     render();
   }
 
   // ---------------------------------------------------------------- events
   document.addEventListener('click', ev => {
+    // แตะพื้นหลังของ sheet = ปิด
+    if (ev.target.classList && ev.target.classList.contains('sheet-overlay')) { ui.sheet = null; render(); return; }
     const el = ev.target.closest('button');
     if (!el || el.disabled) return;
     const d = el.dataset;
-    if (d.do === 'new') { if (s.phase === 'setup' || s.phase === 'end' || confirm('เริ่มเกมใหม่? เกมที่เล่นอยู่จะหายไป')) newGame(); return; }
-    if (d.do === 'rules') { ui.modal = 'rules'; render(); return; }
-    if (d.do === 'close') { ui.modal = null; render(); return; }
+    if (d.sheet) { ui.sheet = d.sheet; render(); return; }
+    if (d.goto) { markFocus(d.goto); scrollToSlide(d.goto, true); return; }
+    if (d.nav) {
+      const list = slides(); const i = list.findIndex(x => x.id === ui.focus);
+      const next = list[Math.max(0, Math.min(list.length - 1, i + Number(d.nav)))];
+      if (next) { markFocus(next.id); scrollToSlide(next.id, true); }
+      return;
+    }
+    if (d.do === 'new') { ui.sheet = null; if (s.phase === 'setup' || s.phase === 'end' || confirm('เริ่มเกมใหม่? เกมที่เล่นอยู่จะหายไป')) newGame(); return; }
+    if (d.do === 'rules') { ui.sheet = null; ui.modal = 'rules'; render(); return; }
+    if (d.do === 'close') { ui.modal = null; ui.sheet = null; render(); return; }
     if (d.do === 'start') { run(G.chooseSetup(s, ui.pickGoal, ui.pickCareer)); return; }
     if (d.do === 'end') {
       if (s.time > 0 && !confirm(`ยังเหลือเวลา ${s.time} ช่อง จบรอบเลยไหม`)) return;
-      run(G.endRound(s)); window.scrollTo(0, 0); return;
+      run(G.endRound(s)); return;
     }
     if (d.pickGoal) { ui.pickGoal = d.pickGoal; render(); return; }
     if (d.pickCareer) { ui.pickCareer = d.pickCareer; render(); return; }
@@ -306,7 +384,7 @@
       if (d.act === 'invest' || d.act === 'repay') { ui.modal = d.act; render(); return; }
       run(G.doAction(s, d.act)); return;
     }
-    if (d.proj) { run(G.doAction(s, 'project', { id: d.proj, outcome: Number(d.out) })); }
+    if (d.proj) { ui.focus = d.proj; run(G.doAction(s, 'project', { id: d.proj, outcome: Number(d.out) })); }
   });
 
   // ---------------------------------------------------------------- boot
