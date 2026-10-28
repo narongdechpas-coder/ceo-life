@@ -342,7 +342,7 @@
       return `<button class="pick ${ui.pickCareer === id ? 'sel' : ''}" data-pick-career="${id}"><span class="pick-art"><img src="assets/art/${id}.webp" alt="" loading="lazy" onerror="this.parentElement.remove()"></span><h3>💼 ${esc(c.name)}</h3>
         <p>${c.tiers.map(t => `${esc(t.name)} 🪙${t.salary}`).join(' → ')}</p><p>${esc(c.perkText)}</p></button>`; }).join('');
     return `<main class="hero setup">
-      <div><h1>LIFE <span>CEO</span></h1><p class="story">ชีวิตที่คุณออกแบบได้ · เกมจำลองชีวิตสำหรับผู้เล่นคนเดียว 8 บท</p></div>
+      <div><h1>LIFE <span>CEO</span></h1><p class="story tagline"><b>ชีวิตที่คุณออกแบบได้</b> <span>เกมจำลองชีวิตสำหรับผู้เล่นคนเดียว 8&nbsp;บท 4&nbsp;ยุค</span></p></div>
       <section><div class="section-title"><h2>เลือกเป้าหมายชีวิต</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${goals}</div></section>
       <section><div class="section-title"><h2>เลือกอาชีพเริ่มต้น</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${careers}</div></section>
       <div class="setup-actions"><button class="btn" data-do="start" ${ui.pickGoal && ui.pickCareer ? '' : 'disabled'}>เริ่มชีวิต →</button>
