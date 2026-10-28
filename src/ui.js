@@ -99,17 +99,23 @@
   function actionDock() {
     const btns = D.ACTIONS.filter(a => a.id !== 'project').map(a => {
       const why = G.actionStatus(s, a.id);
-      let detail;
-      if (ACTION_DESC[a.id]) { const d = ACTION_DESC[a.id](); detail = chips(d.cost, d.gain); }
+      // แยกชิปกับคำอธิบาย: ปุ่มมีแค่ชื่อ + แถวเดียวด้านล่าง (ชิป หรือเหตุผลที่กดไม่ได้)
+      let ch = '', note = '';
+      if (ACTION_DESC[a.id]) { const d = ACTION_DESC[a.id](); ch = chips(d.cost, d.gain); }
       else if (a.id === 'promote') {
         const next = G.career(s).tiers[s.careerTier + 1];
-        detail = next ? `${chips({ energy: 1 }, {}, { require: next.require })}<span class="note">→ ${esc(next.name)} เงินเดือน ${next.salary} · ค่าครองชีพ +1</span>` : '<span class="note">ขั้นสูงสุดแล้ว</span>';
-      } else if (a.id === 'explore') detail = `${chips({ energy: 1 })}<span class="note">เปิดโอกาส ${2 + ((G.career(s).perk || {}).extraOpportunity || 0)} ใบ เลือกได้ 1</span>`;
-      else if (a.id === 'invest') detail = `<span class="note">ย้าย 🪙 เข้า 📈 (ขั้นต่ำ 2) ได้ +1/รอบ ต่อทุก 4</span>`;
-      else if (a.id === 'repay') detail = `<span class="note">ลด 🔗 ดอกเบี้ย 1 ต่อหนี้ทุก 4</span>`;
-      const tip = (detail.match(/<span class="note">(.*?)<\/span>/) || [])[1] || '';
+        if (next) {
+          const req = Object.entries(next.require || {}).map(([k, v]) => `${ICON[k]}≥${v}`).join(' ');
+          ch = `<span class="chips">${req ? `<span class="chip req" title="เงื่อนไขเลื่อนตำแหน่ง">${req}</span>` : ''}<span class="chip neg">${ICON.energy}−1</span></span>`;
+          note = `ต้องมี ${req} → ${esc(next.name)} เงินเดือน ${next.salary} · ค่าครองชีพ +1`;
+        } else note = 'ขั้นสูงสุดแล้ว';
+      } else if (a.id === 'explore') { ch = chips({ energy: 1 }); note = `เปิดโอกาส ${2 + ((G.career(s).perk || {}).extraOpportunity || 0)} ใบ เลือกได้ 1`; }
+      else if (a.id === 'invest') note = 'ย้าย 🪙 เข้า 📈 (ขั้นต่ำ 2) ได้ +1/รอบ ต่อทุก 4';
+      else if (a.id === 'repay') note = 'ลด 🔗 ดอกเบี้ย 1 ต่อหนี้ทุก 4';
+      // เลื่อนตำแหน่งไม่ผ่านเงื่อนไข: ชิปเงื่อนไขบอกอยู่แล้ว ไม่ต้องมีข้อความซ้ำ · เหตุผลอื่นแสดงแทนชิป
+      const reason = why === 'ยังไม่ผ่านเงื่อนไข' && a.id === 'promote' ? '' : whyTag(why);
       const [ico, kind] = ACT_LOOK[a.id] || ['•', 'work'];
-      return `<button class="act k-${kind}" data-act="${a.id}" ${why ? 'disabled' : ''} title="${tip.replace(/"/g, '&quot;')}"><i class="act-ico" aria-hidden="true">${ico}</i><span class="act-main"><b>${esc(a.label)}</b>${detail}${whyTag(why)}</span></button>`;
+      return `<button class="act k-${kind}" data-act="${a.id}" ${why ? 'disabled' : ''} title="${note.replace(/"/g, '&quot;')}"><i class="act-ico" aria-hidden="true">${ico}</i><span class="act-main"><b>${esc(a.label)}</b>${reason || ch}${note ? `<span class="note">${note}</span>` : ''}</span></button>`;
     }).join('');
     const live = s.phase === 'actions';
     const pips = Array.from({ length: s.crisis ? 3 : 4 }, (_, i) => `<i class="${i < s.time ? 'on' : ''}"></i>`).join('');
@@ -154,7 +160,8 @@
         <div class="outs">${outs}</div></li>`;
     }).join('');
     const t = p.tags[0];
-    const tags = p.tags.map(x => `<span title="${TAG_TH[x]}">${TAG_ICON[x]}</span>`).join('');
+    // ไอคอนหลักอยู่ซ้ายแล้ว ด้านขวาแสดงเฉพาะหมวดเพิ่มเติม
+    const tags = p.tags.slice(1).map(x => `<span title="${TAG_TH[x]}">${TAG_ICON[x]}</span>`).join('');
     const why = opts && opts.why;
     return `<article class="tcard pcard ${complete ? 'complete' : ''} ${why ? 'unplayable' : ''}" data-id="${pid}">
       ${why ? `<span class="why-badge">${esc(why)}</span>` : ''}
@@ -611,13 +618,15 @@
   }
 
   // ---------------------------------------------------------------- fit: ข้อความต้องครบ ไม่มี scroll
+  // ล้น = การ์ดทั้งใบล้น หรือเนื้อหาในตัวการ์ดล้นพื้นที่ของมันเอง (ล้นลงไปใต้ footer โดยการ์ดไม่ล้น)
+  const overflows = c => { const b = c.querySelector('.pbody'); return c.scrollHeight > c.clientHeight + 1 || (b && b.scrollHeight > b.clientHeight + 1); };
   function fitCards() {
-    const over = c => c.scrollHeight > c.clientHeight + 1;
+    const over = overflows;
     const all = [...document.querySelectorAll('.table .tcard')];
     all.forEach(c => { c.classList.remove('dense', 'compact', 'tight', 'scrolly'); c.style.height = ''; });
     const row = document.getElementById('cards');
     // ล้างผลจากรอบก่อน (ResizeObserver เรียกซ้ำกับแถวเดิมได้) ไม่ให้ภาพสูงคงที่ค้างอยู่ระหว่างคำนวณ
-    if (row) { row.classList.remove('art-fixed', 'no-art'); row.style.removeProperty('--art-h'); }
+    if (row) { row.classList.remove('art-fixed', 'no-art', 'carousel'); row.style.removeProperty('--art-h'); }
     if (!row || isMobile() || row.classList.contains('browse')) {
       // มือถือ และโหมดดูทั้งหมด: การ์ดขนาดปกติ เลื่อนดูได้ แก้แค่ซ่อนภาพเมื่อข้อความล้น
       if (row) row.classList.remove('two-rows');
@@ -635,21 +644,43 @@
     const gap = parseFloat(cs.columnGap) || 0;
     const n = all.length;
     const fitW = per => (W - gap * (per - 1)) / per;
-    // แถวเดียวไม่พอ (การ์ดจะแคบกว่า 260px) ให้ขึ้น 2 แถว
-    const rows = n > 1 && fitW(n) < 260 ? 2 : 1;
-    const per = Math.ceil(n / rows);
-    const h = rows === 2 ? (H - gap) / 2 : H;
-    const maxW = Math.max(200, Math.min(560, fitW(per)));
-    row.classList.toggle('two-rows', rows === 2);
-    const size = w => all.forEach(c => { c.style.width = `${Math.floor(w)}px`; c.style.height = rows === 2 ? `${Math.floor(h)}px` : ''; });
-    // แถวเตี้ยเกินกว่าจะใส่การ์ดเต็มใบ ให้ย่อทุกใบตั้งแต่แรก
-    if (rows === 2 && h < 420) all.forEach(c => c.classList.add('compact'));
-    size(Math.max(200, Math.min(480, h * 5 / 7, fitW(per))));
-    // แก้ทีละขั้นเฉพาะใบที่ยังล้น: ซ่อนภาพ → ขยายความกว้าง → โหมดย่อ → ตัวหนังสือเล็กลง 1px (จอคอมเท่านั้น)
-    all.forEach(c => { if (over(c)) c.classList.add('dense'); });
-    if (all.some(over)) size(maxW);
-    all.forEach(c => { if (over(c)) c.classList.add('compact'); });
-    all.forEach(c => { if (over(c)) c.classList.add('tight'); });
+    // การ์ดขึ้นบรรทัดเกินจำนวนแถวที่วางไว้ (ความกว้างขั้นต่ำ 200px) แถวล่างจะหลุดใต้ dock
+    const rowOver = () => row.scrollHeight > row.clientHeight + 1;
+    // แถวเดียวไม่พอ (การ์ดจะแคบกว่า 260px) ให้ขึ้น 2 แถว ถ้าการ์ดเยอะจน 2 แถวยังล้น ลอง 3 แถว
+    const attempt = rows => {
+      all.forEach(c => { c.classList.remove('dense', 'compact', 'tight'); c.style.height = ''; });
+      const per = Math.ceil(n / rows);
+      const h = rows > 1 ? (H - gap * (rows - 1)) / rows : H;
+      const maxW = Math.max(200, Math.min(560, fitW(per)));
+      row.classList.toggle('two-rows', rows > 1);
+      const size = w => all.forEach(c => { c.style.width = `${Math.floor(w)}px`; c.style.height = rows > 1 ? `${Math.floor(h)}px` : ''; });
+      // แถวเตี้ยเกินกว่าจะใส่การ์ดเต็มใบ ให้ย่อทุกใบตั้งแต่แรก
+      if (rows > 1 && h < 420) all.forEach(c => c.classList.add('compact'));
+      size(Math.max(200, Math.min(480, h * 5 / 7, fitW(per))));
+      // แก้ทีละขั้นเฉพาะใบที่ยังล้น: ซ่อนภาพ → ขยายความกว้าง → โหมดย่อ → ตัวหนังสือเล็กลง 1px (จอคอมเท่านั้น)
+      all.forEach(c => { if (over(c)) c.classList.add('dense'); });
+      if (all.some(over)) size(maxW);
+      all.forEach(c => { if (over(c)) c.classList.add('compact'); });
+      all.forEach(c => { if (over(c)) c.classList.add('tight'); });
+      return !all.some(over) && !rowOver();
+    };
+    const spill = () => all.reduce((t, c) => { const b = c.querySelector('.pbody'); return t + Math.max(0, c.scrollHeight - c.clientHeight, b ? b.scrollHeight - b.clientHeight : 0); }, 0)
+      + Math.max(0, row.scrollHeight - row.clientHeight);
+    let rows = n > 1 && fitW(n) < 260 ? 2 : 1;
+    if (!attempt(rows) && rows === 2 && n > 4 && fitW(Math.ceil(n / 3)) >= 200) {
+      // ลอง 3 แถว ถ้าไม่ดีกว่าก็กลับไปใช้ 2 แถว (เลือกแบบที่ล้นน้อยกว่า)
+      const two = spill();
+      if (!attempt(3) && spill() >= two) attempt(2);
+    }
+    // การ์ดเยอะเกินกว่าจะวางครบในจอเดียวได้แบบอ่านออก (เช่น tablet แนวตั้ง 8 ใบ)
+    // ยอมให้เลื่อนแนวนอนแบบมือถือ ดีกว่าย่อจนเนื้อหาถูกตัด
+    if (rows > 1 && (all.some(over) || rowOver())) {
+      row.classList.remove('two-rows'); row.classList.add('carousel');
+      all.forEach(c => { c.classList.remove('dense', 'compact', 'tight'); c.style.height = ''; c.style.width = `${Math.floor(Math.max(260, Math.min(380, fitW(2.3))))}px`; });
+      all.forEach(c => { if (over(c)) c.classList.add('dense'); });
+      all.forEach(c => { if (over(c)) c.classList.add('compact'); });
+      all.forEach(c => { if (over(c)) c.classList.add('tight'); });
+    }
     uniformArt(all, row);
     lastResort(all);
   }
@@ -674,9 +705,10 @@
       const orig = all.map(c => c.style.height);
       all.forEach(c => { if (h < c.clientHeight) c.style.height = `${Math.ceil(h + (c.offsetHeight - c.clientHeight))}px`; });
       // วัดเนื้อหาพลาดไปบ้าง (margin ฯลฯ) ถ้ามีใบไหนล้น เพิ่มความสูงให้ทุกใบเท่ากัน หรือคืนค่าเดิมถ้ายังไม่พอ
-      const extra = Math.max(0, ...all.map(c => c.scrollHeight - c.clientHeight));
+      const spill = c => { const b = c.querySelector('.pbody'); return Math.max(c.scrollHeight - c.clientHeight, b ? b.scrollHeight - b.clientHeight : 0); };
+      const extra = Math.max(0, ...all.map(spill));
       if (extra) all.forEach(c => { c.style.height = `${c.offsetHeight + extra}px`; });
-      if (all.some(c => c.scrollHeight > c.clientHeight + 1)) all.forEach((c, i) => { c.style.height = orig[i]; });
+      if (all.some(overflows)) all.forEach((c, i) => { c.style.height = orig[i]; });
     };
     // ถ้ามีใบไหนต้องซ่อนภาพไปแล้ว ซ่อนทุกใบให้แถวดูเท่ากัน
     if (all.some(c => c.classList.contains('dense') || c.classList.contains('compact'))) {
@@ -696,7 +728,7 @@
   }
   // ตาข่ายสุดท้าย: ทางเลือกที่กดไม่ถึงแย่กว่าการเลื่อน ให้เนื้อการ์ดเลื่อนได้และมีเงาบอกว่ามีต่อ
   function lastResort(all) {
-    all.forEach(c => { if (c.scrollHeight > c.clientHeight + 1) c.classList.add('scrolly'); });
+    all.forEach(c => { if (overflows(c)) c.classList.add('scrolly'); });
   }
 
   // ---------------------------------------------------------------- device mode
@@ -885,5 +917,5 @@
   if (!document.getElementById('fx')) { const fx = document.createElement('div'); fx.id = 'fx'; document.body.appendChild(fx); }
   const saved = load();
   if (saved && saved.v === 2) { s = G.migrate(saved); render(); } else newGame();
-  window.__lifeceo = { get state() { return s; }, newGame, render };
+  window.__lifeceo = { get state() { return s; }, get ui() { return ui; }, newGame, render };
 })();

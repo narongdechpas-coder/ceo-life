@@ -131,6 +131,7 @@ button:disabled { cursor: not-allowed; }
 .out:disabled { opacity: .5; }
 .out .ab { grid-row: span 2; width: 26px; height: 26px; border-radius: 50%; background: var(--sage-dark); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 13px; }
 .out .why { grid-column: 2; font-size: 11px; color: var(--coral); }
+.out > b { min-width: 0; overflow-wrap: anywhere; }
 .out.static { cursor: default; }
 .peek { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
 .peek summary { cursor: pointer; list-style: none; }
@@ -252,7 +253,7 @@ html.desk .topbar-row, html.desk .resbar, html.desk .flow { max-width: none; }
 .pcard-head .ttl small { display: block; font-size: 11px; letter-spacing: .1em; opacity: .85; }
 .pcard-head .ttl .th { font-size: 19px; text-transform: none; letter-spacing: 0; }
 .pcard-head .tags { display: flex; gap: 4px; font-size: 16px; }
-.pbody { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.pbody { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 .pbody .art { flex: 1 1 0; min-height: 0; aspect-ratio: auto; }
 .pbody .levels, .pbody .story, .pbody .eopts { flex: none; }
 
@@ -441,7 +442,7 @@ html.bg-plain .table::before, html.bg-plain .table::after { display: none; }
 .score-table td small { display: block; font-size: 12px; color: var(--muted); }
 html.m .chains li { grid-template-columns: 1fr; gap: 2px; }
 html.m .chains .arrow { transform: rotate(90deg); justify-self: start; line-height: 1; }
-.table-cards.two-rows { flex-wrap: wrap; align-content: center; overflow-x: hidden; }
+.table-cards.two-rows { flex-wrap: wrap; align-content: safe center; overflow-x: hidden; }
 /* โหมดย่อ (การ์ดเยอะ 2 แถวบนจอเตี้ย): เหลือหัวการ์ดกับขั้นที่ต้องเลือกตอนนี้ */
 .tcard.compact .art, .tcard.compact .lv.row, .tcard.compact .pcard-foot, .tcard.compact .pcard-head h3:not(.th) { display: none; }
 .tcard.compact .pcard-head { padding: 6px 12px; }
@@ -508,7 +509,7 @@ html.m .tcard.dense .lv.next { gap: 2px 8px; }
 .table-cards.no-art .tcard .art { display: none; }
 .art img { object-position: center 45%; }
 .table-cards.no-art .tcard { align-self: center; }
-.table-cards.two-rows { align-content: center; }
+.table-cards.two-rows { align-content: safe center; }
 /* ภาพอาชีพบนการ์ดตัวเลือก (ถ้ายังไม่มีไฟล์ ช่องนี้จะหายไปเอง) */
 .pick-art { display: block; aspect-ratio: 16 / 9; margin: -14px -14px 4px; border-radius: 12px 12px 0 0; overflow: hidden; background: var(--sage-soft); }
 .pick-art img { width: 100%; height: 100%; object-fit: cover; object-position: center 45%; display: block; }
@@ -543,7 +544,10 @@ html.m .tcard.dense .lv.next { gap: 2px 8px; }
 /* ไอคอน + ชื่อเป็นแถวแรก ผลของกิจกรรมเต็มความกว้างแถวถัดไป */
 .act-main { display: contents; }
 .act-main > :not(b) { grid-column: 1 / -1; min-width: 0; }
-.dock-acts .act b { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 14px; line-height: 1.25; color: var(--ink); }
+.dock-acts .act b { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 14px; line-height: 1.25; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* ผลของกิจกรรมอยู่แถวเดียวเสมอ ปุ่มทุกใบจึงสูงเท่ากันพอดีเนื้อหา */
+.dock-acts .act .chips { flex-wrap: nowrap; gap: 0 7px; white-space: nowrap; }
+.dock-acts .act .why { font-size: 12px; line-height: 1.6; }
 .dock-acts .act:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 4px 0 rgba(0, 0, 0, .12), 0 10px 20px rgba(0, 0, 0, .22); }
 .dock-acts .act:hover:not(:disabled) .act-ico { transform: scale(1.06); }
 .act-ico { transition: transform .12s; }
@@ -563,7 +567,9 @@ html.m .tcard.dense .lv.next { gap: 2px 8px; }
 .dock-note { background: var(--mustard); color: var(--ink); font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, .25); }
 html.m .dock-lead { display: none; }
 html.m .dock-acts .act b { font-size: 14px; }
-html.m .dock-acts .act { flex-basis: 146px; gap: 4px 7px; padding: 6px 8px 6px 6px; }
+html.m .dock-acts .act { flex-basis: 162px; gap: 4px 7px; padding: 6px 8px 6px 6px; }
+html.m .dock-acts { scrollbar-width: none; }
+html.m .dock-acts::-webkit-scrollbar { display: none; }
 html.m .act-ico { width: 32px; height: 32px; font-size: 20px; border-radius: 9px; }
 
 /* วิธีเล่น */
@@ -574,11 +580,13 @@ html.m .act-ico { width: 32px; height: 32px; font-size: 20px; border-radius: 9px
 .ecard.rules ol { margin: 0 0 10px; padding-left: 22px; }
 .ecard.rules li { margin-bottom: 4px; }
 .ecard.rules .btn { margin-top: 6px; width: 100%; }
+/* มือถือที่ถูกบังคับโหมดเดสก์ท็อป (html.m + zoom) ต้องได้ layout มือถือ และหาร vh ด้วย zoom */
+html.zoomed .ecard.rules .ecard-body { max-height: calc(70vh / var(--z, 1)); }
 @media (min-width: 900px) {
-  .ecard.rules { width: min(920px, 100%); }
-  .ecard.rules .ecard-body { max-height: calc(100vh - 120px); }
-  .rcols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
-  .ecard.rules .btn { width: auto; min-width: 160px; display: block; margin-left: auto; }
+  html:not(.m) .ecard.rules { width: min(920px, 100%); }
+  html:not(.m) .ecard.rules .ecard-body { max-height: calc(100vh - 120px); }
+  html:not(.m) .rcols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
+  html:not(.m) .ecard.rules .btn { width: auto; min-width: 160px; display: block; margin-left: auto; }
 }
 
 /* หน้าเลือกเป้าหมาย/อาชีพ จัดกึ่งกลาง */

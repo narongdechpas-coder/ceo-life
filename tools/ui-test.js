@@ -48,7 +48,10 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       deadCards: [...document.querySelectorAll('.table .pcard')].filter(c => !c.querySelector('.out:not([disabled])')).length,
       endDisabled: document.querySelector('[data-do="end"]').disabled,
       // จอที่ไม่ใช่มือถือ: การ์ดบนโต๊ะต้องเห็นครบโดยไม่ต้องเลื่อน
-      cardsScroll: document.documentElement.classList.contains('m') ? 0 : (r => r ? r.scrollWidth - r.clientWidth : 0)(document.getElementById('cards')),
+      // ยกเว้นโหมด carousel ที่ fitCards เลือกเองเมื่อการ์ดเยอะเกินจะวางครบในจอเดียว
+      cardsScroll: document.documentElement.classList.contains('m') ? 0 : (r => r && !r.classList.contains('carousel') ? r.scrollWidth - r.clientWidth : 0)(document.getElementById('cards')),
+      // เนื้อหาในการ์ดต้องไม่ล้นลงไปใต้ footer (การ์ดเองไม่ล้นก็ตาม)
+      bodyOver: [...document.querySelectorAll('.table .tcard .pbody')].filter(b => b.scrollHeight > b.clientHeight + 1).length,
     }));
     const wantDesk = name.startsWith('desktop');
     const shots = new Set();
@@ -60,6 +63,7 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       if (g.vh > 0 || g.hx > 0) problem(`${phase}@${round} page scroll v${g.vh} h${g.hx}`);
       if (g.scrolly) problem(`${phase}@${round} ${g.scrolly} card(s) needed in-card scroll`);
       if (g.over.length) problem(`${phase}@${round} overflow ${g.over.join(', ')}`);
+      if (g.bodyOver && !g.scrolly) problem(`${phase}@${round} ${g.bodyOver} card body(s) spill under footer`);
       if (!g.showAll && g.artTops.length > 1) problem(`${phase}@${round} art starts at different heights ${g.artTops.join('/')}`);
       if (!g.showAll && g.artHeights.length > 1) problem(`${phase}@${round} art heights differ ${g.artHeights.join('/')}`);
       if (g.desk !== wantDesk) problem(`layout desk=${g.desk} expected ${wantDesk}`);

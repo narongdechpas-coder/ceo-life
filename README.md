@@ -33,6 +33,9 @@ node tools/ui-test.js
 ```bash
 node tools/regress-test.js
 ```
+```bash
+node tools/layout-audit.js
+```
 
 เวลาแก้ไฟล์ใน `src/` ให้เปลี่ยนเลข `?v=` ใน `index.html` ด้วย เพื่อไม่ให้เบราว์เซอร์ใช้ไฟล์เก่าปนกับไฟล์ใหม่
 
