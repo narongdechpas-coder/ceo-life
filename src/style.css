@@ -602,3 +602,8 @@ html:not(.m) .hero.setup .pickgrid { grid-template-columns: repeat(3, minmax(0, 
 @keyframes blink { 50% { opacity: 0; } }
 details.panel > summary { cursor: pointer; font-family: 'Kanit', sans-serif; font-weight: 600; color: var(--sage-dark); font-size: 16px; }
 details.panel[open] > summary { margin-bottom: 6px; }
+
+/* ติดตั้งเป็นแอป */
+.hero.setup .install-cta { justify-self: center; }
+.install-card ol { margin: 0 0 10px; padding-left: 22px; line-height: 1.8; }
+.install-card .ecard-body { display: grid; gap: 8px; }

@@ -49,7 +49,7 @@
         { name: 'Senior Engineer', salary: 8, require: { skills: 4 } },
         { name: 'Tech Lead', salary: 11, require: { skills: 7 }, perRound: { stress: 1 } },
       ] },
-    { id: 'C04', name: 'พยาบาล', perk: { relFree: true }, perkText: 'เวลากับคนสำคัญไม่เสีย 🪙 แต่ทุกขั้นมี 💢 +1 ต่อรอบ',
+    { id: 'C04', name: 'พยาบาล', perk: { relFree: true }, perkText: 'เวลากับคนรักไม่เสีย 🪙 แต่ทุกขั้นมี 💢 +1 ต่อรอบ',
       tiers: [
         { name: 'พยาบาลวิชาชีพ', salary: 4, perRound: { stress: 1 } },
         { name: 'หัวหน้าเวร', salary: 6, require: { skills: 3 }, perRound: { stress: 1 } },
@@ -73,7 +73,7 @@
         { name: 'ครูชำนาญการ', salary: 5, require: { skills: 3 }, perRound: { impact: 1 } },
         { name: 'ผู้อำนวยการโรงเรียน', salary: 7, require: { skills: 6, rel: 5 }, perRound: { impact: 1 } },
       ] },
-    { id: 'C08', name: 'นักขาย', perk: { relFree: true }, perkText: 'เวลากับคนสำคัญไม่เสีย 🪙 เลื่อนขั้นต้องใช้ 👥 สูง',
+    { id: 'C08', name: 'นักขาย', perk: { relFree: true }, perkText: 'เวลากับคนรักไม่เสีย 🪙 เลื่อนขั้นต้องใช้ 👥 สูง',
       tiers: [
         { name: 'Sales', salary: 5 },
         { name: 'Key Account', salary: 7, require: { skills: 2, rel: 5 } },
@@ -414,7 +414,7 @@
     { id: 'overtime', label: 'ทำงานล่วงเวลา', cost: { energy: 2 }, gain: { cash: 3, stress: 1 } },
     { id: 'learn', label: 'เรียนรู้', cost: { energy: 1, cash: 2 }, gain: { skills: 1 } },
     { id: 'exercise', label: 'ออกกำลังกาย', cost: { energy: 1 }, gain: { health: 1, stress: -1 } },
-    { id: 'relate', label: 'เวลากับคนสำคัญ', cost: { energy: 1, cash: 1 }, gain: { rel: 1, stress: -1 } },
+    { id: 'relate', label: 'เวลากับคนรัก', cost: { energy: 1, cash: 1 }, gain: { rel: 1, stress: -1 } },
     { id: 'rest', label: 'พักผ่อน', cost: {}, gain: { stress: -2 } },
     { id: 'project', label: 'เดินหน้า Life Project', special: true },
     { id: 'promote', label: 'ขอเลื่อนตำแหน่ง', cost: { energy: 1 }, special: true },

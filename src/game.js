@@ -374,7 +374,7 @@
     if (s.phase !== 'actions') return 'ยังจบรอบไม่ได้';
     const e = era(s);
     if (s.energy >= 3) { applyGain(s, { stress: -1 }); log(s, 'มีแรงเหลือได้พักจริง 💢 −1'); }
-    if ((e.decay || []).includes('rel') && !s.flags.relate) { applyGain(s, { rel: -1 }); log(s, 'ไม่ได้ใช้เวลากับคนสำคัญ 👥 −1', 'bad'); story(s, { kind: 'decay', stat: 'rel' }); }
+    if ((e.decay || []).includes('rel') && !s.flags.relate) { applyGain(s, { rel: -1 }); log(s, 'ไม่ได้ใช้เวลากับคนรัก 👥 −1', 'bad'); story(s, { kind: 'decay', stat: 'rel' }); }
     if ((e.decay || []).includes('health') && !s.flags.exercise) { applyGain(s, { health: -1 }); log(s, 'ไม่ได้ออกกำลังกาย ❤️ −1', 'bad'); story(s, { kind: 'decay', stat: 'health' }); }
     if (s.stress >= 7) {
       s.burnouts += 1;

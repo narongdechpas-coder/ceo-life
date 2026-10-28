@@ -1,8 +1,14 @@
 # หน้าเกมเป็นไฟล์ static ล้วน คัดลอกเฉพาะไฟล์ที่ต้องใช้ไป dist (ไม่ให้ node_modules, tools, docs หลุดขึ้นเว็บ)
 [build]
-  command = "rm -rf dist && mkdir dist && cp -r index.html src assets dist/"
+  command = "rm -rf dist && mkdir dist && cp -r index.html manifest.webmanifest sw.js src assets dist/"
   publish = "dist"
 
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
+
+# service worker ต้องไม่ถูก cache ไม่งั้นเครื่องผู้เล่นจะติดเวอร์ชันเก่า
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"

@@ -192,7 +192,7 @@
       const logs = s.log.slice(-80).map(l => `<p class="${l.tone}">${l.tone === 'era' ? '' : `<small>บท ${l.round}</small> `}${esc(l.text)}</p>`).join('');
       return `<h3>📔 Life Log</h3><div class="log" id="log">${logs}</div>`;
     }
-    return `<h3>เมนู</h3><button class="btn ghost" data-do="rules">สรุปกติกา</button>
+    return `<h3>เมนู</h3><button class="btn ghost" data-do="rules">สรุปกติกา</button>${installBtn('btn ghost')}
       <button class="btn ghost" data-do="bg">พื้นโต๊ะ: ${bgPlain() ? 'สีเรียบ' : 'ภาพวิว'} (กดเพื่อสลับ)</button>
       <button class="btn ghost" data-do="new">เริ่มเกมใหม่</button>`;
   }
@@ -261,7 +261,7 @@
         <ol>
           <li>รับเงินเดือนและรายได้จากการลงทุน แล้วจ่ายค่าครองชีพ ถ้าเงินไม่พอ ส่วนที่ขาดจะกลายเป็นหนี้ 🔗 และมีดอกเบี้ยทุกบท</li>
           <li>เจอเหตุการณ์ชีวิตหนึ่งเรื่อง พร้อม 🔮 Echo ที่ถึงคิว เลือกรับมือก่อนทำอย่างอื่น</li>
-          <li>ใช้เวลา 4 ช่อง จะทำงานเพิ่ม เรียนรู้ ออกกำลังกาย ใช้เวลากับคนสำคัญ พัก ลงทุน ขอเลื่อนตำแหน่ง หรือสำรวจโอกาสก็ได้</li>
+          <li>ใช้เวลา 4 ช่อง จะทำงานเพิ่ม เรียนรู้ ออกกำลังกาย ใช้เวลากับคนรัก พัก ลงทุน ขอเลื่อนตำแหน่ง หรือสำรวจโอกาสก็ได้</li>
           <li>เดิน Life Project ได้โปรเจกต์ละ 1 ขั้นต่อบท ทุกขั้นมีทาง A กับ B ให้เลือก</li>
           <li>กดจบรอบ แล้วเกมจะสรุปผลของบทนั้น</li>
         </ol></section><section>
@@ -269,7 +269,7 @@
         <ol>
           <li>ความเครียด 💢 ทุก 3 แต้มทำให้แรงลด 1 ถ้าถึง 7 จะ Burnout เสีย ❤️ 2</li>
           <li>จบรอบโดยเหลือแรง ⚡ 3 ขึ้นไป ความเครียดลด 1</li>
-          <li>ตั้งแต่ยุค 2 ถ้าบทไหนไม่ได้ใช้เวลากับคนสำคัญ ความสัมพันธ์ 👥 ลด 1</li>
+          <li>ตั้งแต่ยุค 2 ถ้าบทไหนไม่ได้ใช้เวลากับคนรัก ความสัมพันธ์ 👥 ลด 1</li>
           <li>ตั้งแต่ยุค 3 ถ้าบทไหนไม่ได้ออกกำลังกาย สุขภาพ ❤️ ลด 1 และถ้า ❤️ เหลือ 3 หรือต่ำกว่า แรงจะลดอีก 1</li>
           <li>ถ้า ❤️ เป็น 0 สองบทติดกัน ชีวิตจบก่อนเวลา</li>
           <li>ทางเลือกที่มีป้าย 🔮 Echo จะส่งผลกลับมาในยุคถัดไป ทั้งผลดีและผลร้าย</li>
@@ -300,6 +300,40 @@
     try { localStorage.setItem('lifeceo.name', s.name || ''); } catch (e) { /* ไม่มีที่เก็บก็เล่นต่อได้ */ }
   }
 
+  // ---------------------------------------------------------------- ติดตั้งเป็นแอป (PWA)
+  // Android/Chrome: ใช้หน้าต่างติดตั้งของเบราว์เซอร์ · iPhone/iPad: Safari ไม่มีปุ่มให้เรียก จึงบอกวิธีเพิ่มไปยังหน้าจอโฮม
+  let installEvt = null;
+  const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const canInstall = () => /^https?:$/.test(location.protocol) && !standalone() && (installEvt || isIOS());
+  const installBtn = cls => (canInstall() ? `<button class="${cls}" data-do="install">📲 ติดตั้งเป็นแอปบนมือถือ</button>` : '');
+  function installModal() {
+    return `<div class="overlay"><div class="ecard install-card" role="dialog" aria-modal="true">
+      <div class="ecard-head"><small>ติดตั้งเป็นแอป</small><h3>เพิ่ม LIFE CEO ไปที่หน้าจอโฮม</h3></div>
+      <div class="ecard-body">
+        <ol>
+          <li>กดปุ่ม <b>แชร์</b> (สี่เหลี่ยมมีลูกศรชี้ขึ้น) ที่แถบของ Safari</li>
+          <li>เลื่อนลงแล้วเลือก <b>เพิ่มไปยังหน้าจอโฮม</b></li>
+          <li>กด <b>เพิ่ม</b> ไอคอนเกมจะอยู่บนหน้าจอโฮม เปิดแล้วเล่นเต็มจอเหมือนแอป</li>
+        </ol>
+        <p class="note">เกมที่เล่นค้างไว้จะต่อกันได้ ถ้าเปิดจากเครื่องและเบราว์เซอร์เดียวกัน</p>
+        <button class="btn" data-do="close">เข้าใจแล้ว</button>
+      </div></div></div>`;
+  }
+  async function doInstall() {
+    if (!installEvt) { ui.sheet = null; ui.modal = 'install'; render(); return; }
+    const evt = installEvt; installEvt = null;
+    evt.prompt();
+    const { outcome } = await evt.userChoice;
+    ui.sheet = null; render();
+    if (outcome === 'accepted') toast('กำลังติดตั้ง LIFE CEO บนเครื่องนี้');
+  }
+  window.addEventListener('beforeinstallprompt', ev => { ev.preventDefault(); installEvt = ev; if (s) render(); });
+  window.addEventListener('appinstalled', () => { installEvt = null; if (s) render(); });
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { /* ไม่มี SW ก็เล่นได้ปกติ */ }));
+  }
+
   // ---------------------------------------------------------------- screens
   function setupScreen() {
     const goals = s.goalChoices.map(id => { const g = G.GOAL[id];
@@ -313,6 +347,7 @@
       <section><div class="section-title"><h2>เลือกอาชีพเริ่มต้น</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${careers}</div></section>
       <div class="setup-actions"><button class="btn" data-do="start" ${ui.pickGoal && ui.pickCareer ? '' : 'disabled'}>เริ่มชีวิต →</button>
         <button class="btn ghost" data-do="reroll" ${s.rerolls > 0 ? '' : 'disabled'}>${s.rerolls > 0 ? `🎲 สุ่มใหม่ (เหลือ ${s.rerolls} ครั้ง)` : 'ใช้สุ่มใหม่ไปแล้ว'}</button></div>
+      ${installBtn('btn ghost install-cta')}
       <div>
       <p class="note">เริ่มต้น: 🪙 ${D.START.cash} · ❤️ ${D.START.health} · 👥 ${D.START.rel} · 📖 ${D.START.skills} · ค่าครองชีพ ${D.START.expenses}/รอบ</p></div>
     </main>`;
@@ -368,7 +403,7 @@
     }
     // สรุปสิ่งที่ละเลยทั้งยุคไว้บรรทัดท้าย (ไม่ผูกกับบทใดบทหนึ่ง)
     if (decay.rel || decay.health) out.push({ round: 0 });
-    if (decay.rel) out.push(`ยุคนี้มี ${decay.rel} บทที่คุณไม่ได้ใช้เวลากับคนสำคัญ ความสัมพันธ์จึงค่อยๆ ห่างออก`);
+    if (decay.rel) out.push(`ยุคนี้มี ${decay.rel} บทที่คุณไม่ได้ใช้เวลากับคนรัก ความสัมพันธ์จึงค่อยๆ ห่างออก`);
     if (decay.health) out.push(`และมี ${decay.health} บทที่ไม่ได้ออกกำลังกาย สุขภาพจึงถดถอยไปตามอายุ`);
     return out;
   }
@@ -698,6 +733,7 @@
     let m = '';
     if (ui.modal === 'rules') m = rulesModal();
     else if (ui.modal === 'name' && s.phase === 'setup') m = nameModal();
+    else if (ui.modal === 'install') m = installModal();
     else if (ui.sheet && s.phase !== 'setup' && s.phase !== 'end') m = sheetModal(ui.sheet);
     else if (ui.modal === 'invest' || ui.modal === 'repay') m = amountModal(ui.modal);
     modalRoot.innerHTML = m;
@@ -791,6 +827,7 @@
     if (d.do === 'bg') { applyBg(!bgPlain()); render(); return; }
     if (d.do === 'showall') { ui.showAll = ui.showAll === s.round ? 0 : s.round; render(); return; }
     if (d.do === 'new') { ui.sheet = null; if (s.phase === 'setup' || s.phase === 'end' || confirm('เริ่มเกมใหม่? เกมที่เล่นอยู่จะหายไป')) newGame(); return; }
+    if (d.do === 'install') { doInstall(); return; }
     if (d.do === 'ai-retry') { ai.status = 'idle'; requestStory(); return; }
     if (d.do === 'rules') { ui.sheet = null; ui.modal = 'rules'; render(); return; }
     if (d.do === 'close') { ui.modal = null; ui.sheet = null; render(); return; }
