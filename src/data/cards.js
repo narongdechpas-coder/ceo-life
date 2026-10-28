@@ -395,18 +395,18 @@
 
   // ---------------------------------------------------------------- Opportunities (12)
   const OPPORTUNITIES = [
-    { id: 'O01', title: 'งานฟรีแลนซ์ช่วงสั้น', cost: { energy: 2 }, gain: { cash: 4, stress: 1 } },
-    { id: 'O02', title: 'สัมมนาเครือข่ายวิชาชีพ', cost: { cash: 2, energy: 1 }, gain: { rel: 1, skills: 1 } },
-    { id: 'O03', title: 'ทุนอบรมต่างประเทศ', require: { skills: 3 }, cost: { energy: 2 }, gain: { skills: 2, rel: -1 } },
-    { id: 'O04', title: 'จองซื้อหุ้น IPO', cost: { cash: 4 }, gain: { portfolio: 5 } },
-    { id: 'O05', title: 'ทริปครอบครัวราคาพิเศษ', cost: { cash: 3 }, gain: { rel: 2, stress: -2 } },
-    { id: 'O06', title: 'สมาชิกฟิตเนสรายปี', cost: { cash: 3 }, gain: { health: 2 } },
-    { id: 'O07', title: 'ได้รับเชิญเป็นวิทยากร', require: { skills: 4 }, cost: { energy: 1 }, gain: { cash: 3, impact: 1 } },
-    { id: 'O08', title: 'ซื้อรถผ่อนดอกเบี้ยต่ำ', cost: {}, gain: { lp: 1, debt: 5, stress: -1 } },
-    { id: 'O09', title: 'พี่เลี้ยงในสายงาน', require: { rel: 4 }, cost: { energy: 1 }, gain: { skills: 1, rel: 1 } },
-    { id: 'O10', title: 'คอร์สการเงินส่วนบุคคล', cost: { cash: 2 }, gain: { skills: 1 }, echo: { id: 'E02', era: '+1' } },
-    { id: 'O11', title: 'ร่วมทุนร้านเพื่อน', cost: { cash: 3 }, gain: { ongoing: { cash: 1 } }, echo: { id: 'E06', era: '+1' } },
-    { id: 'O12', title: 'อาสาสมัครวันหยุด', cost: { energy: 1 }, gain: { impact: 1, rel: 1, stress: -1 } },
+    { id: 'O01', title: 'งานฟรีแลนซ์ช่วงสั้น', scene: 'ลูกค้าเก่าส่งงานด่วนมาให้ทำช่วงสั้นๆ', cost: { energy: 2 }, gain: { cash: 4, stress: 1 } },
+    { id: 'O02', title: 'สัมมนาเครือข่ายวิชาชีพ', scene: 'สมาคมวิชาชีพจัดงานสัมมนาและงานพบปะคนในวงการ', cost: { cash: 2, energy: 1 }, gain: { rel: 1, skills: 1 } },
+    { id: 'O03', title: 'ทุนอบรมต่างประเทศ', scene: 'บริษัทเปิดรับสมัครทุนไปอบรมต่างประเทศหนึ่งเดือน', require: { skills: 3 }, cost: { energy: 2 }, gain: { skills: 2, rel: -1 } },
+    { id: 'O04', title: 'จองซื้อหุ้น IPO', scene: 'บริษัทที่คุณสนใจกำลังจะเข้าตลาดหุ้น', cost: { cash: 4 }, gain: { portfolio: 5 } },
+    { id: 'O05', title: 'ทริปครอบครัวราคาพิเศษ', scene: 'เจอแพ็กเกจเที่ยวครอบครัวลดราคาช่วงนอกฤดู', cost: { cash: 3 }, gain: { rel: 2, stress: -2 } },
+    { id: 'O06', title: 'สมาชิกฟิตเนสรายปี', scene: 'ฟิตเนสใกล้บ้านจัดโปรสมาชิกรายปี', cost: { cash: 3 }, gain: { health: 2 } },
+    { id: 'O07', title: 'ได้รับเชิญเป็นวิทยากร', scene: 'งานสัมมนาในสายงานชวนคุณขึ้นพูดเรื่องที่ถนัด', require: { skills: 4 }, cost: { energy: 1 }, gain: { cash: 3, impact: 1 } },
+    { id: 'O08', title: 'ซื้อรถผ่อนดอกเบี้ยต่ำ', scene: 'โชว์รูมเสนอผ่อนรถดอกเบี้ยต่ำแบบมีเวลาจำกัด', cost: {}, gain: { lp: 1, debt: 5, stress: -1 } },
+    { id: 'O09', title: 'พี่เลี้ยงในสายงาน', scene: 'รุ่นพี่ที่คุณนับถือเสนอตัวเป็นพี่เลี้ยงให้', require: { rel: 4 }, cost: { energy: 1 }, gain: { skills: 1, rel: 1 } },
+    { id: 'O10', title: 'คอร์สการเงินส่วนบุคคล', scene: 'คอร์สวางแผนการเงินส่วนบุคคลเปิดรอบใหม่', cost: { cash: 2 }, gain: { skills: 1 }, echo: { id: 'E02', era: '+1' } },
+    { id: 'O11', title: 'ร่วมทุนร้านเพื่อน', scene: 'เพื่อนชวนร่วมทุนขยายร้านเล็กๆ ของเขา', cost: { cash: 3 }, gain: { ongoing: { cash: 1 } }, echo: { id: 'E06', era: '+1' } },
+    { id: 'O12', title: 'อาสาสมัครวันหยุด', scene: 'ชุมชนแถวบ้านหาอาสาสมัครช่วยงานวันหยุด', cost: { energy: 1 }, gain: { impact: 1, rel: 1, stress: -1 } },
   ];
 
   // ---------------------------------------------------------------- Actions (ใช้ 1 ⏳)

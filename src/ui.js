@@ -228,7 +228,8 @@
     return `<article class="tcard ecard2 opp" data-id="opp-${id}">
       <header class="pcard-head"><div class="ttl"><small>OPPORTUNITY</small><h3 class="th">${esc(o.title)}</h3></div></header>
       <div class="pbody">
-        <div class="art"><span class="ph">✨</span></div>
+        <div class="art"><span class="ph">✨</span><img src="assets/art/opportunity.webp" alt="" loading="lazy" onerror="this.remove()"></div>
+        ${o.scene ? `<p class="story">${esc(o.scene)}</p>` : ''}
         <div class="eopts"><div class="opt static">${chips(o.cost, o.gain, o)}</div>
           <button class="btn" data-opp="${id}" ${why ? 'disabled' : ''}>รับโอกาสนี้</button>${whyTag(why)}</div>
       </div>
@@ -322,7 +323,7 @@
         if (e.ongoing) t += ` ทำให้${ongoingVerb(e.ongoing)}นับจากนั้น`;
         if (e.done) t += ` จน${esc(e.name)}สำเร็จครบทุกขั้น`;
         out.push(t);
-      } else if (e.kind === 'opp') out.push(`คุณคว้าโอกาส “${esc(e.title)}” ไว้ได้`);
+      } else if (e.kind === 'opp') out.push(e.scene ? `${esc(e.scene)} คุณรับโอกาสนี้ไว้` : `คุณคว้าโอกาส “${esc(e.title)}” ไว้ได้`);
       else if (e.kind === 'promote') out.push(`คุณได้เลื่อนเป็น${esc(gapIfLatin(e.title))} เงินเดือนขึ้นเป็น ${e.salary} แต่ค่าครองชีพก็ขยับตาม`);
       else if (e.kind === 'burnout') out.push('งานหนักจนร่างกายรับไม่ไหว คุณ Burnout');
       else if (e.kind === 'decay') decay[e.stat] += 1;

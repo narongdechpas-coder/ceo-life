@@ -1,7 +1,7 @@
-# LIFE CEO — Image Prompts (26 ภาพ)
+# LIFE CEO — Image Prompts (27 ภาพ)
 
-ภาพประกอบการ์ดชุดแรก 26 ภาพ: Life Project 12, อาชีพ 8, ประจำยุค 4, Echo 2
-การ์ดเป้าหมายชีวิตและการ์ดโอกาสใช้ไอคอน ไม่ต้องทำภาพ
+ภาพประกอบการ์ดชุดแรก 27 ภาพ: Life Project 12, อาชีพ 8, ประจำยุค 4, Echo 2, โอกาส 1
+การ์ดเป้าหมายชีวิตใช้ไอคอน ไม่ต้องทำภาพ
 
 ---
 
@@ -246,7 +246,23 @@ A person stands on a wooden pier at dusk as slightly rougher ripples roll back t
 
 ---
 
-## 7. Checklist ก่อนวางไฟล์
+## 7. โอกาส (1 ภาพ)
+
+ภาพนี้ใช้ร่วมกันกับการ์ดโอกาสทั้ง 12 ใบ เพราะการ์ดโอกาสขึ้นเฉพาะตอนกด "สำรวจโอกาส" และแต่ละใบมีประโยคเปิดฉากของตัวเองอยู่แล้ว ภาพจึงไม่ต้องเล่าเรื่องเฉพาะใบ ขอแค่ให้ความรู้สึกว่า "มีประตูบานใหม่เปิดออกมา"
+หัวการ์ดโอกาสเป็นสีทอง (mustard) ภาพจึงควรโทนอุ่นออกทอง แต่ยังให้เข้าชุดกับภาพอื่น
+
+| ไฟล์ | ใช้กับ |
+|---|---|
+| `opportunity.webp` | การ์ดโอกาสทุกใบ |
+
+**opportunity — โอกาสที่เข้ามา**
+```
+A tall wooden door in a sunlit Thai courtyard stands slightly ajar, warm golden light spilling out through the gap onto stone steps, beyond the courtyard several garden paths branch off in different directions and fade softly into the distance, potted plants and a few floating leaves caught in the light, a small figure seen from behind pausing at the threshold, inviting and hopeful mood with mustard and warm cream tones.
+```
+
+---
+
+## 8. Checklist ก่อนวางไฟล์
 
 - [ ] ไม่มีตัวหนังสือ ตัวเลข ป้าย หรือโลโก้ในภาพ (ซูมตรวจป้ายร้านกับจอคอมในภาพทุกครั้ง)
 - [ ] ของสำคัญอยู่ในกลาง 60% ลองบังบนล่างฝั่งละ 20% แล้วยังเข้าใจภาพไหม
@@ -259,7 +275,7 @@ A person stands on a wooden pier at dusk as slightly rougher ripples roll back t
 node tools/check-art.js
 ```
 
-**ลำดับที่แนะนำ:** ทำ `P01` ก่อน เพื่อหา style ที่ชอบ แล้วใช้เป็นภาพอ้างอิงทำ Project ที่เหลือ → อาชีพ → ยุค → Echo
+**ลำดับที่แนะนำ:** ทำ `P01` ก่อน เพื่อหา style ที่ชอบ แล้วใช้เป็นภาพอ้างอิงทำ Project ที่เหลือ → ยุค → อาชีพ → Echo → โอกาส
 ระหว่างที่ภาพยังไม่ครบ เกมใช้ไอคอนแทนไปก่อน ใส่ไฟล์ไหนเข้าไปก็เห็นภาพนั้นทันที
 
 **หมายเหตุ:** ภาพทั้งหมดเป็นภาพสร้างใหม่ ไม่อ้างอิงคน แบรนด์ หรือสถานที่จริงที่ระบุตัวตนได้ ถ้าจะนำเกมไปขาย ควรตรวจเงื่อนไขการใช้งานเชิงพาณิชย์ของเครื่องมือสร้างภาพที่ใช้ด้วย

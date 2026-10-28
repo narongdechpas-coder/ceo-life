@@ -359,7 +359,7 @@
       payCost(s, o.cost || {});
       applyOutcome(s, o, oid, { from: `รับโอกาส “${o.title}”`, cause: `รับโอกาส “${o.title}”` });
       s.oppAccepted += 1;
-      story(s, { kind: 'opp', title: o.title });
+      story(s, { kind: 'opp', title: o.title, scene: o.scene || '' });
       log(s, `รับโอกาส "${o.title}"`, 'key');
     } else log(s, 'ปล่อยผ่านโอกาสที่เห็น');
     s.oppChoices = [];

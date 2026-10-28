@@ -9,6 +9,7 @@ const WANT = [
   ...D.CAREERS.map(c => [c.id, `อาชีพ · ${c.name}`]),
   ...D.ERAS.map(e => [`era-${e.id}`, `ยุค ${e.id} · ${e.name}`]),
   ['echo-good', 'Echo · ผลดี'], ['echo-bad', 'Echo · ผลร้าย'],
+  ['opportunity', 'โอกาส · ใช้ร่วมทุกใบ'],
 ];
 const MAX_KB = 300;
 
@@ -49,7 +50,7 @@ for (const [id, label] of WANT) {
   if (issues.length) rows.push(`  ✗  ${file.padEnd(16)} ${label}  — ${issues.join(' · ')}`);
   else { ok++; rows.push(`  ✓  ${file.padEnd(16)} ${label}  ${size.w}×${size.h} ${kb} KB`); }
 }
-const extra = [...present].filter(f => !WANT.some(([id]) => `${id}.webp` === f) && !f.startsWith('.'));
+const extra = [...present].filter(f => /\.(webp|png|jpe?g)$/i.test(f) && !WANT.some(([id]) => `${id}.webp` === f));
 
 console.log(`ภาพการ์ด ${ok}/${WANT.length} ผ่านสเปก\n${rows.join('\n')}`);
 if (extra.length) console.log(`\nไฟล์ที่เกมไม่ได้ใช้: ${extra.join(', ')}`);

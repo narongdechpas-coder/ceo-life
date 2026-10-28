@@ -73,7 +73,7 @@ for (const e of D.EVENTS) {
   e.options.forEach((o, j) => checkEffect(`${e.id}.opt${j + 1}`, o));
 }
 
-for (const e of [...D.EVENTS, ...D.ECHOES]) if (!e.scene) err(e.id, 'ไม่มี scene สำหรับเล่าเรื่อง');
+for (const e of [...D.EVENTS, ...D.ECHOES, ...D.OPPORTUNITIES]) if (!e.scene) err(e.id, 'ไม่มี scene สำหรับเล่าเรื่อง');
 
 for (const e of D.ECHOES) {
   e.options.forEach((o, j) => checkEffect(`${e.id}.opt${j + 1}`, o));
