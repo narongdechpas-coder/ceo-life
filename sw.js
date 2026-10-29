@@ -1,6 +1,6 @@
 // Service worker: ทำให้ติดตั้งเป็นแอปได้ และเปิดเล่นต่อได้ตอนเน็ตหลุด
 // หน้าเว็บดึงจากเน็ตก่อน (ได้เวอร์ชันใหม่เสมอ) ไฟล์อื่นตอบจาก cache แล้วอัปเดตเบื้องหลัง
-const CACHE = 'lifeceo-v4';
+const CACHE = 'lifeceo-v5';
 
 self.addEventListener('install', ev => {
   ev.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', 'manifest.webmanifest', 'assets/icons/icon-192.png'])).then(() => self.skipWaiting()));

@@ -537,10 +537,10 @@ html.m .tcard.dense .lv.next { gap: 2px 8px; }
   font-style: normal; font-size: 23px; line-height: 1; background: var(--sage-soft);
   box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .06);
 }
-.act.k-work .act-ico { background: var(--coral-soft); }
-.act.k-grow .act-ico { background: #e1e8fb; }
-.act.k-care .act-ico { background: var(--teal-soft); }
-.act.k-money .act-ico { background: var(--mustard-soft); }
+.k-work .act-ico { background: var(--coral-soft); }
+.k-grow .act-ico { background: #e1e8fb; }
+.k-care .act-ico { background: var(--teal-soft); }
+.k-money .act-ico { background: var(--mustard-soft); }
 /* ไอคอน + ชื่อเป็นแถวแรก ผลของกิจกรรมเต็มความกว้างแถวถัดไป */
 .act-main { display: contents; }
 .act-main > :not(b) { grid-column: 1 / -1; min-width: 0; }
@@ -574,19 +574,32 @@ html.m .act-ico { width: 32px; height: 32px; font-size: 20px; border-radius: 9px
 
 /* วิธีเล่น */
 .ecard.rules { width: min(560px, 100%); }
-.ecard.rules .ecard-body { font-size: 14px; line-height: 1.6; color: var(--ink); max-height: min(70vh, 640px); overflow-y: auto; }
+.ecard.rules .ecard-body { font-size: 14px; line-height: 1.6; color: var(--ink); overflow-y: auto; }
 .ecard.rules p { margin: 0 0 10px; }
 .ecard.rules h4 { font-family: Kanit, sans-serif; font-weight: 600; font-size: 15px; color: var(--sage); margin: 14px 0 6px; }
 .ecard.rules ol { margin: 0 0 10px; padding-left: 22px; }
 .ecard.rules li { margin-bottom: 4px; }
-.ecard.rules .btn { margin-top: 6px; width: 100%; }
+.ecard.rules .btn { width: 100%; }
+/* หน้าวิธีเล่น: เนื้อหาเลื่อนอ่านได้ ปุ่มปิดอยู่ล่างเสมอ */
+.ecard.rules { display: flex; flex-direction: column; max-height: calc(100dvh / var(--z, 1) - 32px); }
+.ecard.rules .ecard-body { flex: 1; min-height: 0; }
+.rules-foot { flex: none; padding: 10px 16px 14px; border-top: 1px solid var(--line); background: var(--paper); }
+.ecard.rules .lead { font-size: 15px; }
+.ecard.rules ul.plain { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; }
+.ecard.rules ul.plain.dots { list-style: disc; padding-left: 20px; }
+.act-list { list-style: none; margin: 4px 0 8px; padding: 0; display: grid; gap: 6px; }
+.act-row { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 8px; align-items: center; margin: 0 !important; }
+.act-row .act-ico { width: 32px; height: 32px; font-size: 19px; border-radius: 9px; }
+.act-row b { display: block; font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 14px; line-height: 1.3; }
+.act-row .act-txt { font-size: 13px; color: var(--muted); line-height: 1.45; display: block; }
 /* มือถือที่ถูกบังคับโหมดเดสก์ท็อป (html.m + zoom) ต้องได้ layout มือถือ และหาร vh ด้วย zoom */
-html.zoomed .ecard.rules .ecard-body { max-height: calc(70vh / var(--z, 1)); }
 @media (min-width: 900px) {
   html:not(.m) .ecard.rules { width: min(920px, 100%); }
-  html:not(.m) .ecard.rules .ecard-body { max-height: calc(100vh - 120px); }
   html:not(.m) .rcols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
   html:not(.m) .ecard.rules .btn { width: auto; min-width: 160px; display: block; margin-left: auto; }
+  html:not(.m) .ecard.rules { width: min(1000px, 100%); }
+  html:not(.m) .act-list { grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+  html:not(.m) .act-row.wide { grid-column: 1 / -1; }
 }
 
 /* หน้าเลือกเป้าหมาย/อาชีพ จัดกึ่งกลาง */
@@ -612,7 +625,7 @@ details.panel > summary { cursor: pointer; font-family: 'Kanit', sans-serif; fon
 details.panel[open] > summary { margin-bottom: 6px; }
 
 /* ติดตั้งเป็นแอป */
-.hero.setup .install-cta { justify-self: center; }
+.hero.setup .setup-extra { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
 .install-card ol { margin: 0 0 10px; padding-left: 22px; line-height: 1.8; }
 .install-card .ecard-body { display: grid; gap: 8px; }
 
