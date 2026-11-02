@@ -832,3 +832,12 @@ html[data-mode="kala"] .ptab.on { box-shadow: 0 0 0 3px var(--mustard), 2px 2px 
 .table-cards.with-tabs { flex: 0 0 auto; min-height: 0; overflow: visible; padding-top: 0; padding-bottom: 0; margin-top: auto; }
 .table-cards.with-tabs .table-empty { margin: 4px auto 0; font-size: 13px; }
 .table-cards.with-tabs + .proj-tabs { margin-bottom: auto; }
+/* รายชื่อโปรเจกต์เป็นตาราง 4 คอลัมน์ (ไอคอน | ชื่อ | ระดับ L | ค่าใช้จ่าย) กว้างพอดีชื่อที่ยาวที่สุด
+   ทุกแถวกว้างเท่ากัน ระดับ L กับค่าใช้จ่ายตรงกันเป็นคอลัมน์ชิดขวา ไม่ห่างจากชื่อเกินไป */
+.proj-tabs { display: grid; grid-template-columns: auto minmax(0, auto) auto auto; justify-content: center; align-content: center; width: auto; max-width: 100%; }
+.ptab { display: grid; grid-template-columns: subgrid; grid-column: 1 / -1; column-gap: 10px; }
+.ptab .ico { grid-column: 1; }
+.ptab b { grid-column: 2; }
+.ptab .lvl { grid-column: 3; justify-self: end; margin-left: 14px; }
+.ptab .chips { grid-column: 4; justify-content: flex-end; min-width: 0; }
+html.m .proj-tabs { max-width: none; padding-left: 28px; padding-right: 28px; }
