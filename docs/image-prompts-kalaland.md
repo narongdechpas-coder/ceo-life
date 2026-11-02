@@ -37,11 +37,11 @@
 | `P11` | B | Project · ดูแลพ่อแม่ |
 | `P12` | B | Project · ฝึกสติ |
 | `kala-opportunity` | A | การ์ดโอกาส (ใช้ร่วม) |
-| `kala-table` (พื้นโต๊ะ · `assets/bg/`) | A | พื้นโต๊ะกะลาแลนด์ |
-| `kala-era-1` | A | ยุค I · เริ่มต้น |
-| `kala-era-2` | A | ยุค II · สร้างตัว |
-| `kala-era-3` | A | ยุค III · จุดสูงสุด |
-| `kala-era-4` | A | ยุค IV · ส่งต่อ |
+| `kala-table` ✅ (พื้นโต๊ะ · `assets/bg/`) | A | พื้นโต๊ะกะลาแลนด์ |
+| `kala-era-1` ✅ | A | ยุค I · เริ่มต้น |
+| `kala-era-2` ✅ | A | ยุค II · สร้างตัว |
+| `kala-era-3` ✅ | A | ยุค III · จุดสูงสุด |
+| `kala-era-4` ✅ | A | ยุค IV · ส่งต่อ |
 | `kala-incident` | A | การ์ดเคราะห์ (ใช้ร่วม) |
 | `kala-echo-bad` | A | Echo ผลร้าย (ใช้ร่วม) |
 | `kala-echo-good` | A | Echo ผลดี (ใช้ร่วม) |
