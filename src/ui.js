@@ -721,7 +721,7 @@
     all.forEach(c => { c.classList.remove('dense', 'compact', 'tight', 'scrolly'); c.style.height = ''; });
     const row = document.getElementById('cards');
     // ล้างผลจากรอบก่อน (ResizeObserver เรียกซ้ำกับแถวเดิมได้) ไม่ให้ภาพสูงคงที่ค้างอยู่ระหว่างคำนวณ
-    if (row) { row.classList.remove('art-fixed', 'no-art', 'carousel'); row.style.removeProperty('--art-h'); }
+    if (row) { row.classList.remove('art-fixed', 'no-art', 'carousel'); row.style.removeProperty('--art-h'); row.classList.toggle('single', all.length === 1); }
     if (!row || isMobile() || row.classList.contains('browse')) {
       // มือถือ และโหมดดูทั้งหมด: การ์ดขนาดปกติ เลื่อนดูได้ แก้แค่ซ่อนภาพเมื่อข้อความล้น
       if (row) row.classList.remove('two-rows');
@@ -870,6 +870,11 @@
     const lg = document.getElementById('log'); if (lg) lg.scrollTop = lg.scrollHeight;
     const cards = document.getElementById('cards'); if (cards) cards.scrollLeft = 0;
     fitCards();
+    // มือถือ: การ์ดเป้าหมาย/อาชีพที่เลือกไว้ เลื่อนมาอยู่กลางแถว (render ใหม่ทำให้ scroll กลับไปซ้ายสุดทุกครั้ง)
+    document.querySelectorAll('.pickgrid').forEach(g => {
+      const sel = g.querySelector('.pick.sel');
+      if (sel && g.scrollWidth > g.clientWidth) g.scrollLeft = sel.offsetLeft - g.offsetLeft - (g.clientWidth - sel.offsetWidth) / 2;
+    });
     if (s.phase === 'end' && !s.aiStory && ai.status === 'idle' && aiAvailable()) setTimeout(requestStory);
     const pname = document.getElementById('pname');
     if (pname) { pname.focus(); pname.select(); document.getElementById('name-form').onsubmit = ev => { ev.preventDefault(); startWithName(); }; }

@@ -335,6 +335,7 @@ html.desk .topbar-row, html.desk .resbar, html.desk .flow { max-width: none; }
 html.m body { font-size: 15px; }
 html.m .tcard { aspect-ratio: auto; width: calc(100% - 28px); max-width: none; }
 html.m .table-cards { gap: 10px; padding: 8px 14px 10px; justify-content: flex-start; }
+html.m .table-cards.single { justify-content: center; }
 html.m .table-head { padding: 8px 14px 0; }
 html.m .table-head .btn { font-size: 14px; }
 
@@ -393,7 +394,7 @@ html.m .story { font-size: 15px; }
 html.m .hero { padding: 16px 12px; gap: 14px; }
 html.m .hero h1 { font-size: 30px; }
 html.m .pickgrid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; padding-bottom: 4px; }
-html.m .pick { flex: 0 0 78%; scroll-snap-align: start; }
+html.m .pick { flex: 0 0 78%; scroll-snap-align: center; }
 html.m .pick p { font-size: 14px; }
 html.m .lv.next .outs { grid-column: 1 / -1; grid-row: auto; padding-left: 0; border-left: 0; }
 /* dense ของการ์ดเหตุการณ์: ชื่อทางเลือกกับ chips อยู่บรรทัดเดียวกันถ้าพอดี */
@@ -668,9 +669,10 @@ html[data-mode="kala"] .hero h1, html[data-mode="kala"] .th, html[data-mode="kal
 html[data-mode="kala"] .ecard-head h3, html[data-mode="kala"] .section-title h2, html[data-mode="kala"] .brand {
   font-family: var(--kala-head); font-weight: 400; letter-spacing: 0;
 }
-html[data-mode="kala"] .hero h1 span, html[data-mode="kala"] .brand span { color: var(--coral); }
+html[data-mode="kala"] .hero h1 span { color: var(--coral); }
+html[data-mode="kala"] .brand span { color: var(--mustard); }
 /* แถบบน: หัวหนังสือพิมพ์ ดำ-แดง */
-html[data-mode="kala"] .topbar { background: var(--ink); border-bottom: 4px solid var(--coral); }
+html[data-mode="kala"] .topbar { background: #8a3b26; border-bottom: 4px solid var(--mustard); }
 html[data-mode="kala"] .topbar .who { color: var(--mustard); }
 html[data-mode="kala"] .res { background: rgba(255, 255, 255, .08); }
 /* โต๊ะ: สลับได้ 2 แบบจากเมนู ☰ — สีเรียบ = โต๊ะเทา · ภาพ = assets/bg/kala-table.webp (ยังไม่มีไฟล์ก็เห็นสีเทาแทน) */
