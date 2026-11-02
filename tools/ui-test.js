@@ -25,6 +25,8 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
     page.on('dialog', d => d.accept());
     await page.goto(URL);
     await page.evaluate(() => localStorage.clear()); await page.reload();
+    // MODE=kala: เลือกโหมดกะลาแลนด์ผ่านหน้าจอจริง (รวมการกดรับทราบ disclaimer)
+    if (process.env.MODE === 'kala') { await page.click('[data-mode-pick="kala"]'); await page.click('[data-do="kala-accept"]'); }
     const picks = await page.locator('[data-pick-goal]').count() + 'x' + await page.locator('[data-pick-career]').count();
     if (picks !== '3x3') problem(`setup choices ${picks}`);
     await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]'); await page.fill('#pname', 'แจ็ค'); await page.click('#name-form [type=submit]');

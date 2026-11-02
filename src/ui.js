@@ -71,7 +71,7 @@
     const nextIncome = G.salary(s) + G.passive(s);
     return `<header class="topbar">
       <div class="topbar-row">
-        <div class="brand">LIFE <span>CEO</span></div>
+        <div class="brand">LIFE <span>CEO</span></div>${modeBadge()}
         <div class="chapter">${s.name ? `<b class="who">${esc(s.name)}</b> · ` : ''}<b>บทที่ ${s.round}/8</b> · ยุค ${ROMAN[e.id]} ${e.name} <span class="long">· อายุ ${e.age}</span></div>
         <div class="time" title="เวลาที่เหลือในรอบนี้">⏳ ${pips}</div>
         <nav class="info-btns">
@@ -204,7 +204,7 @@
       return `<h3>📔 Life Log</h3><div class="log" id="log">${logs}</div>`;
     }
     return `<h3>เมนู</h3><button class="btn ghost" data-do="rules">📖 วิธีเล่น</button>${installBtn('btn ghost')}
-      <button class="btn ghost" data-do="bg">พื้นโต๊ะ: ${bgPlain() ? 'สีเรียบ' : 'ภาพวิว'} (กดเพื่อสลับ)</button>
+      <button class="btn ghost" data-do="bg">พื้นโต๊ะ: ${bgPlain() ? (s.mode === 'kala' ? 'สีเทา' : 'สีเรียบ') : (s.mode === 'kala' ? 'ภาพ' : 'ภาพวิว')} (กดเพื่อสลับ)</button>
       <button class="btn ghost" data-do="new">เริ่มเกมใหม่</button>`;
   }
   function sheetModal(kind) {
@@ -332,6 +332,9 @@
         <h4>จบเกมนับคะแนนจาก</h4>
         <p>★ Life Points, สุขภาพ, ความสัมพันธ์, ความมั่งคั่งสุทธิ, อิสรภาพทางการเงิน (รายได้จากการลงทุนพอจ่ายค่าครองชีพหรือยัง) และเป้าหมายชีวิตที่เลือก หักด้วย Regret และความเครียดที่ค้างอยู่</p>
         </section></div>
+        ${G.modeOf(s) ? `<section class="mode-rules"><h4>🥥 กติกาเสริมของ${esc(G.modeOf(s).name)}</h4>
+          <ul class="plain">${G.modeOf(s).ruleText.map(([t, d, q]) => `<li><b>${esc(t)}</b> ${esc(d)} <small class="quip-line">💬 ${esc(q)}</small></li>`).join('')}</ul>
+          <p class="disclaimer-box">⚠️ ${esc(G.modeOf(s).disclaimer)}</p></section>` : ''}
         <p class="note">ตัวเลขทั้งหมดเป็นค่าตั้งต้นเพื่อทดสอบ</p>
       </div>
       <div class="rules-foot"><button class="btn" data-do="close">ปิด</button></div></div></div>`;
@@ -391,6 +394,36 @@
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { /* ไม่มี SW ก็เล่นได้ปกติ */ }));
   }
 
+  // ---------------------------------------------------------------- โหมด (ชีวิตปกติ / กะลาแลนด์)
+  const pref = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { /* ไม่มีที่เก็บก็เล่นได้ */ } return null; };
+  const modeBadge = () => (G.modeOf(s) ? `<span class="mode-badge" title="${esc(G.modeOf(s).name)}">🥥 ${esc(G.modeOf(s).short)}</span>` : '');
+  function modePicker() {
+    const k = G.MODES.kala;
+    if (!k) return '';
+    return `<section class="modes" aria-label="เลือกโหมด">
+      <button class="mode-pick ${s.mode === 'base' ? 'sel' : ''}" data-mode-pick="base"><b>🌿 ชีวิตปกติ</b><small>ชีวิตที่คุณออกแบบได้ เล่นสบายๆ</small></button>
+      <button class="mode-pick kala ${s.mode === 'kala' ? 'sel' : ''}" data-mode-pick="kala"><b>🥥 ${esc(k.name)}</b><small>ชีวิตจริงไม่ได้โลกสวย · มีการ์ดเคราะห์ข้ามไม่ได้</small></button>
+    </section>`;
+  }
+  function kalaAckModal() {
+    const k = G.MODES.kala;
+    return `<div class="overlay"><div class="ecard rules kala-ack" role="dialog" aria-modal="true">
+      <div class="ecard-head"><small>${esc(k.tagline)}</small><h3>🥥 ยินดีต้อนรับสู่${esc(k.name)}</h3></div>
+      <div class="ecard-body">
+        <p class="disclaimer-box">⚠️ ${esc(k.disclaimer)}</p>
+        <h4>กติกาเสริมของกะลาแลนด์</h4>
+        <ul class="plain">${k.ruleText.map(([t, d, q]) => `<li><b>${esc(t)}</b> ${esc(d)}<br><small class="quip-line">💬 ${esc(q)}</small></li>`).join('')}</ul>
+      </div>
+      <div class="rules-foot two"><button class="btn ghost" data-do="close">ไม่เอาดีกว่า</button><button class="btn" data-do="kala-accept">รับทราบ เข้ากะลา</button></div>
+    </div></div>`;
+  }
+  function pickMode(mode) {
+    if (mode === 'kala' && pref('lifeceo.kalaAck') !== '1') { ui.modal = 'kala-ack'; render(); return; }
+    const err = G.setMode(s, mode);
+    if (!err) pref('lifeceo.mode', s.mode);
+    run(err);
+  }
+
   // ---------------------------------------------------------------- screens
   function setupScreen() {
     const goals = s.goalChoices.map(id => { const g = G.GOAL[id];
@@ -400,10 +433,12 @@
         <p>${c.tiers.map(t => `${esc(t.name)} 🪙${t.salary}`).join(' → ')}</p><p>${esc(c.perkText)}</p></button>`; }).join('');
     return `<main class="hero setup">
       <div><h1>LIFE <span>CEO</span></h1><p class="story tagline"><b>ชีวิตที่คุณออกแบบได้</b> <span>เกมจำลองชีวิตสำหรับผู้เล่นคนเดียว 8&nbsp;บท 4&nbsp;ยุค</span></p></div>
+      ${modePicker()}
       <section><div class="section-title"><h2>เลือกเป้าหมายชีวิต</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${goals}</div></section>
       <section><div class="section-title"><h2>เลือกอาชีพเริ่มต้น</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${careers}</div></section>
       <div class="setup-actions"><button class="btn" data-do="start" ${ui.pickGoal && ui.pickCareer ? '' : 'disabled'}>เริ่มชีวิต →</button>
         <button class="btn ghost" data-do="reroll" ${s.rerolls > 0 ? '' : 'disabled'}>${s.rerolls > 0 ? `🎲 สุ่มใหม่ (เหลือ ${s.rerolls} ครั้ง)` : 'ใช้สุ่มใหม่ไปแล้ว'}</button></div>
+      ${G.modeOf(s) ? `<p class="note disclaimer">⚠️ ${esc(G.modeOf(s).disclaimer)}</p>` : ''}
       <div class="setup-extra"><button class="btn ghost" data-do="rules">📖 วิธีเล่น</button>${installBtn('btn ghost install-cta')}</div>
       <div>
       <p class="note">เริ่มต้น: 🪙 ${D.START.cash} · ❤️ ${D.START.health} · 👥 ${D.START.rel} · 📖 ${D.START.skills} · ค่าครองชีพ ${D.START.expenses}/รอบ</p></div>
@@ -411,7 +446,7 @@
   }
 
   // ---------------------------------------------------------------- end: เล่าชีวิต + ผลสืบเนื่อง
-  const ongoingText = g => Object.entries(g).map(([k, v]) => `${ICON[k]}${sign(v)}`).join(' ');
+  const ongoingText = g => Object.entries(g).filter(([k]) => k !== 'rounds').map(([k, v]) => `${ICON[k]}${sign(v)}`).join(' ');
   // ผลต่อเนื่องที่เป็นรายจ่ายล้วน เล่าว่า "ต้องจ่าย" แทน "ได้"
   const ongoingVerb = g => {
     const parts = [];
@@ -439,13 +474,16 @@
     const decay = { rel: 0, health: 0 };
     for (const e of entries) {
       if (e.kind !== 'decay' && e.round !== round) { round = e.round; out.push({ round }); }
+      const quip = e.quip ? ` <q class="quip-line">${esc(e.quip)}</q>` : '';
       if (e.kind === 'event') {
-        out.push(`${scene(e)} คุณ${did(e)}${e.echo ? ' เรื่องนี้จะย้อนกลับมาหาคุณอีกในยุคหน้า' : ''}`);
+        out.push(`${scene(e)} คุณ${did(e)}${e.echo ? ' เรื่องนี้จะย้อนกลับมาหาคุณอีกในยุคหน้า' : ''}${quip}`);
+      } else if (e.kind === 'incident') {
+        out.push(`เคราะห์มาเยือน: ${scene(e)}${e.soft ? ' โชคดีที่เตรียมตัวไว้ เลยเจ็บน้อยลง' : ''}${quip}`);
       } else if (e.kind === 'echo') {
         const back = backFrom(e);
         let t = `${scene(e)}${back ? ` (${back})` : ''} คุณ${did(e)}`;
         if (e.regret) t += ' แต่เรื่องนี้ก็ยังค้างคาใจไปอีกนาน';
-        out.push(t);
+        out.push(t + quip);
       } else if (e.kind === 'project') {
         let t = e.level === 1
           ? `คุณเริ่ม${esc(e.name)} ขั้นแรกคือ${esc(e.step)} และเลือก${esc(e.label)}`
@@ -529,7 +567,8 @@
         : `<section class="panel"><div class="section-title"><h2>เรื่องเล่า 4 ยุค</h2></div>${eras}</section>`}
       <section class="panel"><div class="section-title"><h2>การตัดสินใจที่ส่งผลต่อเนื่อง</h2><small>เลือกวันนั้น → ผลที่กลับมา → สิ่งที่คุณทำ</small></div>${chains()}</section>
       <section class="panel"><div class="section-title"><h2>คะแนนมาจากไหน</h2></div><table class="score-table">${rows}<tr class="total"><td>รวม</td><td>${f.total}</td></tr></table></section>
-      <div><button class="btn" data-do="new">เริ่มชีวิตใหม่</button> <span class="note">seed ${s.seed}</span></div>
+      <div><button class="btn" data-do="new">เริ่มชีวิตใหม่</button> <span class="note">seed ${s.seed}${G.modeOf(s) ? ` · โหมด${esc(G.modeOf(s).name)}` : ''}</span></div>
+      ${G.modeOf(s) ? `<p class="note disclaimer">⚠️ ${esc(G.modeOf(s).disclaimer)}</p>` : ''}
     </main>`;
   }
 
@@ -574,6 +613,10 @@
       final: [`ตำแหน่งสุดท้าย ${G.tier(s).name}`, `สุขภาพ ${s.health}`, `ความสัมพันธ์ ${s.rel}`, `ทักษะ ${s.skills}`, `ความเครียด ${s.stress}`,
         `เงินสด ${s.cash}`, `เงินลงทุน ${s.portfolio}`, `หนี้ ${s.debt}`, `Burnout ${s.burnouts} ครั้ง`, `Regret ${f.regrets} เรื่อง`],
       score: f.rows.map(([k, v]) => `${k} ${v > 0 ? '+' : ''}${v}`),
+      // โหมดเสริม: Claude เปลี่ยนโทนตามโหมด และใช้ประโยคกวนที่ผู้เล่นเจอจริงเป็นวัตถุดิบ
+      mode: s.mode || 'base',
+      quips: (s.story || []).filter(e => e.quip).map(e => e.quip),
+      incidents: (s.story || []).filter(e => e.kind === 'incident').map(e => `${e.title}${e.soft ? ' (เบาลงเพราะเตรียมไว้)' : ''}`),
     };
   }
   async function requestStory() {
@@ -818,6 +861,7 @@
     if (ui.modal === 'rules') m = rulesModal();
     else if (ui.modal === 'name' && s.phase === 'setup') m = nameModal();
     else if (ui.modal === 'install') m = installModal();
+    else if (ui.modal === 'kala-ack' && s.phase === 'setup') m = kalaAckModal();
     else if (ui.sheet && s.phase !== 'setup' && s.phase !== 'end') m = sheetModal(ui.sheet);
     else if (ui.modal === 'invest' || ui.modal === 'repay') m = amountModal(ui.modal);
     modalRoot.innerHTML = m;
@@ -877,9 +921,10 @@
     });
   }
 
-  function toast(msg) {
-    const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
-    document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
+  function toast(msg, ms, cls) {
+    document.querySelectorAll('.toast').forEach(x => x.remove());
+    const t = document.createElement('div'); t.className = `toast ${cls || ''}`; t.textContent = msg;
+    document.body.appendChild(t); setTimeout(() => t.remove(), ms || 2200);
   }
   function run(err) { if (err) toast(err); render(); }
   // all-or-nothing: ถ้า engine พังกลางคำสั่ง คืน state เดิมทั้งหมด ผู้เล่นจะไม่เสีย ⚡/🪙 ฟรี
@@ -893,7 +938,8 @@
   }
 
   function newGame() {
-    s = G.newGame((Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0);
+    const last = pref('lifeceo.mode');
+    s = G.newGame((Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0, last === 'kala' && pref('lifeceo.kalaAck') === '1' ? 'kala' : 'base');
     ui = { modal: null, sheet: null, showAll: 0, pickGoal: null, pickCareer: null };
     ai = { status: 'idle', text: '', seed: null };
     window.scrollTo(0, 0);
@@ -912,6 +958,8 @@
     if (d.do === 'showall') { ui.showAll = ui.showAll === s.round ? 0 : s.round; render(); return; }
     if (d.do === 'new') { ui.sheet = null; if (s.phase === 'setup' || s.phase === 'end' || confirm('เริ่มเกมใหม่? เกมที่เล่นอยู่จะหายไป')) newGame(); return; }
     if (d.do === 'install') { doInstall(); return; }
+    if (d.modePick) { pickMode(d.modePick); return; }
+    if (d.do === 'kala-accept') { pref('lifeceo.kalaAck', '1'); ui.modal = null; pickMode('kala'); return; }
     if (d.do === 'ai-retry') { ai.status = 'idle'; requestStory(); return; }
     if (d.do === 'rules') { ui.sheet = null; ui.modal = 'rules'; render(); return; }
     if (d.do === 'close') { ui.modal = null; ui.sheet = null; render(); return; }
@@ -929,7 +977,15 @@
     }
     if (d.pickGoal) { ui.pickGoal = d.pickGoal; render(); return; }
     if (d.pickCareer) { ui.pickCareer = d.pickCareer; render(); return; }
-    if (d.opt !== undefined) { withFx([el.closest('.tcard')], ev, () => run(safely(() => G.chooseOption(s, Number(d.opt))))); return; }
+    if (d.opt !== undefined) {
+      withFx([el.closest('.tcard')], ev, () => {
+        const err = safely(() => G.chooseOption(s, Number(d.opt)));
+        run(err);
+        // ประโยคกวนของโหมดเสริม ขึ้นนานกว่าข้อความปกติให้อ่านทัน
+        if (!err && s.lastQuip) toast(`💬 ${s.lastQuip}`, 4200, 'quip');
+      });
+      return;
+    }
     if (d.opp !== undefined) {
       // รับโอกาสหรือปล่อยผ่าน การ์ดโอกาสทุกใบออกจากโต๊ะพร้อมกัน
       withFx([...document.querySelectorAll('.table .ecard2.opp')], ev, () => run(safely(() => G.takeOpportunity(s, d.opp || null))));

@@ -1,4 +1,4 @@
-# KALALAND — Image Prompts v3.0 (โหมดกะลาแลนด์ · 51 ภาพ)
+# KALALAND — Image Prompts v3.0 (โหมดกะลาแลนด์ · 52 ภาพ)
 
 ทุก prompt ใช้ **KALALAND Image Style Lock v3.0** (`docs/kalaland-style-lock.md`) วาง Style Lock เต็มไว้ก่อน แล้วต่อด้วยบล็อก Scene ของแต่ละภาพ (v2.0 เดิมเก็บไว้ที่ `docs/kalaland-style-lock-v2.md`)
 
@@ -8,10 +8,11 @@
 
 **ความปลอดภัย (Style Lock §12):** ตัวละครทุกตัวเป็นคนสมมติ ห้ามหน้าคล้ายนักการเมืองหรือคนดังจริง ห้ามสี โลโก้ หรือตราของพรรคหรือหน่วยงานจริง วัดเป็นได้แค่ฉากหลัง
 
-**ลำดับ:** เริ่มจาก **K-E05 เลือกตั้ง** เป็นภาพทดสอบแรก (ใกล้ภาพตัวอย่างในบอร์ด v3.0 ที่สุด เทียบสไตล์ได้ง่าย) → กลุ่ม **A** ที่เหลือ (17 ภาพ เกมมีภาพครบทุกยุค เคราะห์ และ Echo แบบใช้ร่วม) → กลุ่ม **B** ทยอยเติม
+**ลำดับ:** เริ่มจาก **K-E05 เลือกตั้ง** เป็นภาพทดสอบแรก (ใกล้ภาพตัวอย่างในบอร์ด v3.0 ที่สุด เทียบสไตล์ได้ง่าย) → กลุ่ม **A** ที่เหลือ (18 ภาพ รวมพื้นโต๊ะ เกมมีภาพครบทุกยุค เคราะห์ และ Echo แบบใช้ร่วม) → กลุ่ม **B** ทยอยเติม
 
 | ไฟล์ | กลุ่ม | การ์ด |
 |---|---|---|
+| `kala-table` (พื้นโต๊ะ · `assets/bg/`) | A | พื้นโต๊ะกะลาแลนด์ |
 | `kala-era-1` | A | ยุค I · เริ่มต้น |
 | `kala-era-2` | A | ยุค II · สร้างตัว |
 | `kala-era-3` | A | ยุค III · จุดสูงสุด |
@@ -65,6 +66,33 @@
 | `K-I12` | B | ค่าไฟขึ้น |
 
 ---
+
+## `kala-table` · พื้นโต๊ะกะลาแลนด์ (A) — วางที่ `assets/bg/kala-table.webp`
+```text
+# SCENE DESCRIPTION
+
+Scene: A wide background plate for a game table: a lively, chaotic big-city street corner in a fictional Southeast Asian land, seen slightly from above
+
+Main Characters: none (no people in this image)
+
+Character Look: none
+
+Main Action: tangled overhead power lines, street-food carts with umbrellas, parked motorcycles on the sidewalk, potholes with puddles, campaign posters with faces only, construction pillars of an unfinished elevated train line
+
+Environment: shophouses and a distant temple roofline at the edges; the center 70% of the frame is a calm, softly blurred road surface so game cards can sit on top
+
+Visual Irony: a modern city skyline behind, crumbling everyday infrastructure in front
+
+Palette Accent: warm grey, earth brown, cobalt blue
+
+Composition: Wide, important detail only at the edges, quiet and empty center
+
+Aspect Ratio: 21:9 (16:9 also accepted)
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
 
 ## `kala-era-1` · ยุค I · เริ่มต้น (A)
 ```text

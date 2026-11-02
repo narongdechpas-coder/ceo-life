@@ -96,6 +96,8 @@ function inspect(where) {
       page.on('dialog', d => d.accept());
       await page.goto(URL);
       await page.evaluate(() => localStorage.clear()); await page.reload();
+      // MODE=kala: เลือกโหมดกะลาแลนด์ผ่านหน้าจอจริง ตรวจหน้าต่าง disclaimer ด้วย แล้วกดรับทราบ
+      if (process.env.MODE === 'kala') { await page.click('[data-mode-pick="kala"]'); await look('disclaimer', 'kala-ack'); await page.click('[data-do="kala-accept"]'); }
       await look('หน้าเลือก', 'setup');
       await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
       await page.fill('#pname', 'ศักดิ์สิทธิ์ชัยวัฒนาพงษ์'); await look('ใส่ชื่อ', 'name');

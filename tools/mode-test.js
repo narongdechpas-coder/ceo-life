@@ -26,6 +26,15 @@ const pendingIds = s => s.pending.map(p => `${p.kind}:${p.id}`);
   check('base game still base', G.newGame(3).mode === 'base' && G.newGame(3, 'nope').mode === 'base');
 }
 
+// 1b) เปลี่ยนโหมดระหว่างหน้าเลือก
+{
+  const s = G.newGame(4);
+  check('setMode to kala in setup', G.setMode(s, 'kala') === null && s.mode === 'kala' && s.eventDecks[1].every(id => id.startsWith('K-E')) && s.incidentDeck.length === 12);
+  check('setMode back to base', G.setMode(s, 'base') === null && s.mode === 'base' && s.eventDecks[1].every(id => id.startsWith('V')) && s.incidentDeck.length === 0);
+  G.chooseSetup(s, s.goalChoices[0], s.careerChoices[0]);
+  check('setMode refused after start', !!G.setMode(s, 'kala') && s.mode === 'base');
+}
+
 // 2) การ์ดเคราะห์: มาก่อนทุกใบ มีทางเดียว ทำอย่างอื่นก่อนไม่ได้
 {
   let found = null;

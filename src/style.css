@@ -673,16 +673,14 @@ html[data-mode="kala"] .hero h1 span, html[data-mode="kala"] .brand span { color
 html[data-mode="kala"] .topbar { background: var(--ink); border-bottom: 4px solid var(--coral); }
 html[data-mode="kala"] .topbar .who { color: var(--mustard); }
 html[data-mode="kala"] .res { background: rgba(255, 255, 255, .08); }
-/* โต๊ะ: กระดาษหนังสือพิมพ์ ไม่ใช้ภาพวิว */
-html[data-mode="kala"] .table {
-  background: #e6dcc6 radial-gradient(rgba(30, 26, 22, .10) 1px, transparent 1.3px) 0 0 / 7px 7px;
-  box-shadow: inset 0 0 0 3px var(--ink), inset 0 0 40px rgba(30, 26, 22, .15);
+/* โต๊ะ: สลับได้ 2 แบบจากเมนู ☰ — สีเรียบ = โต๊ะเทา · ภาพ = assets/bg/kala-table.webp (ยังไม่มีไฟล์ก็เห็นสีเทาแทน) */
+html[data-mode="kala"] .table { background: #8e8a84; box-shadow: inset 0 0 0 3px var(--ink), inset 0 0 50px rgba(0, 0, 0, .22); }
+html[data-mode="kala"] .table::before {
+  background: url('../assets/bg/kala-table.webp') center 60% / cover no-repeat;
+  filter: saturate(.8) brightness(.9) blur(1.5px);
 }
-html[data-mode="kala"] .table::before, html[data-mode="kala"] .table::after { display: none; }
-html[data-mode="kala"] .table-head { color: var(--ink); }
-html[data-mode="kala"] .table-head b, html[data-mode="kala"] .table-head span { text-shadow: none; }
-html[data-mode="kala"] .table .btn.ghost { color: var(--ink); border-color: var(--ink); background: var(--paper); }
-html[data-mode="kala"] .table-empty { color: var(--ink); }
+html[data-mode="kala"] .table::after { background: linear-gradient(180deg, rgba(30, 26, 22, .45) 0%, rgba(30, 26, 22, .15) 45%, rgba(30, 26, 22, .4) 100%); }
+html[data-mode="kala"] .table .btn.ghost { color: #fff; border-color: rgba(255, 255, 255, .7); background: rgba(30, 26, 22, .35); box-shadow: none; }
 /* การ์ด: ขอบหมึก เงาแข็งแบบงานพิมพ์ */
 html[data-mode="kala"] .tcard { border: 2px solid var(--ink); box-shadow: var(--shadow); border-radius: 10px; }
 html[data-mode="kala"] .pcard-head { background: var(--ink); }
@@ -715,3 +713,28 @@ html[data-mode="kala"] .btn.ghost { background: var(--paper); color: var(--ink);
 html[data-mode="kala"] .pick, html[data-mode="kala"] .panel, html[data-mode="kala"] .ecard, html[data-mode="kala"] .sheet { border: 2px solid var(--ink); box-shadow: var(--shadow); }
 html[data-mode="kala"] .pick.sel { background: var(--mustard-soft); border-color: var(--coral); }
 html[data-mode="kala"] .tier-badge { background: var(--coral); }
+
+/* ---------------------------------------------------------------- เลือกโหมด */
+.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 760px; width: 100%; justify-self: center; }
+.mode-pick {
+  text-align: left; background: var(--paper); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px;
+  display: grid; gap: 2px; font: inherit; color: var(--ink); cursor: pointer;
+}
+.mode-pick b { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 16px; }
+.mode-pick small { color: var(--muted); font-size: 13px; }
+.mode-pick.sel { border-color: var(--sage); background: var(--sage-soft); box-shadow: 0 0 0 3px rgba(63, 107, 79, .15); }
+.mode-pick.kala.sel { border-color: #c8102e; background: #fbedb5; box-shadow: 3px 3px 0 #1e1a16; }
+html.m .modes { grid-template-columns: 1fr; }
+.mode-badge {
+  flex: none; font: 600 12px/1 'Kanit', sans-serif; color: #1e1a16; background: #f5c518; border-radius: 4px;
+  padding: 4px 7px; transform: rotate(-3deg); white-space: nowrap;
+}
+html.m .mode-badge { display: none; }
+.note.disclaimer { text-align: center; max-width: 680px; justify-self: center; color: var(--muted); }
+.disclaimer-box { background: #fbedb5; border: 2px dashed #c8102e; border-radius: 10px; padding: 10px 12px; margin: 0 0 6px; font-size: 14px; }
+.quip-line { color: #c8102e; }
+.rules-foot.two { display: flex; gap: 10px; justify-content: flex-end; }
+.rules-foot.two .btn { width: auto; min-width: 140px; }
+html.m .rules-foot.two .btn { flex: 1; min-width: 0; }
+.toast.quip { background: #1e1a16; color: #f5c518; border: 2px solid #f5c518; font-weight: 600; max-width: min(560px, calc(100% - 32px)); text-align: center; }
+html[data-mode="kala"] .toast:not(.quip) { background: #1e1a16; }

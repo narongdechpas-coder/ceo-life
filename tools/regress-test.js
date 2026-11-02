@@ -161,6 +161,38 @@ const st = page => page.evaluate(() => { const s = window.__lifeceo.state; retur
     await page.close();
   }
 
+  // ---------- 7) โหมดกะลาแลนด์: disclaimer · เคราะห์ข้ามไม่ได้ · ประโยคกวน · จำโหมดหลังรีโหลด
+  {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+    page.on('pageerror', e => errors.push(e.message)); page.on('dialog', d => d.accept());
+    await page.goto(URL); await page.evaluate(() => localStorage.clear()); await page.reload();
+    const mode = () => page.evaluate(() => [window.__lifeceo.state.mode, document.documentElement.dataset.mode].join('/'));
+    await page.click('[data-mode-pick="kala"]');
+    check('kala: disclaimer shown before switching', await page.locator('.kala-ack').isVisible() && (await mode()) === 'base/base');
+    await page.click('.kala-ack [data-do="close"]');
+    check('kala: cancel keeps normal mode', (await mode()) === 'base/base');
+    await page.click('[data-mode-pick="kala"]'); await page.click('[data-do="kala-accept"]');
+    check('kala: accept switches mode and theme', (await mode()) === 'kala/kala' && await page.locator('.note.disclaimer').isVisible());
+    await page.click('[data-mode-pick="base"]'); await page.click('[data-mode-pick="kala"]');
+    check('kala: no second disclaimer after accepting once', !(await page.locator('.kala-ack').count()) && (await mode()) === 'kala/kala');
+    // เกมที่เริ่มด้วยการ์ดเคราะห์ (เลือก seed ที่มีเคราะห์ตอนต้น)
+    await page.evaluate(() => { const G = window.LifeCEO; let s;
+      for (let seed = 1; seed < 300; seed++) { s = G.newGame(seed, 'kala'); G.chooseSetup(s, s.goalChoices[0], s.careerChoices[0], 'แจ็ค'); if (s.pending[0].kind === 'incident') break; }
+      localStorage.setItem('lifeceo.v2.save', JSON.stringify(s)); });
+    await page.reload(); await page.waitForTimeout(400);
+    const inc = page.locator('.ecard2.incident');
+    check('kala: incident card on table with one button', await inc.isVisible() && await inc.locator('.opt').count() === 1 && (await inc.locator('.opt b').textContent()) === 'รับกรรม');
+    check('kala: dock locked until fate accepted', await page.locator('[data-do="end"]').isDisabled() && await page.locator('.dock-acts .act:not([disabled])').count() === 0);
+    await inc.locator('.opt').click(); await page.waitForTimeout(250);
+    check('kala: quip toast after accepting', (await page.locator('.toast.quip').textContent().catch(() => '')).startsWith('💬'));
+    await page.reload(); await page.waitForTimeout(300);
+    check('kala: mode and theme survive reload', (await mode()) === 'kala/kala' && await page.locator('.mode-badge').isVisible());
+    // เริ่มเกมใหม่จากเมนูใช้โหมดล่าสุด
+    await page.evaluate(() => window.__lifeceo.newGame()); await page.waitForTimeout(200);
+    check('kala: new game keeps last mode', (await mode()) === 'kala/kala' && await page.locator('[data-mode-pick="kala"].sel').count() === 1);
+    await page.close();
+  }
+
   check('no page errors', !errors.length, errors.join(' | '));
   console.log(results.join('\n'));
   await browser.close();

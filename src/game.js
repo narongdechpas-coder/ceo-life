@@ -170,13 +170,25 @@
     s.seenChoices = [...s.goalChoices, ...s.careerChoices];
     s.projectDeck = shuffle(s, D.PROJECTS.map(p => p.id));
     s.market = s.projectDeck.splice(0, 3);
-    // โหมดเสริมใช้เหตุการณ์ของโหมดนั้นแทนกองเดิม (ยุคละ 5 ใบ เล่น 2) ถ้าไม่มีค่อยใช้กองปกติ
+    buildEventDecks(s);
+    s.oppDeck = shuffle(s, D.OPPORTUNITIES.map(o => o.id));
+    s.incidentDeck = buildIncidentDeck(s);
+    return s;
+  }
+  // โหมดเสริมใช้เหตุการณ์ของโหมดนั้นแทนกองเดิม (ยุคละ 5 ใบ เล่น 2) ถ้าไม่มีค่อยใช้กองปกติ
+  function buildEventDecks(s) {
     const m = MODES[s.mode];
     const pool = e => ((m && m.events || []).filter(v => v.era === e).length ? m.events : D.EVENTS).filter(v => v.era === e).map(v => v.id);
     for (const e of [1, 2, 3, 4]) s.eventDecks[e] = shuffle(s, pool(e));
-    s.oppDeck = shuffle(s, D.OPPORTUNITIES.map(o => o.id));
-    s.incidentDeck = m && m.incidents ? shuffle(s, m.incidents.map(x => x.id)) : [];
-    return s;
+  }
+  const buildIncidentDeck = s => (MODES[s.mode] && MODES[s.mode].incidents ? shuffle(s, MODES[s.mode].incidents.map(x => x.id)) : []);
+  // เปลี่ยนโหมดได้เฉพาะตอนเลือกเป้าหมาย/อาชีพ (สร้างกองเหตุการณ์และกองเคราะห์ใหม่)
+  function setMode(s, mode) {
+    if (s.phase !== 'setup') return 'เปลี่ยนโหมดได้เฉพาะตอนเริ่มเกม';
+    s.mode = MODES[mode] ? mode : 'base';
+    buildEventDecks(s);
+    s.incidentDeck = buildIncidentDeck(s);
+    return null;
   }
 
   // สุ่มเป้าหมายและอาชีพชุดใหม่ เลือกจากใบที่ยังไม่เคยเห็นก่อน (ถ้าไม่พอค่อยเติมจากใบที่เคยเห็น)
@@ -479,7 +491,7 @@
 
   const API = {
     D, MODES, CAREER, GOAL, PROJECT, EVENT, ECHO, OPP, INCIDENT, ROUNDS, modeOf, rule, effective,
-    newGame, migrate, reroll, chooseSetup, chooseOption, doAction, takeOpportunity, endRound,
+    newGame, migrate, reroll, setMode, chooseSetup, chooseOption, doAction, takeOpportunity, endRound,
     currentCard, actionStatus, actionCost, projectStatus, score, summary,
     eraOf, era, career, tier, energyCap, salary, passive, livingCost, interest, portfolioYield, blocker, sumCost,
   };
