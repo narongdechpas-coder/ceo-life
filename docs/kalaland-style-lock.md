@@ -1,6 +1,8 @@
-# KALALAND --- Image Style Lock v2.0
+# KALALAND --- Image Style Lock v3.0
 
-## Bold Thai Satirical Cartoon
+## Bold Thai Satirical Cartoon · Two-Layer Satire Visual Identity
+
+**What changed from v2.0:** cleaner organic linework, smoother watercolor washes with fewer ink speckles, a 12-colour reference palette (adds purple, brown and grey), characters that stay realistic and relatable, temples allowed as background only, a Recurring Visual Vocabulary (section 11), and fictional-world safety rules (section 12).
 
 **Document purpose:** Master visual-style specification for all
 illustrations in the KALALAND satirical universe.
@@ -41,12 +43,13 @@ absurd.
 
 ## 1. Line Art --- Signature Style
 
--   Bold, confident, organic black ink outlines.
+-   Bold, confident, hand-drawn black ink outlines.
+-   Clean, organic strokes: confident and tidy, never scratchy.
 -   Hand-drawn strokes with natural irregularities.
 -   Slight variations in line thickness.
 -   Simple, expressive contour drawing.
 -   Loose but controlled cartoon linework.
--   Natural imperfections that make the artwork feel handmade.
+-   Light natural imperfections that make the artwork feel handmade, without messy stray marks.
 -   Clearly defined silhouettes and recognizable objects.
 
 **Critical linework rules:**
@@ -75,6 +78,7 @@ Characters should have a distinctive Thai satirical comic appearance.
 -   Expressive gestures and body language.
 -   Natural, imperfect human appearances.
 -   Visually recognizable everyday Thai people.
+-   Exaggerated but still **realistic and relatable**: people you could meet at the market, the office or the bus stop, never grotesque or monstrous.
 
 Possible character types:
 
@@ -100,13 +104,15 @@ Use a traditional watercolor and gouache illustration aesthetic.
 
 ### Color characteristics
 
--   Vibrant but slightly earthy colors.
+-   Vibrant, warm and natural tones.
 -   Warm tropical atmosphere.
--   Rich cobalt blue, sky blue, red, yellow, green, orange, and muted
-    beige.
+-   Reference palette (12 swatches): cobalt blue, sky blue, red, sunflower
+    yellow, leaf green, orange, purple, warm sand, earth brown, warm grey,
+    paper cream, pale blue.
 -   Natural watercolor pigment variations.
 -   Slightly uneven hand-painted color fills.
--   Visible brush textures and subtle paper grain.
+-   Smooth watercolor washes with visible but gentle brush texture.
+-   Subtle paper grain; **fewer ink speckles and splatters** than v2.0.
 -   Soft, natural painted shadows.
 -   Organic color transitions.
 
@@ -133,7 +139,8 @@ Possible environments include:
 -   Rural villages and small communities.
 -   Construction sites and urban infrastructure.
 -   Shopping districts and office buildings.
--   Public parks, temples, and local neighborhoods.
+-   Public parks and local neighborhoods.
+-   Temples and traditional rooftops **as distant background scenery only**; never the subject of a joke.
 
 Environmental details should be simplified but recognizable.
 
@@ -197,6 +204,7 @@ Maintain a balance between comedy, empathy, and social criticism.
 -   Maintain sufficient negative space.
 -   Use exaggerated gestures and facial expressions to guide attention.
 -   Every object should contribute to the story or atmosphere.
+-   Clear subject, readable action, balanced visual storytelling: keep the focus on the main characters and the situation.
 
 Prioritize storytelling over decorative complexity.
 
@@ -301,6 +309,40 @@ Only the **SCENE, CHARACTERS, ACTION, and ENVIRONMENT** should change.
 
 ------------------------------------------------------------------------
 
+## 11. Recurring Visual Vocabulary
+
+Keep these looks the same in every image so KALALAND feels like one universe.
+
+| Role | Look |
+| --- | --- |
+| Working-class citizen | faded denim overalls or work shirt, red-and-white checked loincloth scarf (pha khao ma) over the shoulder, sun-tanned skin, tired but kind eyes |
+| Hi-so / influential figure | shiny purple floral silk shirt, thick gold necklace and rings, sunglasses on the head, broad confident grin |
+| Office worker | pale short-sleeve shirt, lanyard, laptop bag, dark circles under the eyes |
+| Generic government officer | plain khaki uniform **without insignia or emblems**, stack of blank papers, bored expression |
+| Elderly citizen | simple cotton shirt, reading glasses, small cloth bag |
+| Influencer | trendy outfit, ring light or phone on a selfie stick (blank screen), dramatic pose |
+
+| Prop | Meaning |
+| --- | --- |
+| Stacked tiffin carrier (pin-to) | election-time handout |
+| Plain envelope | under-the-table money or social-event donation |
+| Towering stack of blank paperwork | bureaucracy |
+| Campaign posters with faces only | elections (no names, numbers, party colours or symbols) |
+| Blank phone screen | online life, scams, posts |
+
+## 12. Fictional-World Safety Rules
+
+-   Every person is fictional. Never resemble a real politician, celebrity,
+    official or public figure.
+-   No real party colours, logos, symbols, uniforms with insignia, or agency
+    emblems.
+-   No royal imagery, and no religious figures or rituals as the target of
+    humor.
+-   Satire targets systems and situations, never ethnic groups, regions,
+    disabilities or vulnerable people.
+
+------------------------------------------------------------------------
+
 # Reusable Scene Prompt Template
 
 Use this template for each new illustration. Add the complete Image
@@ -313,11 +355,15 @@ Scene: [Describe the situation]
 
 Main Characters: [Describe the people and their expressions]
 
+Character Look: [Pick from the Recurring Visual Vocabulary, section 11]
+
 Main Action: [Describe what is happening]
 
 Environment: [Describe the location and surroundings]
 
 Visual Irony: [What makes this situation funny but socially meaningful?]
+
+Palette Accent: [2–3 swatches from the reference palette that set the mood]
 
 Composition: [Wide / Medium / Close-up]
 
@@ -325,7 +371,7 @@ Aspect Ratio: 16:9
 
 Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
 
-Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v2.0.
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
 ## Recommended Quality Checklist
@@ -356,7 +402,10 @@ Before accepting an image, check the following:
                                       or technical drafting
 
   Color                               Hand-painted watercolor and gouache
-                                      appearance
+                                      appearance, smooth washes
+
+  Safety                              Fictional faces, no real party or
+                                      agency symbols (section 12)
   -----------------------------------------------------------------------
 
 **Final acceptance principle:** The image must be visually entertaining,
