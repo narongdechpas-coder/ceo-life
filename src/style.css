@@ -75,6 +75,7 @@ button:disabled { cursor: not-allowed; }
 .chip.star { color: var(--star); }
 .chip.ongoing { background: var(--mustard-soft); border-radius: 6px; padding: 0 6px; color: #8a5a00; }
 .chip.echo { background: #ece6f7; border-radius: 6px; padding: 0 6px; color: #5b3fa0; }
+.chip.risk { background: #fbe9d0; border-radius: 6px; padding: 0 6px; color: #9a4a12; white-space: nowrap; }
 .chip.req { background: var(--panel); border-radius: 6px; padding: 0 6px; color: var(--muted); font-weight: 500; }
 
 /* ---------------------------------------------------------------- actions */
@@ -920,3 +921,7 @@ html.m .table-cards.single > .ecard2 .pbody .art { flex: none; height: auto; min
 .ecard2 .pbody .art:not(:has(img)) { flex: none; aspect-ratio: auto; height: 72px; min-height: 0; }
 .ecard2 .art:not(:has(img)) .ph { font-size: 40px; }
 html.m .table-cards.single > .ecard2 .pbody .art:not(:has(img)) { aspect-ratio: auto; height: 72px; }
+/* มือถือ: ชิปความเสี่ยงเหลือแค่ 🎲 ไม่ให้ตัวเลือกขึ้นบรรทัดใหม่ (คำอธิบายอยู่ใน tooltip และหน้าวิธีเล่น) */
+.chip.risk i { font-style: normal; }
+html.m .chip.risk { padding: 0 3px; }
+html.m .chip.risk i { display: none; }

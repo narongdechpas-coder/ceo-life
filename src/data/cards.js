@@ -253,7 +253,7 @@
       { label: 'ไปด้วย', cost: { cash: 3 }, gain: { stress: -2, rel: 1 }, echo: { id: 'E18', era: '+1' } },
       { label: 'ไม่ไป ทำงานเก็บเงิน', gain: { cash: 2, stress: 1 }, echo: { id: 'E03', era: '+1' } } ] },
     { id: 'V103', era: 1, title: 'ข้อเสนอที่ปฏิเสธยาก', scene: 'หัวหน้ายื่นโครงการใหญ่ที่ต้องแลกด้วยเวลาส่วนตัว', story: 'หัวหน้าชวนรับผิดชอบโครงการสำคัญ แต่ต้องใช้เวลาส่วนตัวมากขึ้น', options: [
-      { label: 'รับงาน', cost: { energy: 2 }, gain: { cash: 3, skills: 1, stress: 1 } },
+      { label: 'รับงาน', cost: { energy: 2 }, gain: { cash: 3, skills: 1, stress: 1 }, risk: [{ p: .3, label: 'โปรเจกต์ล่มกลางทาง', gain: { cash: 1, skills: 1, stress: 2 } }] },
       { label: 'เจรจาขอบเขต', require: { skills: 2 }, cost: { energy: 1 }, gain: { cash: 1, rel: 1 } },
       { label: 'ปฏิเสธ', gain: {} } ] },
     { id: 'V104', era: 1, title: 'บัตรเครดิตใบแรก', scene: 'ธนาคารอนุมัติบัตรเครดิตใบแรก', story: 'ธนาคารอนุมัติวงเงินให้ทันที ของที่อยากได้มานานลดราคาพอดี', options: [
@@ -261,7 +261,7 @@
       { label: 'ไม่สมัคร', gain: {} } ] },
     { id: 'V105', era: 1, title: 'คอร์สออนไลน์ลดราคา', scene: 'คอร์สออนไลน์ที่ตลาดต้องการลดราคาหนัก', story: 'คอร์สทักษะที่ตลาดต้องการลดราคา 70% ถึงคืนนี้', options: [
       { label: 'ซื้อคอร์สพื้นฐาน', cost: { cash: 2 }, gain: { skills: 1 } },
-      { label: 'ซื้อแพ็กเกจเต็มแล้วเร่งเรียน', cost: { cash: 4 }, gain: { skills: 2, stress: 1 } },
+      { label: 'แพ็กเกจเต็ม เร่งเรียน', cost: { cash: 4 }, gain: { skills: 2, stress: 1 }, risk: [{ p: .5, label: 'เรียนจนจบ ได้ของจริง', gain: { skills: 3, stress: 1 } }, { p: .5, label: 'เรียนไม่จบ', gain: { skills: 1, stress: 1 } }] },
       { label: 'ข้ามไป', gain: {} } ] },
     { id: 'V106', era: 1, title: 'นอนดึกติดต่อกันหลายเดือน', scene: 'หลายเดือนมานี้นอนตีสองจนเป็นนิสัย', story: 'งานกับซีรีส์ทำให้คุณนอนตีสองเป็นปกติ', options: [
       { label: 'ปรับตารางชีวิตใหม่', cost: { energy: 2 }, gain: { health: 1 }, echo: { id: 'E17', era: '+1' } },
@@ -283,12 +283,12 @@
       { label: 'จ้างผู้ดูแล', cost: { cash: 3 }, gain: {} },
       { label: 'ไว้ค่อยว่ากัน', tell: 'ผัดไว้ก่อน', gain: {}, echo: { id: 'E08', era: '+1' } } ] },
     { id: 'V205', era: 2, title: 'โบนัสก้อนใหญ่', scene: 'ปีนี้โบนัสออกมาเกินคาด', story: 'ปีนี้ผลงานดี โบนัสออกมาเกินคาด', options: [
-      { label: 'ลงทุนทั้งหมด', gain: { portfolio: 5 } },
+      { label: 'ลงทุนทั้งหมด', gain: { portfolio: 5 }, risk: [{ p: .5, label: 'ตลาดขาขึ้น', gain: { portfolio: 7 } }, { p: .5, label: 'ตลาดซบเซา', gain: { portfolio: 3 } }] },
       { label: 'เก็บเป็นเงินสด', gain: { cash: 7 } },
       { label: 'ฉลองกับคนที่รัก', gain: { cash: 2, rel: 2, stress: -2 } } ] },
     { id: 'V206', era: 2, title: 'ลูกค้าคนสำคัญชวนดื่ม', scene: 'ลูกค้ารายใหญ่ชวนไปสังสรรค์ทุกสัปดาห์', story: 'ลูกค้ารายใหญ่ชวนสังสรรค์ทุกสัปดาห์ ดีลใหญ่ขึ้นกับความสนิท', options: [
       { label: 'ไปทุกครั้ง', gain: { cash: 2, health: -1, stress: 1 }, echo: { id: 'E09', era: '+1' } },
-      { label: 'ไปบางครั้ง', gain: {} },
+      { label: 'ไปบางครั้ง', gain: {}, risk: [{ p: .5, label: 'ได้ดีลจากวงเหล้า', gain: { cash: 2 } }] },
       { label: 'ปฏิเสธอย่างสุภาพ', gain: { health: 1 } } ] },
     // ยุค III
     { id: 'V301', era: 3, title: 'ข้อเสนองานต่างประเทศ', scene: 'บริษัทแม่เสนอตำแหน่งผู้บริหารที่สิงคโปร์', story: 'บริษัทแม่เสนอตำแหน่งผู้บริหารที่สิงคโปร์ เงินดีแต่ต้องอยู่ไกลบ้าน', options: [
@@ -300,7 +300,7 @@
     { id: 'V303', era: 3, title: 'ตลาดหุ้นผันผวนหนัก', scene: 'ตลาดหุ้นร่วงหนักจนพอร์ตติดลบสองหลัก', story: 'พอร์ตติดลบสองหลัก ข่าวทุกช่องพูดถึงวิกฤต', options: [
       { label: 'ถือต่ออย่างมีวินัย', gain: { stress: 1 }, echo: { id: 'E12', era: '+1' } },
       { label: 'ขายตัดขาดทุน', require: { portfolio: 4 }, gain: { portfolio: -4, cash: 3, stress: -1 } },
-      { label: 'ช้อนซื้อเพิ่ม', cost: { cash: 3 }, gain: { portfolio: 4, stress: 1 } } ] },
+      { label: 'ช้อนซื้อเพิ่ม', cost: { cash: 3 }, gain: { portfolio: 4, stress: 1 }, risk: [{ p: .5, label: 'ช้อนได้ก้นพอดี', gain: { portfolio: 6, stress: 1 } }, { p: .5, label: 'ตลาดลงต่อ', gain: { portfolio: 2, stress: 2 } }] } ] },
     { id: 'V304', era: 3, title: 'เพื่อนเก่าป่วยหนัก', scene: 'เพื่อนสมัยมัธยมป่วยหนัก ครอบครัวเขาลำบากเรื่องค่ารักษา', story: 'เพื่อนสมัยมัธยมเข้าโรงพยาบาล ครอบครัวเขาลำบากเรื่องค่ารักษา', options: [
       { label: 'ไปเยี่ยมและช่วยค่ารักษา', cost: { cash: 3, energy: 1 }, gain: { rel: 2, impact: 1 } },
       { label: 'ส่งข้อความให้กำลังใจ', gain: {} } ] },
@@ -309,7 +309,7 @@
       { label: 'จ้างติวเตอร์แก้ปัญหา', cost: { cash: 3 }, gain: { stress: -1 } },
       { label: 'ให้คู่ชีวิตจัดการไปก่อน', gain: { rel: -1 }, echo: { id: 'E13', era: '+1' } } ] },
     { id: 'V306', era: 3, title: 'วิกฤตวัยกลางคน', scene: 'วันหนึ่งตื่นมาแล้วรู้สึกว่าชีวิตวนอยู่ที่เดิม', story: 'ตื่นมาแล้วรู้สึกว่าชีวิตวนอยู่ที่เดิม', options: [
-      { label: 'ลาพักยาว', cost: { cash: 4 }, gain: { stress: -4, health: 1 } },
+      { label: 'ลาพักยาว', cost: { cash: 4 }, gain: { stress: -4, health: 1 }, risk: [{ p: .3, label: 'กลับมางานกองท่วมโต๊ะ', gain: { stress: -2, health: 1 } }] },
       { label: 'ซื้อรถในฝัน', cost: { cash: 6 }, gain: { lp: 2, ongoing: { cash: -1 } } },
       { label: 'อดทนต่อไป', gain: { stress: 2 } } ] },
     // ยุค IV
@@ -395,10 +395,10 @@
 
   // ---------------------------------------------------------------- Opportunities (12)
   const OPPORTUNITIES = [
-    { id: 'O01', title: 'งานฟรีแลนซ์ช่วงสั้น', scene: 'ลูกค้าเก่าส่งงานด่วนมาให้ทำช่วงสั้นๆ', cost: { energy: 2 }, gain: { cash: 4, stress: 1 } },
+    { id: 'O01', title: 'งานฟรีแลนซ์ช่วงสั้น', scene: 'ลูกค้าเก่าส่งงานด่วนมาให้ทำช่วงสั้นๆ', cost: { energy: 2 }, gain: { cash: 4, stress: 1 }, risk: [{ p: .7, label: 'ได้ค่าจ้างครบ', gain: { cash: 5, stress: 1 } }, { p: .3, label: 'ลูกค้าเบี้ยวครึ่ง', gain: { cash: 1, stress: 2 } }] },
     { id: 'O02', title: 'สัมมนาเครือข่ายวิชาชีพ', scene: 'สมาคมวิชาชีพจัดงานสัมมนาและงานพบปะคนในวงการ', cost: { cash: 2, energy: 1 }, gain: { rel: 1, skills: 1 } },
     { id: 'O03', title: 'ทุนอบรมต่างประเทศ', scene: 'บริษัทเปิดรับสมัครทุนไปอบรมต่างประเทศหนึ่งเดือน', require: { skills: 3 }, cost: { energy: 2 }, gain: { skills: 2, rel: -1 } },
-    { id: 'O04', title: 'จองซื้อหุ้น IPO', scene: 'บริษัทที่คุณสนใจกำลังจะเข้าตลาดหุ้น', cost: { cash: 4 }, gain: { portfolio: 5 } },
+    { id: 'O04', title: 'จองซื้อหุ้น IPO', scene: 'บริษัทที่คุณสนใจกำลังจะเข้าตลาดหุ้น', cost: { cash: 4 }, gain: { portfolio: 5 }, risk: [{ p: .4, label: 'หุ้นขึ้นแรง', gain: { portfolio: 8 } }, { p: .6, label: 'ราคานิ่ง', gain: { portfolio: 3 } }] },
     { id: 'O05', title: 'ทริปครอบครัวราคาพิเศษ', scene: 'เจอแพ็กเกจเที่ยวครอบครัวลดราคาช่วงนอกฤดู', cost: { cash: 3 }, gain: { rel: 2, stress: -2 } },
     { id: 'O06', title: 'สมาชิกฟิตเนสรายปี', scene: 'ฟิตเนสใกล้บ้านจัดโปรสมาชิกรายปี', cost: { cash: 3 }, gain: { health: 2 } },
     { id: 'O07', title: 'ได้รับเชิญเป็นวิทยากร', scene: 'งานสัมมนาในสายงานชวนคุณขึ้นพูดเรื่องที่ถนัด', require: { skills: 4 }, cost: { energy: 1 }, gain: { cash: 3, impact: 1 } },

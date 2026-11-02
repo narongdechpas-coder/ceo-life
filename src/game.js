@@ -117,9 +117,19 @@
   //   cause : ส่วนท้ายประโยค "...ที่คุณ<cause>" เช่น 'รูดเลย'
   // การ์ดเคราะห์: ผลเบาลงเมื่อผ่านเงื่อนไขที่เตรียมไว้ (มีประกัน มีเงินสำรอง ฯลฯ)
   const effective = (s, o) => (o.soft && meets(s, o.soft.when) ? { ...o, gain: o.soft.gain } : o);
+  // ตัวเลือกที่ "มีความเสี่ยง": สุ่มผลจริงจาก risk (ความน่าจะเป็นที่เหลือใช้ gain ปกติ) ด้วย RNG ของเกม
+  function rollRisk(s, o) {
+    s.lastRisk = null;
+    if (!o.risk || !o.risk.length) return o.gain;
+    let r = rand(s);
+    for (const x of o.risk) { if (r < x.p) { s.lastRisk = { label: x.label, gain: x.gain }; return x.gain; } r -= x.p; }
+    return o.gain;
+  }
   function applyOutcome(s, o, src, ctx) {
     if (o.clearOngoing) s.ongoing = s.ongoing.filter(x => x.src !== src);
-    applyGain(s, o.gain, src);
+    const gain = rollRisk(s, o);
+    applyGain(s, gain, src);
+    if (s.lastRisk) log(s, `ผลที่ออก: ${s.lastRisk.label}`, 'key');
     if (o.echo && (o.echo.chance == null || rand(s) < o.echo.chance)) plantEcho(s, o.echo.id, ctx, o.echo.delay);
   }
   // delay 'round' = กลับมาในบทถัดไป (โซ่ซวยซ้ำซ้อน) ไม่งั้นรอยุคถัดไป
@@ -298,7 +308,7 @@
       story(s, { kind: 'echo', id: card.id, good: card.kind === 'good', title: card.title, scene: card.scene || '', label: o.label, tell: said, regret: !!o.regret,
         from: link ? link.from : '', cause: link ? link.cause || '' : '', planted: link ? link.planted : null, quip: o.quip || '' });
     } else if (kind === 'incident') story(s, { kind: 'incident', id: card.id, title: card.title, scene: card.scene || '', quip: o.quip || '', soft: o !== raw });
-    else story(s, { kind: 'event', title: card.title, scene: card.scene || '', label: o.label, tell: said, echo: !!o.echo, quip: o.quip || '' });
+    else story(s, { kind: 'event', title: card.title, scene: card.scene || '', label: o.label, tell: s.lastRisk ? `${said} (${s.lastRisk.label})` : said, echo: !!o.echo, quip: o.quip || '' });
     s.lastQuip = o.quip || '';
     log(s, kind === 'incident' ? `เคราะห์ "${card.title}"${o !== raw ? ' (เบาลงเพราะเตรียมไว้)' : ''}` : `${kind === 'echo' ? 'Echo' : 'เหตุการณ์'} "${card.title}" → ${o.label}`,
       kind === 'incident' ? 'bad' : kind === 'echo' ? (card.kind === 'good' ? 'good' : (o.regret ? 'bad' : 'key')) : 'key');
@@ -426,7 +436,7 @@
       payCost(s, o.cost || {});
       applyOutcome(s, o, oid, { from: `รับโอกาส “${o.title}”`, cause: `รับโอกาส “${o.title}”` });
       s.oppAccepted += 1;
-      story(s, { kind: 'opp', title: o.title, scene: o.scene || '' });
+      story(s, { kind: 'opp', title: o.title, scene: o.scene || '', luck: s.lastRisk ? s.lastRisk.label : '' });
       log(s, `รับโอกาส "${o.title}"`, 'key');
     } else log(s, 'ปล่อยผ่านโอกาสที่เห็น');
     s.oppChoices = [];

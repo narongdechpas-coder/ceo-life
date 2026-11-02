@@ -52,6 +52,7 @@
     }
     if (extra && extra.require) out.unshift(`<span class="chip req">ต้องมี ${Object.entries(extra.require).map(([k, v]) => `${ICON[k]}≥${v}`).join(' ')}</span>`);
     if (extra && extra.echo) out.push('<span class="chip echo" title="ผลสะท้อนรออยู่ในยุคถัดไป">🔮 Echo</span>');
+    if (extra && extra.risk) out.push('<span class="chip risk" title="มีความเสี่ยง: ผลจริงอาจดีหรือแย่กว่าที่แสดง" aria-label="มีความเสี่ยง">🎲<i> เสี่ยง</i></span>');
     if (extra && extra.clearOngoing) out.push('<span class="chip req">หยุดผล ↻ เดิม</span>');
     if (extra && extra.regret) out.push('<span class="chip neg">Regret −2 คะแนน</span>');
     return `<span class="chips">${out.join('') || '<span class="chip req">ไม่มีผล</span>'}</span>`;
@@ -329,6 +330,7 @@
           <li><b>การพัก</b> จบรอบโดยเหลือแรง 3 ขึ้นไป ความเครียดลด 1 ไม่ต้องใช้ทุกช่องก็ได้</li>
           <li><b>เงินไม่พอ</b> ส่วนที่ขาดกลายเป็นหนี้ 🔗 มีดอกเบี้ยทุกบท</li>
           <li><b>🔮 Echo</b> ทางเลือกที่มีป้ายนี้จะย้อนกลับมาในยุคหน้า ทั้งผลดีและผลร้าย Echo ร้ายที่ยังไม่ได้แก้ตอนจบเกม นับเป็น Regret</li>
+          <li><b>🎲 เสี่ยง</b> ทางเลือกที่มีป้ายนี้ ผลจริงอาจดีหรือแย่กว่าตัวเลขที่เห็น ขึ้นกับดวง</li>
         </ul>
         <h4>ลำดับในแต่ละบท</h4>
         <ol>
@@ -519,7 +521,7 @@
         if (e.ongoing) t += ` ทำให้${ongoingVerb(e.ongoing)}นับจากนั้น`;
         if (e.done) t += ` จน${esc(e.name)}สำเร็จครบทุกขั้น`;
         out.push(t);
-      } else if (e.kind === 'opp') out.push(e.scene ? `${esc(e.scene)} คุณรับโอกาสนี้ไว้` : `คุณคว้าโอกาส “${esc(e.title)}” ไว้ได้`);
+      } else if (e.kind === 'opp') out.push((e.scene ? `${esc(e.scene)} คุณรับโอกาสนี้ไว้` : `คุณคว้าโอกาส “${esc(e.title)}” ไว้ได้`) + (e.luck ? ` ผลออกมาว่า${esc(e.luck)}` : ''));
       else if (e.kind === 'promote') out.push(`คุณได้เลื่อนเป็น${esc(gapIfLatin(e.title))} เงินเดือนขึ้นเป็น ${e.salary} แต่ค่าครองชีพก็ขยับตาม`);
       else if (e.kind === 'burnout') out.push('งานหนักจนร่างกายรับไม่ไหว คุณ Burnout');
       else if (e.kind === 'decay') decay[e.stat] += 1;
@@ -1060,13 +1062,18 @@
         const err = safely(() => G.chooseOption(s, Number(d.opt)));
         run(err);
         // ประโยคกวนของโหมดเสริม ขึ้นนานกว่าข้อความปกติให้อ่านทัน
-        if (!err && s.lastQuip) toast(`💬 ${s.lastQuip}`, 4200, 'quip');
+        if (!err && s.lastRisk) toast(`🎲 ${s.lastRisk.label} ${plain({}, s.lastRisk.gain)}`, 3200);
+        else if (!err && s.lastQuip) toast(`💬 ${s.lastQuip}`, 4200, 'quip');
       });
       return;
     }
     if (d.opp !== undefined) {
       // รับโอกาสหรือปล่อยผ่าน การ์ดโอกาสทุกใบออกจากโต๊ะพร้อมกัน
-      withFx([...document.querySelectorAll('.table .ecard2.opp')], ev, () => run(safely(() => G.takeOpportunity(s, d.opp || null))));
+      withFx([...document.querySelectorAll('.table .ecard2.opp')], ev, () => {
+        const err = safely(() => G.takeOpportunity(s, d.opp || null));
+        run(err);
+        if (!err && d.opp && s.lastRisk) toast(`🎲 ${s.lastRisk.label} ${plain({}, s.lastRisk.gain)}`, 3200);
+      });
       return;
     }
     if (d.amount) {
