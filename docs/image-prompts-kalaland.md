@@ -10,7 +10,9 @@
 
 **ในโหมดนี้ทุกภาพมาจาก `assets/art/kala/`** ทั้งอาชีพ Life Project โอกาส และการ์ดเหตุการณ์ ไม่ปนกับภาพชุดโหมดปกติ ไฟล์ที่ยังไม่มีจะแสดงไอคอนแทน
 
-**ลำดับ:** เริ่มจาก **K-E05 เลือกตั้ง** เป็นภาพทดสอบแรก (ใกล้ภาพตัวอย่างในบอร์ด v3.0 ที่สุด เทียบสไตล์ได้ง่าย) → กลุ่ม **A** ที่เหลือ (27 ภาพ รวมอาชีพ 8 ภาพ โอกาส และพื้นโต๊ะ เกมมีภาพครบทุกยุค เคราะห์ และ Echo แบบใช้ร่วม) → กลุ่ม **B** ทยอยเติม
+**ลำดับ:** เริ่มจาก **K-E05 เลือกตั้ง** เป็นภาพทดสอบแรก (ใกล้ภาพตัวอย่างในบอร์ด v3.0 ที่สุด เทียบสไตล์ได้ง่าย) → กลุ่ม **A** ที่เหลือ (39 ภาพ รวมอาชีพ 8 ภาพ เคราะห์แยกใบ 12 ภาพ โอกาส และพื้นโต๊ะ เกมมีภาพครบทุกยุค และ Echo แบบใช้ร่วม) → กลุ่ม **B** ทยอยเติม
+
+**ชุดเคราะห์ 12 ภาพ (`K-I01`–`K-I12`):** แต่ละใบมีภาพของตัวเอง วางเป็น `assets/art/kala/K-I01.webp` … `K-I12.webp` ได้เลยโดยไม่ต้องแก้โค้ด ใบไหนยังไม่มีไฟล์ เกมจะใช้ภาพใช้ร่วม `kala-incident` แทน (ยังไม่มีอีกก็เป็นลายแถบเหลือง) ทุกใบให้ผู้เล่นเป็นตัวหลักที่โดนเคราะห์ งานบวช/งานศพไม่มีพระหรือพิธีศาสนาในภาพ ม็อบปิดถนนเห็นแค่รถติด ไม่มีผู้ชุมนุมหรือธง
 
 | ไฟล์ | กลุ่ม | การ์ด |
 |---|---|---|
@@ -75,18 +77,18 @@
 | `K-X09` | B | ถูกหวย |
 | `K-X10` | B | รถไฟฟ้าเสร็จ |
 | `K-X11` | B | ผู้มีอิทธิพลเอาคืน |
-| `K-I01` | B | เจอด่าน |
-| `K-I02` | B | เมาขับชนแล้วหนี |
-| `K-I03` | B | ซื้อของออนไลน์โดนโกง |
-| `K-I04` | B | งบถนนหาย |
-| `K-I05` | B | ม็อบปิดถนน |
-| `K-I06` | B | ฝุ่น PM2.5 |
-| `K-I07` | B | งานบวช |
-| `K-I08` | B | งานแต่ง |
-| `K-I09` | B | งานศพในซอย |
-| `K-I10` | B | ไฟดับตอนส่งงาน |
-| `K-I11` | B | แก๊งคอลเซ็นเตอร์ |
-| `K-I12` | B | ค่าไฟขึ้น |
+| `K-I01` | A | เคราะห์ · เจอด่าน |
+| `K-I02` | A | เคราะห์ · คนเมาขับชนแล้วหนี |
+| `K-I03` | A | เคราะห์ · ซื้อของออนไลน์โดนโกง |
+| `K-I04` | A | เคราะห์ · งบถนนหายระหว่างทาง |
+| `K-I05` | A | เคราะห์ · ม็อบปิดถนน |
+| `K-I06` | A | เคราะห์ · ฝุ่น PM2.5 ทะลุมาตรฐาน |
+| `K-I07` | A | เคราะห์ · งานบวชญาติ |
+| `K-I08` | A | เคราะห์ · งานแต่งเพื่อนร่วมงาน |
+| `K-I09` | A | เคราะห์ · งานศพคนในซอย |
+| `K-I10` | A | เคราะห์ · ไฟดับทั้งเขตตอนส่งงาน |
+| `K-I11` | A | เคราะห์ · แก๊งคอลเซ็นเตอร์โทรมา |
+| `K-I12` | A | เคราะห์ · ค่าไฟขึ้นแบบงงๆ |
 
 ---
 
@@ -1737,326 +1739,326 @@ Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
-## `K-I01` · เจอด่าน (B)
+## `K-I01` · เจอด่าน (A)
 ```text
 # SCENE DESCRIPTION
 
-Scene: A checkpoint on the way
+Scene: Checkpoint that eats half the night
 
-Main Characters: driver holding documents, generic officer with a flashlight; exaggerated but realistic and relatable expressions
+Main Characters: tired driver in a small car, a generic officer in a plain khaki uniform without any insignia waving a flashlight; exaggerated but realistic and relatable expressions
 
 Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes); generic government officer look (plain khaki uniform without insignia)
 
-Main Action: flashlight pointing at an empty wallet
+Main Action: the driver rests their chin on the steering wheel while the officer slowly inspects a blank document; a wall clock on a roadside pole shows the hands spinning past midnight (no numbers on the clock face)
 
-Environment: night road with traffic cones
+Environment: night road lined with traffic cones and a long queue of cars with tail lights glowing
 
-Visual Irony: the checkpoint checks everything except what matters
+Visual Irony: the checkpoint inspects every tiny thing, while an obviously overloaded truck drives past behind them unchecked
 
 Palette Accent: earth brown, warm grey, red
 
-Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+Composition: Medium-wide, the player is the main character and the one hit by bad luck, clear subject and readable action
 
 Aspect Ratio: 16:9
 
-Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, bill, envelope, parcel and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
-## `K-I02` · เมาขับชนแล้วหนี (B)
+## `K-I02` · คนเมาขับชนแล้วหนี (A)
 ```text
 # SCENE DESCRIPTION
 
-Scene: Hit and run
+Scene: Hit and run, nobody to blame
 
-Main Characters: injured cyclist on the road, a car speeding away leaving a cloud; exaggerated but realistic and relatable expressions
+Main Characters: the player sitting on the curb next to a bent bicycle with a bandaged arm, a car speeding away in a cartoon dust cloud; exaggerated but realistic and relatable expressions
 
 Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
 
-Main Action: onlookers filming with phones (blank screens)
+Main Action: the player looks up at a street CCTV camera that is hanging loose by its wire, lens cracked, while a medical bill (blank paper) flutters down into their lap
 
-Environment: street corner at night with a broken CCTV camera
+Environment: street corner at night under one flickering streetlight
 
-Visual Irony: the camera was broken, as always
+Visual Irony: the one camera that should have seen everything is broken, as always
 
 Palette Accent: earth brown, warm grey, red
 
-Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+Composition: Medium-wide, the player is the main character and the one hit by bad luck, clear subject and readable action
 
 Aspect Ratio: 16:9
 
-Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, bill, envelope, parcel and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
-## `K-I03` · ซื้อของออนไลน์โดนโกง (B)
+## `K-I03` · ซื้อของออนไลน์โดนโกง (A)
 ```text
 # SCENE DESCRIPTION
 
 Scene: Online shopping scam
 
-Main Characters: customer opening a box containing a brick; exaggerated but realistic and relatable expressions
+Main Characters: the player kneeling at their doorstep, opening a parcel box that contains a red brick instead of a phone; exaggerated but realistic and relatable expressions
 
 Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
 
-Main Action: five shining stars floating above the brick
+Main Action: the player holds up the brick in disbelief; above it five glowing golden stars float proudly like a review rating (stars only, no text)
 
-Environment: home doorstep
+Environment: condo corridor doorstep with torn tape and bubble wrap scattered
 
 Visual Irony: five-star review, zero-star product
 
-Palette Accent: earth brown, warm grey, red
+Palette Accent: earth brown, warm grey, mustard yellow
 
-Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+Composition: Medium-wide, the player is the main character and the one hit by bad luck, clear subject and readable action
 
 Aspect Ratio: 16:9
 
-Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, bill, envelope, parcel and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
-## `K-I04` · งบถนนหาย (B)
+## `K-I04` · งบถนนหายระหว่างทาง (A)
 ```text
 # SCENE DESCRIPTION
 
-Scene: Pothole road
+Scene: Road budget vanished on the way
 
-Main Characters: driver with a broken wheel, road full of potholes shaped like coins; exaggerated but realistic and relatable expressions
+Main Characters: the player standing beside their scooter with a flat tire stuck in a deep pothole; exaggerated but realistic and relatable expressions
 
 Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf)
 
-Main Action: a new paved road ending abruptly after one meter
+Main Action: a freshly paved shiny strip of road ends abruptly one meter in, and the old giant pothole returns right after it; a broken traffic cone floats in the puddle
 
-Environment: suburban road
+Environment: suburban road after rain, puddles reflecting the sky
 
 Visual Irony: new road every year, same hole every year
 
 Palette Accent: earth brown, warm grey, red
 
-Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+Composition: Medium-wide, the player is the main character and the one hit by bad luck, clear subject and readable action
 
 Aspect Ratio: 16:9
 
-Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, bill, envelope, parcel and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
-## `K-I05` · ม็อบปิดถนน (B)
+## `K-I05` · ม็อบปิดถนน (A)
 ```text
 # SCENE DESCRIPTION
 
-Scene: Traffic stopped for hours
+Scene: Every road closed for the whole day
 
-Main Characters: commuters sleeping in their cars; exaggerated but realistic and relatable expressions
+Main Characters: the player in a car stuck in gridlock that stretches to the horizon, commuters napping in neighboring cars; exaggerated but realistic and relatable expressions
 
 Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
 
-Main Action: a delivery rider climbing over cars
+Main Action: the player gives up and reclines the car seat, eating instant noodles from a cup, while a delivery rider climbs over car roofs; the cause of the jam is not visible at all, only endless cars
 
-Environment: city intersection gridlock
+Environment: wide city avenue with a sea of stopped cars under a hazy sunset; no protesters, no crowds, no flags, no banners, no colored ribbons
 
-Visual Irony: you can't go anywhere, so you finally rest
+Visual Irony: you cannot go anywhere, so you finally get to rest
 
-Palette Accent: earth brown, warm grey, red
+Palette Accent: earth brown, warm grey, sky blue
 
-Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+Composition: Medium-wide, the player is the main character and the one hit by bad luck, clear subject and readable action
 
 Aspect Ratio: 16:9
 
-Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, bill, envelope, parcel and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
-## `K-I06` · ฝุ่น PM2.5 (B)
+## `K-I06` · ฝุ่น PM2.5 ทะลุมาตรฐาน (A)
 ```text
 # SCENE DESCRIPTION
 
-Scene: Smog city
+Scene: Orange sky smog day
 
-Main Characters: people wearing masks, buildings fading into orange haze; exaggerated but realistic and relatable expressions
+Main Characters: the player walking to work in a thick face mask, buildings fading into orange haze; exaggerated but realistic and relatable expressions
 
 Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes); elderly citizen look (cotton shirt, reading glasses, cloth bag)
 
-Main Action: a child drawing a blue sky with crayons
+Main Action: the player stops beside a small child who is drawing a bright blue sky with crayons on blank paper, while the real sky behind them is orange-brown
 
-Environment: school playground
+Environment: school fence and sidewalk in heavy smog, sun reduced to a pale disc
 
-Visual Irony: breathing is the new extreme sport
+Visual Irony: children only know blue skies from crayons
 
-Palette Accent: earth brown, warm grey, red
+Palette Accent: burnt orange, warm grey, sky blue
 
-Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+Composition: Medium-wide, the player is the main character and the one hit by bad luck, clear subject and readable action
 
 Aspect Ratio: 16:9
 
-Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, bill, envelope, parcel and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
-## `K-I07` · งานบวช (B)
+## `K-I07` · งานบวชญาติ (A)
 ```text
 # SCENE DESCRIPTION
 
-Scene: Ordination party envelope
+Scene: Three relatives celebrating at once
 
-Main Characters: guest holding an envelope, a long buffet line; exaggerated but realistic and relatable expressions
+Main Characters: the player at a festive countryside celebration tent, holding three plain blank envelopes fanned out like playing cards; exaggerated but realistic and relatable expressions
 
-Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf); plain envelope
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf); plain blank envelopes
 
-Main Action: envelope thinner than the plate
+Main Action: the player peeks into a nearly empty wallet while a long, cheerful buffet line and a stack of folding chairs stretch behind them
 
-Environment: village temple fair grounds (no religious mockery, festive setting only)
+Environment: front-yard party tent in a village with string lights, round tables and a loudspeaker; no monks, no temple, no religious objects or rituals shown
 
-Visual Irony: merit is priceless, the envelope is not
+Visual Irony: joining the celebration is free, the envelopes are not
 
-Palette Accent: earth brown, warm grey, red
+Palette Accent: mustard yellow, warm grey, red
 
-Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+Composition: Medium-wide, the player is the main character and the one hit by bad luck, clear subject and readable action
 
 Aspect Ratio: 16:9
 
-Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, bill, envelope, parcel and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
-## `K-I08` · งานแต่ง (B)
+## `K-I08` · งานแต่งเพื่อนร่วมงาน (A)
 ```text
 # SCENE DESCRIPTION
 
-Scene: Wedding envelope
+Scene: Five-star hotel wedding invitation
 
-Main Characters: office worker in formal clothes counting coins at a fancy hotel entrance; exaggerated but realistic and relatable expressions
+Main Characters: the player in formal clothes at a fancy hotel ballroom entrance, counting coins into a plain blank envelope; exaggerated but realistic and relatable expressions
 
-Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes); plain envelope
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes); plain blank envelope
 
-Main Action: looking at the dessert tower
+Main Action: the player glances at a towering dessert display while the envelope in hand is clearly thicker than the tiny plate of food
 
-Environment: hotel ballroom
+Environment: glittering hotel ballroom with chandeliers and floral arches
 
-Visual Irony: the envelope costs more than the food
+Visual Irony: the envelope costs more than the meal
 
-Palette Accent: earth brown, warm grey, red
+Palette Accent: mustard yellow, warm grey, red
 
-Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+Composition: Medium-wide, the player is the main character and the one hit by bad luck, clear subject and readable action
 
 Aspect Ratio: 16:9
 
-Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, bill, envelope, parcel and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
-## `K-I09` · งานศพในซอย (B)
+## `K-I09` · งานศพคนในซอย (A)
 ```text
 # SCENE DESCRIPTION
 
-Scene: Neighborhood funeral
+Scene: Seven nights in a row at the neighborhood hall
 
-Main Characters: neighbors in black holding envelopes, sitting in rows; exaggerated but realistic and relatable expressions
+Main Characters: the player in black clothes sitting in a row of plastic chairs among neighbors, visibly sleepy; exaggerated but realistic and relatable expressions
 
-Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf); elderly citizen look (cotton shirt, reading glasses, cloth bag); plain envelope
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes); elderly citizen look (cotton shirt, reading glasses, cloth bag); plain blank envelopes
 
-Main Action: checking their wallets quietly
+Main Action: the player quietly checks a thin wallet while a calendar-like row of seven identical small envelopes is lined up on their lap
 
-Environment: community hall
+Environment: community hall at night with fluorescent lights, rows of chairs and simple white flower decorations; no monks, no religious rituals or objects shown, respectful mood
 
-Visual Irony: social tax, collected at every life stage
+Visual Irony: the social tax is collected at every life event, every night
 
-Palette Accent: earth brown, warm grey, red
+Palette Accent: warm grey, dark navy, mustard yellow
 
-Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+Composition: Medium-wide, the player is the main character and the one hit by bad luck, clear subject and readable action
 
 Aspect Ratio: 16:9
 
-Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, bill, envelope, parcel and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
-## `K-I10` · ไฟดับตอนส่งงาน (B)
+## `K-I10` · ไฟดับทั้งเขตตอนส่งงาน (A)
 ```text
 # SCENE DESCRIPTION
 
-Scene: Power outage at deadline
+Scene: Blackout five minutes before the deadline
 
-Main Characters: worker lit by phone light, laptop dark; exaggerated but realistic and relatable expressions
+Main Characters: the player lit only by a phone flashlight, laptop screen black; exaggerated but realistic and relatable expressions
 
 Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
 
-Main Action: staring at a big backup generator that is not connected
+Main Action: the player stares at a big shiny backup generator in the corner whose power cable lies unplugged on the floor
 
-Environment: small home office
+Environment: small home office in total darkness, whole neighborhood dark through the window
 
-Visual Irony: the backup exists, the cable doesn't
+Visual Irony: the backup exists, the cable does not
 
-Palette Accent: earth brown, warm grey, red
+Palette Accent: dark navy, warm grey, mustard yellow
 
-Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+Composition: Medium-wide, the player is the main character and the one hit by bad luck, clear subject and readable action
 
 Aspect Ratio: 16:9
 
-Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, bill, envelope, parcel and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
-## `K-I11` · แก๊งคอลเซ็นเตอร์ (B)
+## `K-I11` · แก๊งคอลเซ็นเตอร์โทรมา (A)
 ```text
 # SCENE DESCRIPTION
 
-Scene: Scam call
+Scene: Scam call claiming an illegal parcel
 
-Main Characters: elderly man on the phone, scammer in a cubicle wearing a fake uniform; exaggerated but realistic and relatable expressions
+Main Characters: the player holding a phone in panic at home; on the other half of the frame a scammer in a cramped cubicle wearing an obviously fake costume uniform; exaggerated but realistic and relatable expressions
 
-Character Look: elderly citizen look (cotton shirt, reading glasses, cloth bag)
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes); generic fake uniform costume with no real insignia
 
-Main Action: phone cord stretching from the scam room to the house
+Main Action: a cartoon phone cord stretches across the split frame from the scam cubicle into the player's ear, the phone screen blank
 
-Environment: split scene: scam office and home
+Environment: split scene: cluttered scam office with rows of headsets on the left, small home living room on the right
 
 Visual Irony: the call is fake, the panic is real
 
-Palette Accent: earth brown, warm grey, red
+Palette Accent: warm grey, red, sky blue
 
-Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+Composition: Medium-wide, the player is the main character and the one hit by bad luck, clear subject and readable action
 
 Aspect Ratio: 16:9
 
-Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, bill, envelope, parcel and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
 
-## `K-I12` · ค่าไฟขึ้น (B)
+## `K-I12` · ค่าไฟขึ้นแบบงงๆ (A)
 ```text
 # SCENE DESCRIPTION
 
 Scene: Electricity bill shock
 
-Main Characters: family reading a bill that is longer than the table; exaggerated but realistic and relatable expressions
+Main Characters: the player and family around a small table, unrolling a blank electricity bill that is longer than the table; exaggerated but realistic and relatable expressions
 
 Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf)
 
-Main Action: the bill catching fire by itself
+Main Action: the blank bill starts smoking and glowing hot in their hands while a single tiny electric fan spins weakly
 
-Environment: small home with one fan
+Environment: small home with one fan and one light bulb, same as always
 
 Visual Irony: same usage, hotter bill
 
-Palette Accent: earth brown, warm grey, red
+Palette Accent: burnt orange, warm grey, red
 
-Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+Composition: Medium-wide, the player is the main character and the one hit by bad luck, clear subject and readable action
 
 Aspect Ratio: 16:9
 
-Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, bill, envelope, parcel and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```

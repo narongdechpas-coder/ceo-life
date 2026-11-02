@@ -657,6 +657,7 @@ html[data-mode="kala"] {
   --star: #1d4fbf;
   --shadow: 3px 3px 0 #1e1a16;
   --kala-head: 'Chonburi', 'Kanit', serif;
+  --brick: #8a3b26;
 }
 html[data-mode="kala"] body {
   background-color: var(--bg);
@@ -672,7 +673,7 @@ html[data-mode="kala"] .ecard-head h3, html[data-mode="kala"] .section-title h2,
 html[data-mode="kala"] .hero h1 span { color: var(--coral); }
 html[data-mode="kala"] .brand span { color: var(--mustard); }
 /* แถบบน: หัวหนังสือพิมพ์ ดำ-แดง */
-html[data-mode="kala"] .topbar { background: #8a3b26; border-bottom: 4px solid var(--mustard); }
+html[data-mode="kala"] .topbar { background: var(--brick); border-bottom: 4px solid var(--mustard); }
 html[data-mode="kala"] .topbar .who { color: var(--mustard); }
 html[data-mode="kala"] .res { background: rgba(255, 255, 255, .08); }
 /* โต๊ะ: สลับได้ 2 แบบจากเมนู ☰ — สีเรียบ = โต๊ะเทา · ภาพ = assets/bg/kala-table.webp (ยังไม่มีไฟล์ก็เห็นสีเทาแทน) */
@@ -685,8 +686,8 @@ html[data-mode="kala"] .table::after { background: linear-gradient(180deg, rgba(
 html[data-mode="kala"] .table .btn.ghost { color: #fff; border-color: rgba(255, 255, 255, .7); background: rgba(30, 26, 22, .35); box-shadow: none; }
 /* การ์ด: ขอบหมึก เงาแข็งแบบงานพิมพ์ */
 html[data-mode="kala"] .tcard { border: 2px solid var(--ink); box-shadow: var(--shadow); border-radius: 10px; }
-html[data-mode="kala"] .pcard-head { background: var(--ink); }
-html[data-mode="kala"] .pcard-foot { background: var(--ink); color: var(--mustard); }
+html[data-mode="kala"] .pcard-head { background: var(--brick); }
+html[data-mode="kala"] .pcard-foot { background: var(--brick); color: var(--mustard); }
 html[data-mode="kala"] .ecard2.event .pcard-head { background: var(--coral); }
 html[data-mode="kala"] .ecard2.event .pcard-foot { background: var(--coral); color: #fff; }
 html[data-mode="kala"] .lv-badge, html[data-mode="kala"] .out .ab { background: var(--ink); }
@@ -704,9 +705,9 @@ html[data-mode="kala"] .art { filter: saturate(1.05) contrast(1.02); }
 .ecard2.incident .opt { border-color: #c8102e; }
 .chip.soft { background: #dbeadf; color: #1f6e5c; border-radius: 999px; padding: 1px 8px; font-size: 12px; }
 /* แถบล่าง: หมึกดำ เส้นเหลือง ปุ่มจบรอบแดง */
-html[data-mode="kala"] .dock { background: var(--ink); border-top: 4px solid var(--mustard); }
+html[data-mode="kala"] .dock { background: var(--brick); border-top: 4px solid var(--mustard); }
 html[data-mode="kala"] .dock-acts .act { border: 2px solid var(--ink); border-radius: 10px; box-shadow: 2px 2px 0 rgba(0, 0, 0, .5); }
-html[data-mode="kala"] .dock-end { background: var(--coral); color: #fff; font-family: var(--kala-head); font-weight: 400; }
+html[data-mode="kala"] .dock-end { background: var(--coral); color: #fff; box-shadow: inset 0 0 0 2px var(--mustard); font-family: var(--kala-head); font-weight: 400; }
 html[data-mode="kala"] .dock-end:hover:not(:disabled) { background: #a50d26; }
 html[data-mode="kala"] .dock-note { background: var(--mustard); color: var(--ink); }
 /* ปุ่มทั่วไปและ panel */
