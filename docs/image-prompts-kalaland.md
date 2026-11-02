@@ -1,4 +1,4 @@
-# KALALAND — Image Prompts v3.0 (โหมดกะลาแลนด์ · 52 ภาพ)
+# KALALAND — Image Prompts v3.0 (โหมดกะลาแลนด์ · 73 ภาพ)
 
 ทุก prompt ใช้ **KALALAND Image Style Lock v3.0** (`docs/kalaland-style-lock.md`) วาง Style Lock เต็มไว้ก่อน แล้วต่อด้วยบล็อก Scene ของแต่ละภาพ (v2.0 เดิมเก็บไว้ที่ `docs/kalaland-style-lock-v2.md`)
 
@@ -8,10 +8,33 @@
 
 **ความปลอดภัย (Style Lock §12):** ตัวละครทุกตัวเป็นคนสมมติ ห้ามหน้าคล้ายนักการเมืองหรือคนดังจริง ห้ามสี โลโก้ หรือตราของพรรคหรือหน่วยงานจริง วัดเป็นได้แค่ฉากหลัง
 
-**ลำดับ:** เริ่มจาก **K-E05 เลือกตั้ง** เป็นภาพทดสอบแรก (ใกล้ภาพตัวอย่างในบอร์ด v3.0 ที่สุด เทียบสไตล์ได้ง่าย) → กลุ่ม **A** ที่เหลือ (18 ภาพ รวมพื้นโต๊ะ เกมมีภาพครบทุกยุค เคราะห์ และ Echo แบบใช้ร่วม) → กลุ่ม **B** ทยอยเติม
+**ในโหมดนี้ทุกภาพมาจาก `assets/art/kala/`** ทั้งอาชีพ Life Project โอกาส และการ์ดเหตุการณ์ ไม่ปนกับภาพชุดโหมดปกติ ไฟล์ที่ยังไม่มีจะแสดงไอคอนแทน
+
+**ลำดับ:** เริ่มจาก **K-E05 เลือกตั้ง** เป็นภาพทดสอบแรก (ใกล้ภาพตัวอย่างในบอร์ด v3.0 ที่สุด เทียบสไตล์ได้ง่าย) → กลุ่ม **A** ที่เหลือ (27 ภาพ รวมอาชีพ 8 ภาพ โอกาส และพื้นโต๊ะ เกมมีภาพครบทุกยุค เคราะห์ และ Echo แบบใช้ร่วม) → กลุ่ม **B** ทยอยเติม
 
 | ไฟล์ | กลุ่ม | การ์ด |
 |---|---|---|
+| `K-C01` | A | อาชีพ · พนักงานสัญญาจ้างรายปี |
+| `K-C02` | A | อาชีพ · ข้าราชการซีเริ่มต้น |
+| `K-C03` | A | อาชีพ · ไรเดอร์ส่งอาหาร |
+| `K-C04` | A | อาชีพ · แม่ค้าออนไลน์ |
+| `K-C05` | A | อาชีพ · ครูอัตราจ้าง |
+| `K-C06` | A | อาชีพ · Influencer สายรีวิว |
+| `K-C07` | A | อาชีพ · โปรแกรมเมอร์ Outsource |
+| `K-C08` | A | อาชีพ · ทายาทตระกูลดัง |
+| `P01` | B | Project · ธุรกิจครอบครัว |
+| `P02` | B | Project · ปริญญาโท |
+| `P03` | B | Project · สร้างครอบครัว |
+| `P04` | B | Project · วิ่งมาราธอน |
+| `P05` | B | Project · เที่ยวรอบโลก |
+| `P06` | B | Project · บ้านของตัวเอง |
+| `P07` | B | Project · สตาร์ทอัพ |
+| `P08` | B | Project · อาสาสมัครชุมชน |
+| `P09` | B | Project · เขียนหนังสือ |
+| `P10` | B | Project · อสังหาให้เช่า |
+| `P11` | B | Project · ดูแลพ่อแม่ |
+| `P12` | B | Project · ฝึกสติ |
+| `kala-opportunity` | A | การ์ดโอกาส (ใช้ร่วม) |
 | `kala-table` (พื้นโต๊ะ · `assets/bg/`) | A | พื้นโต๊ะกะลาแลนด์ |
 | `kala-era-1` | A | ยุค I · เริ่มต้น |
 | `kala-era-2` | A | ยุค II · สร้างตัว |
@@ -66,6 +89,573 @@
 | `K-I12` | B | ค่าไฟขึ้น |
 
 ---
+
+## `K-C01` · อาชีพ · พนักงานสัญญาจ้างรายปี (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A contract employee waiting for the annual contract renewal
+
+Main Characters: nervous young employee, indifferent HR manager; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: holding a blank contract with crossed fingers while a calendar page for December falls
+
+Environment: cramped open-plan office
+
+Visual Irony: job security renewed one year at a time
+
+Palette Accent: cobalt blue, warm grey, paper cream
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `K-C02` · อาชีพ · ข้าราชการซีเริ่มต้น (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A proud new junior civil servant
+
+Main Characters: young officer in a new uniform, beaming parents taking a photo; exaggerated but realistic and relatable expressions
+
+Character Look: generic government officer look (plain khaki uniform without insignia)
+
+Main Action: posing proudly next to a towering stack of blank paperwork while counting a few coins
+
+Environment: government office with ceiling fans
+
+Visual Irony: stable and respected, paid in prestige
+
+Palette Accent: sky blue, warm sand, paper cream
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `K-C03` · อาชีพ · ไรเดอร์ส่งอาหาร (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A food delivery rider in the rain
+
+Main Characters: exhausted rider with a delivery box, customer receiving food dry under a roof; exaggerated but realistic and relatable expressions
+
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf)
+
+Main Action: handing over a perfectly dry meal while soaked to the bone
+
+Environment: rainy street with traffic
+
+Visual Irony: five-star service, zero-star safety net
+
+Palette Accent: cobalt blue, orange, warm grey
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `K-C04` · อาชีพ · แม่ค้าออนไลน์ (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: An online seller doing a live stream to almost nobody
+
+Main Characters: energetic seller with a ring light, piles of products, mother watching on a phone; exaggerated but realistic and relatable expressions
+
+Character Look: influencer look (trendy outfit, phone on a selfie stick with a blank screen)
+
+Main Action: shouting excitedly at a phone on a tripod (blank screen) with only three tiny viewer icons
+
+Environment: small living room turned into a warehouse
+
+Visual Irony: hustling at full volume for an audience of three
+
+Palette Accent: orange, purple, sunflower yellow
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `K-C05` · อาชีพ · ครูอัตราจ้าง (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A temporary teacher buried in paperwork
+
+Main Characters: kind teacher, students waiting with raised hands; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: teaching with one hand while filling stacks of blank forms with the other
+
+Environment: simple classroom with a fan and blackboard (blank)
+
+Visual Irony: the paperwork gets more attention than the students
+
+Palette Accent: leaf green, warm sand, cobalt blue
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `K-C06` · อาชีพ · Influencer สายรีวิว (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A review influencer filming a meal
+
+Main Characters: influencer smiling for the camera, food going cold, friends waiting to eat; exaggerated but realistic and relatable expressions
+
+Character Look: influencer look (trendy outfit, phone on a selfie stick with a blank screen)
+
+Main Action: posing with chopsticks above a plate for the tenth take
+
+Environment: trendy cafe
+
+Visual Irony: the meal is for the camera, not for eating
+
+Palette Accent: purple, orange, pale blue
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `K-C07` · อาชีพ · โปรแกรมเมอร์ Outsource (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A programmer coding for a foreign client at night
+
+Main Characters: tired programmer with headphones, a foreign-client video call window (blank faces); exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: typing fast at midnight while the clock shows the client's morning
+
+Environment: small condo room lit by monitors with blank screens
+
+Visual Irony: world-class work at local wages
+
+Palette Accent: cobalt blue, purple, warm grey
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `K-C08` · อาชีพ · ทายาทตระกูลดัง (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A rich heir walking past the queue
+
+Main Characters: confident heir with sunglasses, a long queue of ordinary applicants; exaggerated but realistic and relatable expressions
+
+Character Look: hi-so look (purple floral silk shirt, thick gold necklace, sunglasses on head)
+
+Main Action: walking straight through a VIP door while the queue stares
+
+Environment: office lobby with a long line
+
+Visual Irony: the shortcut exists, but only for certain surnames
+
+Palette Accent: purple, sunflower yellow, earth brown
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `P01` · Project · ธุรกิจครอบครัว (B)
+```text
+# SCENE DESCRIPTION
+
+Scene: A family shop struggling against a giant mall
+
+Main Characters: parent and adult child behind a tiny shop counter, a huge shiny mall looming across the road; exaggerated but realistic and relatable expressions
+
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf)
+
+Main Action: sweeping the shop front while mall shoppers walk past
+
+Environment: old shophouse street
+
+Visual Irony: the family shop competes with a giant, armed with a broom
+
+Palette Accent: earth brown, orange, cobalt blue
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `P02` · Project · ปริญญาโท (B)
+```text
+# SCENE DESCRIPTION
+
+Scene: A master's degree student juggling work and study
+
+Main Characters: exhausted office worker with a graduation cap on top of a laptop bag; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: reading a thick blank textbook on a crowded bus
+
+Environment: crowded bus at night
+
+Visual Irony: more certificates, same salary
+
+Palette Accent: cobalt blue, warm grey, sunflower yellow
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `P03` · Project · สร้างครอบครัว (B)
+```text
+# SCENE DESCRIPTION
+
+Scene: Starting a family on a tight budget
+
+Main Characters: young couple holding a baby, a mountain of baby products and bills; exaggerated but realistic and relatable expressions
+
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf)
+
+Main Action: calculating with a calculator while the baby smiles
+
+Environment: small rented room
+
+Visual Irony: the happiest expense in the world
+
+Palette Accent: orange, pale blue, paper cream
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `P04` · Project · วิ่งมาราธอน (B)
+```text
+# SCENE DESCRIPTION
+
+Scene: Running a marathon through smog
+
+Main Characters: determined runner wearing a mask, other runners coughing; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: crossing a finish line under an orange smoggy sky
+
+Environment: city road race
+
+Visual Irony: healthy lifestyle, unhealthy air
+
+Palette Accent: orange, warm grey, leaf green
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `P05` · Project · เที่ยวรอบโลก (B)
+```text
+# SCENE DESCRIPTION
+
+Scene: Travelling the world on a budget
+
+Main Characters: budget traveler with an overstuffed backpack, a currency exchange board (blank); exaggerated but realistic and relatable expressions
+
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf)
+
+Main Action: looking at a tiny wallet in front of a sparkling foreign landmark silhouette
+
+Environment: airport departure hall
+
+Visual Irony: the dream trip, paid in installments
+
+Palette Accent: sky blue, sunflower yellow, earth brown
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `P06` · Project · บ้านของตัวเอง (B)
+```text
+# SCENE DESCRIPTION
+
+Scene: Buying a house with a 30-year loan
+
+Main Characters: proud new homeowner holding keys, a bank officer chaining a giant calendar to their leg; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: standing in front of a small townhouse with a chain to a calendar of many pages
+
+Environment: new housing estate
+
+Visual Irony: the house is yours, the loan is forever
+
+Palette Accent: cobalt blue, earth brown, warm sand
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `P07` · Project · สตาร์ทอัพ (B)
+```text
+# SCENE DESCRIPTION
+
+Scene: A startup pitch to investors
+
+Main Characters: young founder with slides, investors with bored faces; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: pitching a tiny rocket model while the investors look at their phones (blank)
+
+Environment: co-working space
+
+Visual Irony: disruptive idea, traditional funding gatekeepers
+
+Palette Accent: purple, orange, cobalt blue
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `P08` · Project · อาสาสมัครชุมชน (B)
+```text
+# SCENE DESCRIPTION
+
+Scene: Community volunteers fixing what the system didn't
+
+Main Characters: volunteers filling a pothole and painting a crosswalk, an official taking credit for the photo; exaggerated but realistic and relatable expressions
+
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf); generic government officer look (plain khaki uniform without insignia)
+
+Main Action: a volunteer working while an official poses in front for a photo
+
+Environment: neighborhood road
+
+Visual Irony: the people do the work, someone else takes the photo
+
+Palette Accent: leaf green, sunflower yellow, warm grey
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `P09` · Project · เขียนหนังสือ (B)
+```text
+# SCENE DESCRIPTION
+
+Scene: Writing a book late at night
+
+Main Characters: writer at a tiny desk surrounded by crumpled papers, a cat sleeping; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: typing on a laptop (blank screen) while a stack of rejection envelopes grows
+
+Environment: small apartment at night
+
+Visual Irony: dreams written after office hours
+
+Palette Accent: cobalt blue, paper cream, purple
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `P10` · Project · อสังหาให้เช่า (B)
+```text
+# SCENE DESCRIPTION
+
+Scene: Being a small landlord
+
+Main Characters: landlord holding keys, tenants of tiny rooms asking for repairs; exaggerated but realistic and relatable expressions
+
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf)
+
+Main Action: balancing a leaking ceiling bucket and a rent notebook (blank)
+
+Environment: small apartment building corridor
+
+Visual Irony: passive income with very active problems
+
+Palette Accent: earth brown, sky blue, warm grey
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `P11` · Project · ดูแลพ่อแม่ (B)
+```text
+# SCENE DESCRIPTION
+
+Scene: Caring for aging parents
+
+Main Characters: adult child helping an elderly parent, hospital appointment cards (blank) everywhere; exaggerated but realistic and relatable expressions
+
+Character Look: elderly citizen look (cotton shirt, reading glasses, cloth bag); office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: carrying a parent's bag and a work laptop at the same time
+
+Environment: hospital waiting area
+
+Visual Irony: the sandwich generation, pressed from both sides
+
+Palette Accent: leaf green, pale blue, warm sand
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `P12` · Project · ฝึกสติ (B)
+```text
+# SCENE DESCRIPTION
+
+Scene: Practicing mindfulness in a chaotic city
+
+Main Characters: person meditating calmly, chaos all around: traffic, construction, notifications; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: sitting cross-legged on a rooftop while horns and drills surround them
+
+Environment: city rooftop
+
+Visual Irony: inner peace, outer noise
+
+Palette Accent: leaf green, cobalt blue, sunflower yellow
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `kala-opportunity` · การ์ดโอกาส (ใช้ร่วม) (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A rare open door of opportunity
+
+Main Characters: ordinary person peeking through a slightly open door, a crowd with connections already inside; exaggerated but realistic and relatable expressions
+
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf); hi-so look (purple floral silk shirt, thick gold necklace, sunglasses on head)
+
+Main Action: squeezing through the gap while a VIP walks through the main entrance
+
+Environment: grand building entrance
+
+Visual Irony: opportunity knocks, but the VIP door is wider
+
+Palette Accent: sunflower yellow, cobalt blue, purple
+
+Composition: Medium-wide, clear subject and readable action, keep focus on the main characters
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
 
 ## `kala-table` · พื้นโต๊ะกะลาแลนด์ (A) — วางที่ `assets/bg/kala-table.webp`
 ```text

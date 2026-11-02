@@ -7,6 +7,7 @@ const G = require('../src/game.js');
 
 const K = Number(process.argv[2]) || 4;
 const MODE = process.env.MODE || 'base';
+const CAREERS = (G.MODES[MODE] && G.MODES[MODE].careers) || G.D.CAREERS;
 const OUT = process.argv[3] || path.resolve(__dirname, `../docs/balance-report${MODE !== 'base' ? `-${MODE}` : ''}.md`);
 const clone = s => JSON.parse(JSON.stringify(s));
 
@@ -126,7 +127,7 @@ function play(bot, goalId, careerId, seed) {
 const t0 = Date.now();
 const games = [];
 for (const bot of Object.keys(BOTS)) {
-  for (const g of G.D.GOALS) for (const c of G.D.CAREERS) for (let k = 0; k < K; k++) games.push(play(bot, g.id, c.id, 1000 + k * 7919));
+  for (const g of G.D.GOALS) for (const c of CAREERS) for (let k = 0; k < K; k++) games.push(play(bot, g.id, c.id, 1000 + k * 7919));
   process.stderr.write(`${bot} ✓ `);
 }
 process.stderr.write(`\n${games.length} เกม ใน ${((Date.now() - t0) / 1000).toFixed(0)} วินาที\n`);
@@ -158,7 +159,7 @@ T('2. เป้าหมายชีวิต (bot ไล่เป้าหม�
 
 const allMed = q(smart.map(x => x.total), .5);
 T(`3. อาชีพ (ทุก bot ที่มีกลยุทธ์ · คะแนนกลางรวม ${allMed})`, ['อาชีพ', 'คะแนน p50', 'ต่างจากกลาง', 'เป้าหมายเต็ม', 'Burnout/เกม'],
-  G.D.CAREERS.map(c => { const l = smart.filter(x => x.careerId === c.id); const m = q(l.map(x => x.total), .5);
+  CAREERS.map(c => { const l = smart.filter(x => x.careerId === c.id); const m = q(l.map(x => x.total), .5);
     return [`${c.id} ${c.name}`, m, `${m - allMed >= 0 ? '+' : ''}${m - allMed}`, pct(l.filter(x => x.goal === 'full').length, l.length), f1(mean(l.map(x => x.burnouts)))]; }));
 
 T('4. Life Project (ทุก bot ที่มีกลยุทธ์)', ['Project', 'เริ่ม', 'ทำครบ L3', 'อัตราจบ'],

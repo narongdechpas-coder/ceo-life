@@ -171,7 +171,7 @@
       ${why ? `<span class="why-badge">${esc(why)}</span>` : ''}
       <header class="pcard-head"><span class="ico">${TAG_ICON[t]}</span><div class="ttl"><h3>${esc(p.en)}</h3><p>${esc(p.name)}</p></div><span class="tags">${tags}</span></header>
       <div class="pbody">
-        <div class="art t-${t}"><span class="ph">${TAG_ICON[t]}</span><img src="assets/art/${pid}.webp" alt="" loading="lazy" onerror="this.remove()"></div>
+        <div class="art t-${t}"><span class="ph">${TAG_ICON[t]}</span><img src="${artSrc(pid)}" alt="" loading="lazy" onerror="this.remove()"></div>
         <ol class="levels">${levels}</ol>
       </div>
       <footer class="pcard-foot">${complete ? 'COMPLETED' : 'LIFE PROJECT'}</footer>
@@ -182,7 +182,7 @@
   const echoCount = () => [1, 2, 3, 4].reduce((t, e) => t + s.echoQueue[e].length, 0);
   function sheetBody(kind) {
     if (kind === 'goal') {
-      const g = G.GOAL[s.goalId];
+      const g = G.goalOf(s);
       const sum = G.summary(s);
       const now = g.checkFull(sum) ? '✅ บรรลุแล้ว (ถ้าจบเกมตอนนี้)' : g.checkPartial(sum) ? '◐ บรรลุบางส่วน' : '○ ยังไม่บรรลุ';
       return `<h3>🎯 ${esc(g.name)}</h3>
@@ -215,6 +215,8 @@
   // ---------------------------------------------------------------- modals
   // ---------------------------------------------------------------- event / echo / opportunity cards (วางบนโต๊ะ)
   const ERA_ICON = ['', '🌅', '🏗️', '⛰️', '🌳'];
+  // ภาพทุกใบในโหมดเสริมมาจากโฟลเดอร์ของโหมด (assets/art/kala/) ไม่ปนกับภาพสไตล์โหมดปกติ
+  const artSrc = f => `assets/art/${s.mode && s.mode !== 'base' ? `${s.mode}/` : ''}${f}.webp`;
   // ภาพการ์ดเหตุการณ์: โหมดเสริมลองภาพเฉพาะใบก่อน → ภาพใช้ร่วมของโหมด → ภาพโหมดปกติ (ไฟล์ไหนไม่มีก็ข้าม)
   function artImgs(kind, card) {
     const common = kind === 'echo' ? `echo-${card.kind}` : `era-${card.era}`;
@@ -255,7 +257,7 @@
     return `<article class="tcard ecard2 opp" data-id="opp-${id}">
       <header class="pcard-head"><div class="ttl"><small>OPPORTUNITY</small><h3 class="th">${esc(o.title)}</h3></div></header>
       <div class="pbody">
-        <div class="art"><span class="ph">✨</span><img src="assets/art/opportunity.webp" alt="" loading="lazy" onerror="this.remove()"></div>
+        <div class="art"><span class="ph">✨</span><img src="${artSrc(s.mode && s.mode !== 'base' ? `${s.mode}-opportunity` : 'opportunity')}" alt="" loading="lazy" onerror="this.remove()"></div>
         ${o.scene ? `<p class="story">${esc(o.scene)}</p>` : ''}
         <div class="eopts"><div class="opt static">${chips(o.cost, o.gain, o)}</div>
           <button class="btn" data-opp="${id}" ${why ? 'disabled' : ''}>รับโอกาสนี้</button>${whyTag(why)}</div>
@@ -426,11 +428,11 @@
 
   // ---------------------------------------------------------------- screens
   function setupScreen() {
-    const goals = s.goalChoices.map(id => { const g = G.GOAL[id];
+    const goals = s.goalChoices.map(id => { const g = G.goalOf(s, id);
       return `<button class="pick ${ui.pickGoal === id ? 'sel' : ''}" data-pick-goal="${id}"><h3>🎯 ${esc(g.name)}</h3><p>เต็ม +10: ${esc(g.full)}</p><p>บางส่วน +4: ${esc(g.partial)}</p></button>`; }).join('');
     const careers = s.careerChoices.map(id => { const c = G.CAREER[id];
-      return `<button class="pick ${ui.pickCareer === id ? 'sel' : ''}" data-pick-career="${id}"><span class="pick-art"><img src="assets/art/${id}.webp" alt="" loading="lazy" onerror="this.parentElement.remove()"></span><h3>💼 ${esc(c.name)}</h3>
-        <p>${c.tiers.map(t => `${esc(t.name)} 🪙${t.salary}`).join(' → ')}</p><p>${esc(c.perkText)}</p></button>`; }).join('');
+      return `<button class="pick ${ui.pickCareer === id ? 'sel' : ''}" data-pick-career="${id}"><span class="pick-art"><img src="${artSrc(id)}" alt="" loading="lazy" onerror="this.parentElement.remove()"></span><h3>💼 ${esc(c.name)}</h3>
+        <p>${c.tiers.map(t => `${esc(t.name)} 🪙${t.salary}`).join(' → ')}</p><p>${esc(c.perkText)}</p>${c.quip ? `<p class="quip-line">💬 ${esc(c.quip)}</p>` : ''}</button>`; }).join('');
     return `<main class="hero setup">
       <div><h1>LIFE <span>CEO</span></h1><p class="story tagline"><b>ชีวิตที่คุณออกแบบได้</b> <span>เกมจำลองชีวิตสำหรับผู้เล่นคนเดียว 8&nbsp;บท 4&nbsp;ยุค</span></p></div>
       ${modePicker()}
@@ -520,7 +522,7 @@
     return items.length ? `<ul class="chains">${items.join('')}</ul>` : '<p class="note">ชีวิตนี้แทบไม่มีการตัดสินใจที่ย้อนกลับมาให้ผลภายหลัง</p>';
   }
   function scoreReasons() {
-    const sum = G.summary(s), g = G.GOAL[s.goalId];
+    const sum = G.summary(s), g = G.goalOf(s);
     return [
       'จาก Life Project เหตุการณ์ และ Echo ที่ดี',
       `❤️ จบที่ ${s.health} (7 ขึ้นไปได้เต็ม 6)`,
@@ -534,7 +536,7 @@
   }
   function endScreen() {
     const f = s.final;
-    const c = G.CAREER[s.careerId], g = G.GOAL[s.goalId];
+    const c = G.CAREER[s.careerId], g = G.goalOf(s);
     const reasons = scoreReasons();
     const rows = f.rows.map(([k, v], i) => `<tr><td>${esc(k)}<small>${esc(reasons[i] || '')}</small></td><td>${v > 0 ? '+' : ''}${v}</td></tr>`).join('');
     let eras = '';
@@ -559,7 +561,7 @@
       eras = s.log.filter(l => ['key', 'good', 'bad', 'echo', 'era'].includes(l.tone)).map(l => `<p class="${l.tone}">${esc(l.text)}</p>`).join('');
     }
     return `<main class="hero end">
-      <div><h1>${s.gameOver === 'crisis' ? 'ชีวิตต้องเริ่มต้นใหม่' : `ชีวิตของ${s.name ? esc(gapIfLatin(s.name)) : 'คุณ'}`}</h1>
+      <div><h1>${s.gameOver === 'crisis' ? `ชีวิตของ${s.name ? esc(gapIfLatin(s.name)) : 'คุณ'}ต้องเริ่มต้นใหม่` : `ชีวิตของ${s.name ? esc(gapIfLatin(s.name)) : 'คุณ'}`}</h1>
         <p class="story">${esc(c.name)} · ตั้งใจเป็น “${esc(g.name)}” · ${f.goal === 'full' ? 'ทำได้ตามที่ตั้งใจ' : f.goal === 'partial' ? 'ทำได้บางส่วน' : 'ยังไปไม่ถึง'}</p>
         <p><span class="tier-badge">${esc(f.tier)}</span> <b class="big">${f.total} คะแนน</b> <span class="note">ช่วงคะแนนของแต่ละระดับยังเป็นค่าชั่วคราว</span></p></div>
       ${aiPanel()}

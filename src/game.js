@@ -11,7 +11,7 @@
   const modeCards = key => Object.values(MODES).flatMap(m => m[key] || []);
 
   const byId = list => Object.fromEntries(list.map(x => [x.id, x]));
-  const CAREER = byId(D.CAREERS), GOAL = byId(D.GOALS), PROJECT = byId(D.PROJECTS);
+  const CAREER = byId([...D.CAREERS, ...modeCards('careers')]), GOAL = byId(D.GOALS), PROJECT = byId(D.PROJECTS);
   const EVENT = byId([...D.EVENTS, ...modeCards('events')]), ECHO = byId([...D.ECHOES, ...modeCards('echoes')]), OPP = byId(D.OPPORTUNITIES);
   const INCIDENT = byId(modeCards('incidents'));
   const ROUNDS = 8;
@@ -33,6 +33,8 @@
 
   // ---------------------------------------------------------------- โหมด
   const modeOf = s => MODES[s.mode] || null;
+  // โหมดเสริมปรับเกณฑ์เป้าหมายบางข้อได้ (ข้อความและ check ทับของเดิม)
+  const goalOf = (s, id) => { const g = GOAL[id || s.goalId]; const m = modeOf(s); const o = m && m.goals && m.goals[g.id]; return o ? { ...g, ...o } : g; };
   const rule = (s, key) => { const m = modeOf(s); return m && m.rules ? m.rules[key] : undefined; };
 
   // ---------------------------------------------------------------- ค่าที่คำนวณจาก state
@@ -165,7 +167,7 @@
       gameOver: null, log: [], story: [], echoLinks: [], snaps: [],
     };
     s.goalChoices = shuffle(s, D.GOALS.map(g => g.id)).slice(0, 3);
-    s.careerChoices = shuffle(s, D.CAREERS.map(c => c.id)).slice(0, 3);
+    s.careerChoices = shuffle(s, careerPool(s)).slice(0, 3);
     s.rerolls = REROLLS;
     s.seenChoices = [...s.goalChoices, ...s.careerChoices];
     s.projectDeck = shuffle(s, D.PROJECTS.map(p => p.id));
@@ -181,11 +183,16 @@
     const pool = e => ((m && m.events || []).filter(v => v.era === e).length ? m.events : D.EVENTS).filter(v => v.era === e).map(v => v.id);
     for (const e of [1, 2, 3, 4]) s.eventDecks[e] = shuffle(s, pool(e));
   }
+  // โหมดเสริมมีอาชีพของตัวเอง (กะลาแลนด์) ถ้าไม่มีใช้อาชีพปกติ
+  const careerPool = s => ((MODES[s.mode] && MODES[s.mode].careers) || D.CAREERS).map(c => c.id);
   const buildIncidentDeck = s => (MODES[s.mode] && MODES[s.mode].incidents ? shuffle(s, MODES[s.mode].incidents.map(x => x.id)) : []);
   // เปลี่ยนโหมดได้เฉพาะตอนเลือกเป้าหมาย/อาชีพ (สร้างกองเหตุการณ์และกองเคราะห์ใหม่)
   function setMode(s, mode) {
     if (s.phase !== 'setup') return 'เปลี่ยนโหมดได้เฉพาะตอนเริ่มเกม';
+    const was = s.mode;
     s.mode = MODES[mode] ? mode : 'base';
+    // ชุดอาชีพเปลี่ยนตามโหมด: จั่วใหม่ 3 ใบ (สุ่มใหม่ที่ใช้ไปแล้วไม่คืน)
+    if (was !== s.mode) { s.careerChoices = shuffle(s, careerPool(s)).slice(0, 3); s.seenChoices = [...s.goalChoices, ...s.careerChoices]; }
     buildEventDecks(s);
     s.incidentDeck = buildIncidentDeck(s);
     return null;
@@ -202,7 +209,7 @@
       return [...fresh, ...old].slice(0, 3);
     };
     s.goalChoices = draw(D.GOALS.map(g => g.id), s.goalChoices);
-    s.careerChoices = draw(D.CAREERS.map(c => c.id), s.careerChoices);
+    s.careerChoices = draw(careerPool(s), s.careerChoices);
     s.seenChoices = [...seen, ...s.goalChoices, ...s.careerChoices];
     s.rerolls -= 1;
     return null;
@@ -228,6 +235,12 @@
     if (firstOfEra && e.id > 1 && rule(s, 'inflationPerEra')) { s.expenses += rule(s, 'inflationPerEra'); log(s, `เงินเฟ้อ ค่าครองชีพ +${rule(s, 'inflationPerEra')}`, 'bad'); }
     s.flags = { advanced: [] };
     s.time = s.crisis ? D.START.time - 1 : D.START.time;
+    // กะลาแลนด์: ชีวิตประจำวัน (รถติด ข่าว ค่าครองชีพ) เติมความเครียดทุกต้นบท ก่อนคิดแรงของบท
+    if (rule(s, 'stressPerRound') && eraOf(s.round) >= (rule(s, 'stressFromEra') || 1)) applyGain(s, { stress: rule(s, 'stressPerRound') });
+    // กะลาแลนด์: สังขารไม่เที่ยง สุขภาพลดเองทุกบทตั้งแต่ยุคที่กำหนด (ออกกำลังกายช่วยชดเชยได้)
+    if (rule(s, 'agingFromEra') && eraOf(s.round) >= rule(s, 'agingFromEra')) applyGain(s, { health: -1 });
+    // กะลาแลนด์: หนี้ถึงเกณฑ์ เจ้าหนี้มาทวงถึงหน้าบ้าน
+    if (rule(s, 'debtStressAt') && s.debt >= rule(s, 'debtStressAt')) { applyGain(s, { stress: 1 }); log(s, `หนี้ ${s.debt} เจ้าหนี้ตามทวง 💢 +1`, 'bad'); }
     // 1 บทใหม่
     s.energy = energyCap(s);
     // 2 รายได้และภาระ
@@ -426,9 +439,12 @@
     if (s.phase !== 'actions') return 'ยังจบรอบไม่ได้';
     const e = era(s);
     if (s.energy >= 3) { applyGain(s, { stress: -1 }); log(s, 'มีแรงเหลือได้พักจริง 💢 −1'); }
-    if ((e.decay || []).includes('rel') && !s.flags.relate) { applyGain(s, { rel: -1 }); log(s, 'ไม่ได้ใช้เวลากับคนรัก 👥 −1', 'bad'); story(s, { kind: 'decay', stat: 'rel' }); }
-    if ((e.decay || []).includes('health') && !s.flags.exercise) { applyGain(s, { health: -1 }); log(s, 'ไม่ได้ออกกำลังกาย ❤️ −1', 'bad'); story(s, { kind: 'decay', stat: 'health' }); }
-    if (s.stress >= 7) {
+    // กะลาแลนด์เลื่อนยุคที่เริ่มเสื่อมให้เร็วขึ้นได้ (เช่น ฝุ่นทำให้สุขภาพเริ่มถดถอยตั้งแต่ยุค 2)
+    const decayFrom = rule(s, 'decayFromEra') || {};
+    const decays = k => (e.decay || []).includes(k) || (decayFrom[k] && e.id >= decayFrom[k]);
+    if (decays('rel') && !s.flags.relate) { applyGain(s, { rel: -1 }); log(s, 'ไม่ได้ใช้เวลากับคนรัก 👥 −1', 'bad'); story(s, { kind: 'decay', stat: 'rel' }); }
+    if (decays('health') && !s.flags.exercise) { applyGain(s, { health: -1 }); log(s, 'ไม่ได้ออกกำลังกาย ❤️ −1', 'bad'); story(s, { kind: 'decay', stat: 'health' }); }
+    if (s.stress >= (rule(s, 'burnoutAt') || 7)) {
       s.burnouts += 1;
       s.stress = 4;
       applyGain(s, { health: -2 });
@@ -463,7 +479,7 @@
 
   function score(s) {
     const sum = summary(s);
-    const g = GOAL[s.goalId];
+    const g = goalOf(s);
     const goal = g.checkFull(sum) ? 10 : g.checkPartial(sum) ? 4 : 0;
     const unopened = Object.values(s.echoQueue).flat().filter(id => ECHO[id].kind === 'bad').length;
     const regrets = s.regrets + unopened;
@@ -471,7 +487,8 @@
       ['★ Life Points', s.lp],
       ['สุขภาพ', band(s.health, [[7, 6], [4, 3], [0, 0]])],
       ['ความสัมพันธ์', band(s.rel, [[7, 6], [4, 3], [0, 0]])],
-      ['ความมั่งคั่งสุทธิ', Math.max(0, Math.min(6, Math.floor((s.cash + s.portfolio - s.debt) / 5)))],
+      // กะลาแลนด์: หนี้ท่วมมีผลติดลบได้ (โหมดปกติต่ำสุด 0)
+      ['ความมั่งคั่งสุทธิ', Math.max(rule(s, 'negativeWealth') ? -6 : 0, Math.min(6, Math.floor((s.cash + s.portfolio - s.debt) / 5)))],
       ['อิสรภาพ', sum.passive >= sum.expenses ? 6 : sum.passive * 2 >= sum.expenses ? 3 : 0],
       [`เป้าหมาย: ${g.name}`, goal],
       [`Regret ×${regrets}`, -2 * regrets],
@@ -490,7 +507,7 @@
   }
 
   const API = {
-    D, MODES, CAREER, GOAL, PROJECT, EVENT, ECHO, OPP, INCIDENT, ROUNDS, modeOf, rule, effective,
+    D, MODES, goalOf, CAREER, GOAL, PROJECT, EVENT, ECHO, OPP, INCIDENT, ROUNDS, modeOf, rule, effective,
     newGame, migrate, reroll, setMode, chooseSetup, chooseOption, doAction, takeOpportunity, endRound,
     currentCard, actionStatus, actionCost, projectStatus, score, summary,
     eraOf, era, career, tier, energyCap, salary, passive, livingCost, interest, portfolioYield, blocker, sumCost,

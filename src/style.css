@@ -738,3 +738,7 @@ html.m .mode-badge { display: none; }
 html.m .rules-foot.two .btn { flex: 1; min-width: 0; }
 .toast.quip { background: #1e1a16; color: #f5c518; border: 2px solid #f5c518; font-weight: 600; max-width: min(560px, calc(100% - 32px)); text-align: center; }
 html[data-mode="kala"] .toast:not(.quip) { background: #1e1a16; }
+
+/* จอแคบ: ปุ่มเลือกโหมดและหัวเรื่องห้ามดันหน้าให้ล้นแนวนอน */
+.hero.setup > *, .modes, .mode-pick { min-width: 0; }
+.mode-pick small { overflow-wrap: anywhere; }

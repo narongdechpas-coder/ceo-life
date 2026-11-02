@@ -104,6 +104,18 @@ for (const [mid, m] of Object.entries(MODES)) {
   const cards = [...(m.events || []), ...(m.echoes || []), ...(m.incidents || [])];
   for (const c of cards) { if (allIds.has(c.id)) err(mid, `id ซ้ำ ${c.id}`); allIds.add(c.id); if (!c.scene) err(c.id, 'ไม่มี scene'); }
   for (const era of [1, 2, 3, 4]) { const n = (m.events || []).filter(e => e.era === era).length; if (n && n < 2) err(mid, `ยุค ${era} มีเหตุการณ์ ${n} ใบ ต้องมีอย่างน้อย 2`); }
+  for (const c of m.careers || []) {
+    if (allIds.has(c.id)) err(mid, `id ซ้ำ ${c.id}`); allIds.add(c.id);
+    if (c.tiers.length !== 3) err(c.id, 'ต้องมี 3 ขั้น');
+    if (!c.perkText) err(c.id, 'ไม่มี perkText');
+    c.tiers.forEach((t, i) => {
+      checkKeys(`${c.id}.tier${i}`, t.require, REQ_KEYS, 'require');
+      checkKeys(`${c.id}.tier${i}`, t.perRound, STAT_KEYS, 'perRound');
+      if (i > 0 && !t.require) err(c.id, `ขั้น ${i + 1} ไม่มีเงื่อนไขเลื่อน`);
+      if (i > 0 && t.salary <= c.tiers[i - 1].salary) err(c.id, `เงินเดือนขั้น ${i + 1} ไม่สูงกว่าขั้นก่อน`);
+    });
+  }
+  if (m.careers && m.careers.length < 3) err(mid, 'อาชีพต้องมีอย่างน้อย 3 ใบ (จั่ว 3)');
   for (const e of m.events || []) {
     if (e.options.length < 2) err(e.id, 'ต้องมีอย่างน้อย 2 ทางเลือก');
     if (!e.options.some(o => !o.require && !Object.keys(o.cost || {}).length)) err(e.id, 'ไม่มีทางเลือกที่เลือกได้เสมอ');
@@ -138,4 +150,4 @@ for (const g of D.GOALS) {
 if (errors.length) { console.error(`พบ ${errors.length} ปัญหา\n` + errors.map(e => ' - ' + e).join('\n')); process.exit(1); }
 console.log(`ผ่าน: Careers ${D.CAREERS.length} · Goals ${D.GOALS.length} · Projects ${D.PROJECTS.length} · Events ${D.EVENTS.length} · Echoes ${D.ECHOES.length} · Opportunities ${D.OPPORTUNITIES.length}`);
 console.log(`Echo ที่ถูกอ้าง: ${[...referenced].sort().join(', ')}`);
-for (const [mid, m] of Object.entries(MODES)) console.log(`โหมด ${mid}: เหตุการณ์ ${m.events.length} · เคราะห์ ${m.incidents.length} · Echo ${m.echoes.length}`);
+for (const [mid, m] of Object.entries(MODES)) console.log(`โหมด ${mid}: อาชีพ ${(m.careers || []).length} · เหตุการณ์ ${m.events.length} · เคราะห์ ${m.incidents.length} · Echo ${m.echoes.length}`);

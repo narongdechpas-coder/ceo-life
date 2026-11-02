@@ -157,5 +157,34 @@ const pendingIds = s => s.pending.map(p => `${p.kind}:${p.id}`);
   check('quip stored for the story', s.lastQuip === 'เกิดมาจนก็ต้องต่อคิวนะจ๊ะ' && s.story.at(-1).quip === s.lastQuip);
 }
 
+// 10) อาชีพของกะลาแลนด์ และเกณฑ์เป้าหมายที่ทับของเดิม
+{
+  const s = G.newGame(41, 'kala');
+  check('kala career choices come from Kalaland careers', s.careerChoices.every(id => id.startsWith('K-C')));
+  G.reroll(s);
+  check('reroll keeps Kalaland careers', s.careerChoices.every(id => id.startsWith('K-C')));
+  const b = G.newGame(41);
+  check('base career choices unchanged', b.careerChoices.every(id => /^C0\d$/.test(id)));
+  check('goal override in kala only', G.goalOf(s, 'G08').full.includes('9') && !G.goalOf(b, 'G08').full.includes('9'));
+}
+
+// 11) กติกาเสริมรอบสอง: ความเครียดรายบท · สังขาร · เจ้าหนี้ทวง · คะแนนหนี้ติดลบ · Burnout ที่ 6
+{
+  const s = start(51, x => { x.round = 4; x.pending = []; x.phase = 'actions'; x.stress = 0; x.health = 7; x.debt = 0; x.energy = 0; });
+  G.endRound(s); // → บท 5 (ยุค III)
+  check('daily stress +1 from era II', s.stress >= 1, `💢 ${s.stress}`);
+  check('aging −1 health in era III', s.health <= 6, `❤️ ${s.health}`);
+  const d = start(52, x => { x.round = 2; x.pending = []; x.phase = 'actions'; x.stress = 0; x.debt = 6; x.energy = 0; });
+  G.endRound(d);
+  check('debt ≥ 6 adds stress', d.stress >= 2 && d.log.some(l => l.text.includes('เจ้าหนี้')), `💢 ${d.stress}`);
+  const w = start(53, x => { x.cash = 0; x.portfolio = 0; x.debt = 20; });
+  check('negative wealth score in kala', G.score(w).rows.find(r => r[0] === 'ความมั่งคั่งสุทธิ')[1] < 0);
+  const bw = G.newGame(53); G.chooseSetup(bw, bw.goalChoices[0], bw.careerChoices[0]); bw.debt = 20; bw.cash = 0;
+  check('base wealth score never negative', G.score(bw).rows.find(r => r[0] === 'ความมั่งคั่งสุทธิ')[1] === 0);
+  const bo = start(54, x => { x.pending = []; x.phase = 'actions'; x.stress = 6; x.energy = 0; });
+  G.endRound(bo);
+  check('burnout at 6 in kala', bo.burnouts === 1);
+}
+
 console.log(results.join('\n'));
 process.exit(results.some(r => r.startsWith('FAIL')) ? 1 : 0);
