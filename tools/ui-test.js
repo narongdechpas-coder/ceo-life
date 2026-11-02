@@ -94,12 +94,12 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
       }
       if (round >= 3) await shot('play');
 
-      // ปุ่มดูทั้งหมด: ต้องได้การ์ดครบ ของฉัน (ที่ยังไม่จบ) + ตลาด แล้วกดกลับ
+      // ปุ่มดูทั้งหมด: ต้องได้การ์ดครบ (หรือรายชื่อครบในโหมดรายชื่อ) ของฉัน (ที่ยังไม่จบ) + ตลาด แล้วกดกลับ
       if (!showAllChecked && await page.locator('[data-do="showall"]').count()) {
         showAllChecked = true;
         await page.click('[data-do="showall"]');
         const [n, want] = await page.evaluate(() => { const s = window.__lifeceo.state;
-          return [document.querySelectorAll('.table .pcard').length, Object.values(s.projects).filter(p => p.level < 3).length + s.market.length]; });
+          return [document.querySelectorAll('.table .pcard').length + document.querySelectorAll('.table .ptab').length, Object.values(s.projects).filter(p => p.level < 3).length + s.market.length]; });
         if (n !== want) problem(`show all: ${n} cards, expected ${want}`);
         await shot('showall');
         await page.click('[data-do="showall"]');

@@ -100,6 +100,7 @@
     overtime: ['💼', 'work'], learn: ['📖', 'grow'], exercise: ['🏃', 'care'], relate: ['👥', 'care'], rest: ['😌', 'care'],
     promote: ['🎖️', 'work'], explore: ['🔍', 'grow'], invest: ['📈', 'money'], repay: ['🔗', 'money'],
   };
+  const SHORT_LABEL = { overtime: 'ล่วงเวลา', relate: 'เวลาคนรัก', promote: 'เลื่อนขั้น', explore: 'สำรวจโอกาส' };
   function actionDock() {
     const btns = D.ACTIONS.filter(a => a.id !== 'project').map(a => {
       const why = G.actionStatus(s, a.id);
@@ -119,7 +120,9 @@
       // เลื่อนตำแหน่งไม่ผ่านเงื่อนไข: ชิปเงื่อนไขบอกอยู่แล้ว ไม่ต้องมีข้อความซ้ำ · เหตุผลอื่นแสดงแทนชิป
       const reason = why === 'ยังไม่ผ่านเงื่อนไข' && a.id === 'promote' ? '' : whyTag(why);
       const [ico, kind] = ACT_LOOK[a.id] || ['•', 'work'];
-      return `<button class="act k-${kind}" data-act="${a.id}" ${why ? 'disabled' : ''} title="${note.replace(/"/g, '&quot;')}"><i class="act-ico" aria-hidden="true">${ico}</i><span class="act-main"><b>${esc(a.label)}</b>${reason || ch}${note ? `<span class="note">${note}</span>` : ''}</span></button>`;
+      // มือถือปุ่มแคบ (3 คอลัมน์) ใช้ชื่อสั้น ชื่อเต็มอยู่ใน tooltip
+      const label = isMobile() && SHORT_LABEL[a.id] ? SHORT_LABEL[a.id] : a.label;
+      return `<button class="act k-${kind}" data-act="${a.id}" ${why ? 'disabled' : ''} title="${esc(a.label)}${note ? ` · ${note.replace(/"/g, '&quot;')}` : ''}"><i class="act-ico" aria-hidden="true">${ico}</i><span class="act-main"><b>${esc(label)}</b>${reason || ch}${note ? `<span class="note">${note}</span>` : ''}</span></button>`;
     }).join('');
     const live = s.phase === 'actions';
     const pips = Array.from({ length: s.crisis ? 3 : 4 }, (_, i) => `<i class="${i < s.time ? 'on' : ''}"></i>`).join('');
@@ -167,9 +170,10 @@
     // ไอคอนหลักอยู่ซ้ายแล้ว ด้านขวาแสดงเฉพาะหมวดเพิ่มเติม
     const tags = p.tags.slice(1).map(x => `<span title="${TAG_TH[x]}">${TAG_ICON[x]}</span>`).join('');
     const why = opts && opts.why;
-    return `<article class="tcard pcard ${complete ? 'complete' : ''} ${why ? 'unplayable' : ''}" data-id="${pid}">
+    const close = opts && opts.close ? '<button class="pclose" data-do="close-proj" aria-label="ปิดการ์ด" title="ปิด">✕</button>' : '';
+    return `<article class="tcard pcard ${complete ? 'complete' : ''} ${why ? 'unplayable' : ''} ${close ? 'has-close' : ''}" data-id="${pid}">
       ${why ? `<span class="why-badge">${esc(why)}</span>` : ''}
-      <header class="pcard-head"><span class="ico">${TAG_ICON[t]}</span><div class="ttl"><h3>${esc(p.en)}</h3><p>${esc(p.name)}</p></div><span class="tags">${tags}</span></header>
+      <header class="pcard-head"><span class="ico">${TAG_ICON[t]}</span><div class="ttl"><h3>${esc(p.en)}</h3><p>${esc(p.name)}</p></div><span class="tags">${tags}</span>${close}</header>
       <div class="pbody">
         <div class="art t-${t}"><span class="ph">${TAG_ICON[t]}</span><img src="${artSrc(pid)}" alt="" loading="lazy" onerror="this.remove()"></div>
         <ol class="levels">${levels}</ol>
@@ -683,7 +687,36 @@
       const msg = s.time <= 0 ? 'เวลาหมดแล้ว กด "จบรอบ" ด้านล่าง' : 'รอบนี้ยังไม่มีโปรเจกต์ที่เล่นได้ ใช้กิจกรรมด้านล่างสะสมทรัพยากร';
       return { head, cards: [], empty: msg };
     }
-    return { head, cards: list.map(id => projectCard(id, { why: playable(id) ? null : blockReason(id) })) };
+    const card = (id, close) => projectCard(id, { why: playable(id) ? null : blockReason(id), close });
+    // การ์ดน้อย (จอคอม 1–3 ใบ) วางเต็มพร้อมรูปเหมือนเดิม
+    if (!listMode(list)) return { head, cards: list.map(id => card(id)) };
+    // การ์ดเยอะหรือมือถือ: โต๊ะเหลือรายชื่อ กดชื่อเปิดการ์ดทีละใบเป็นหน้าต่างทับ (เห็นรูปเต็ม)
+    return {
+      head, tabs: projTabs(list), cards: [],
+      empty: s.time <= 0 ? 'เวลาหมดแล้ว กด "จบรอบ" ด้านล่าง' : 'แตะชื่อโปรเจกต์ด้านล่างเพื่อเปิดการ์ด',
+    };
+  }
+  const listMode = list => isMobile() || list.length >= 4;
+  // การ์ดที่เปิดอยู่ ล้างทุกต้นรอบ (รอบหน้ารายชื่อกลับมาครบ ยังไม่มีใบไหนเปิดค้าง)
+  function openProj() {
+    if (ui.openRound !== s.round) { ui.openProj = null; ui.openRound = s.round; }
+    return ui.openProj && allProjects().includes(ui.openProj) ? ui.openProj : null;
+  }
+  function projTabs(list) {
+    return `<nav class="proj-tabs" aria-label="รายชื่อ Life Projects">${list.map(id => {
+      const p = G.PROJECT[id];
+      const level = (s.projects[id] || { level: 0 }).level;
+      const lv = p.levels[level];
+      const ok = playable(id);
+      const cost = Object.values(lv.cost || {}).some(Boolean) ? chips(lv.cost) : '';
+      return `<button class="ptab ${ok ? '' : 'off'} ${ui.openProj === id ? 'on' : ''}" data-open-proj="${id}" title="${ok ? '' : esc(blockReason(id) || '')}">
+        <span class="ico">${TAG_ICON[p.tags[0]]}</span><b>${esc(p.name)}</b><span class="lvl">L${level + 1}</span>${cost}</button>`;
+    }).join('')}</nav>`;
+  }
+  function projPop() {
+    const id = openProj();
+    if (!id) return '';
+    return `<div class="overlay proj-overlay"><div class="proj-pop">${projectCard(id, { why: playable(id) ? null : blockReason(id), close: true })}</div></div>`;
   }
 
   function sidePanel() {
@@ -705,6 +738,7 @@
         <main class="table">
           <div class="table-head">${v.head}</div>
           <div class="table-cards ${s.phase === 'actions' && ui.showAll === s.round ? 'browse' : ''}" id="cards">${v.cards.join('') || `<p class="table-empty">${esc(v.empty || '')}</p>`}</div>
+          ${v.tabs || ''}
         </main>
         ${isDesk() && innerWidth / (parseFloat(document.documentElement.style.getPropertyValue('--z')) || 1) >= 1500 ? sidePanel() : ''}
       </div>
@@ -865,6 +899,7 @@
     else if (ui.modal === 'install') m = installModal();
     else if (ui.modal === 'kala-ack' && s.phase === 'setup') m = kalaAckModal();
     else if (ui.sheet && s.phase !== 'setup' && s.phase !== 'end') m = sheetModal(ui.sheet);
+    else if (s.phase === 'actions' && ui.openProj) m = projPop();
     else if (ui.modal === 'invest' || ui.modal === 'repay') m = amountModal(ui.modal);
     modalRoot.innerHTML = m;
     const lg = document.getElementById('log'); if (lg) lg.scrollTop = lg.scrollHeight;
@@ -957,11 +992,14 @@
   document.addEventListener('click', ev => {
     // แตะพื้นหลังของ sheet = ปิด
     if (ev.target.classList && ev.target.classList.contains('sheet-overlay')) { ui.sheet = null; render(); return; }
+    if (ev.target.classList && ev.target.classList.contains('proj-overlay')) { ui.openProj = null; render(); return; }
     const el = ev.target.closest('button');
     if (!el || el.disabled) return;
     const d = el.dataset;
     if (d.sheet) { ui.sheet = d.sheet; render(); return; }
     if (d.do === 'bg') { applyBg(!bgPlain()); render(); return; }
+    if (d.openProj) { ui.openProj = d.openProj; ui.openRound = s.round; render(); return; }
+    if (d.do === 'close-proj') { ui.openProj = null; render(); return; }
     if (d.do === 'showall') { ui.showAll = ui.showAll === s.round ? 0 : s.round; render(); return; }
     if (d.do === 'new') { ui.sheet = null; if (s.phase === 'setup' || s.phase === 'end' || confirm('เริ่มเกมใหม่? เกมที่เล่นอยู่จะหายไป')) newGame(); return; }
     if (d.do === 'install') { doInstall(); return; }
@@ -1009,6 +1047,8 @@
     if (d.proj) {
       withFx([el.closest('.tcard')], ev, () => {
         const err = safely(() => G.doAction(s, 'project', { id: d.proj, outcome: Number(d.out) }));
+        // เลือกแล้วการ์ดออกจากโต๊ะ (ทำได้ 1 ขั้นต่อรอบ) ปิดการ์ดที่เปิดอยู่ด้วย
+        if (!err) ui.openProj = null;
         render();
         // การ์ดจะออกจากโต๊ะ (ทำได้ 1 ขั้นต่อรอบ) จึงบอกผลสั้นๆ
         toast(err || s.log[s.log.length - 1].text);

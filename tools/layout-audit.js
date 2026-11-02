@@ -50,7 +50,7 @@ function inspect(where) {
     if (b.scrollHeight > b.clientHeight + 1 && getComputedStyle(b).overflowY !== 'visible') out.push(`${where}: ปุ่ม "${name(b)}" ข้อความถูกตัด`);
   }
   // ปุ่มกิจกรรม: ทุกใบสูงเท่ากันได้ แต่ต้องไม่สูงกว่าปุ่มทั่วไป (มัธยฐานของเนื้อหา) เกิน 8px และชื่ออยู่บรรทัดเดียว
-  const acts = [...document.querySelectorAll('.dock-acts .act')];
+  const acts = [...document.querySelectorAll('.dock-acts .act')].filter(a => a.offsetParent);
   if (acts.length) {
     const need = acts.map(a => {
       const parts = [a.querySelector('.act-ico'), ...a.querySelectorAll('.act-main > *')].filter(k => k && k.offsetParent);
