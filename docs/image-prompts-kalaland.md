@@ -1,4 +1,4 @@
-# KALALAND — Image Prompts v3.0 (โหมดกะลาแลนด์ · 73 ภาพ)
+# KALALAND — Image Prompts v3.0 (โหมดกะลาแลนด์ · 85 ภาพ)
 
 ทุก prompt ใช้ **KALALAND Image Style Lock v3.0** (`docs/kalaland-style-lock.md`) วาง Style Lock เต็มไว้ก่อน แล้วต่อด้วยบล็อก Scene ของแต่ละภาพ (v2.0 เดิมเก็บไว้ที่ `docs/kalaland-style-lock-v2.md`)
 
@@ -11,6 +11,8 @@
 **ในโหมดนี้ทุกภาพมาจาก `assets/art/kala/`** ทั้งอาชีพ Life Project โอกาส และการ์ดเหตุการณ์ ไม่ปนกับภาพชุดโหมดปกติ ไฟล์ที่ยังไม่มีจะแสดงไอคอนแทน
 
 **ลำดับ:** เริ่มจาก **K-E05 เลือกตั้ง** เป็นภาพทดสอบแรก (ใกล้ภาพตัวอย่างในบอร์ด v3.0 ที่สุด เทียบสไตล์ได้ง่าย) → กลุ่ม **A** ที่เหลือ (39 ภาพ รวมอาชีพ 8 ภาพ เคราะห์แยกใบ 12 ภาพ โอกาส และพื้นโต๊ะ เกมมีภาพครบทุกยุค และ Echo แบบใช้ร่วม) → กลุ่ม **B** ทยอยเติม
+
+**ชุดโอกาส 12 ภาพ (`O01`–`O12`):** การ์ดโอกาสเป็นของกลางทั้งสองโหมด ภาพกะลาวางเป็น `assets/art/kala/O01.webp` … ใบไหนยังไม่มีภาพ เกมใช้ `kala-opportunity` แทน (ยังไม่มีอีกก็เป็น ✨) ชื่อไฟล์ใช้ `O01` ไม่ต้องมีขีด
 
 **ชุดเคราะห์ 12 ภาพ (`K-I01`–`K-I12`):** แต่ละใบมีภาพของตัวเอง วางเป็น `assets/art/kala/K-I01.webp` … `K-I12.webp` ได้เลยโดยไม่ต้องแก้โค้ด ใบไหนยังไม่มีไฟล์ เกมจะใช้ภาพใช้ร่วม `kala-incident` แทน (ยังไม่มีอีกก็เป็นลายแถบเหลือง) ทุกใบให้ผู้เล่นเป็นตัวหลักที่โดนเคราะห์ งานบวช/งานศพไม่มีพระหรือพิธีศาสนาในภาพ ม็อบปิดถนนเห็นแค่รถติด ไม่มีผู้ชุมนุมหรือธง
 
@@ -36,13 +38,25 @@
 | `P10` ✅ | B | Project · อสังหาให้เช่า |
 | `P11` ✅ | B | Project · ดูแลพ่อแม่ |
 | `P12` ✅ | B | Project · ฝึกสติ |
-| `kala-opportunity` | A | การ์ดโอกาส (ใช้ร่วม) |
+| `O01` | A | โอกาส · งานฟรีแลนซ์ช่วงสั้น |
+| `O02` | A | โอกาส · สัมมนาเครือข่ายวิชาชีพ |
+| `O03` | A | โอกาส · ทุนอบรมต่างประเทศ |
+| `O04` | A | โอกาส · จองซื้อหุ้น IPO |
+| `O05` | A | โอกาส · ทริปครอบครัวราคาพิเศษ |
+| `O06` | A | โอกาส · สมาชิกฟิตเนสรายปี |
+| `O07` | A | โอกาส · ได้รับเชิญเป็นวิทยากร |
+| `O08` | A | โอกาส · ซื้อรถผ่อนดอกเบี้ยต่ำ |
+| `O09` | A | โอกาส · พี่เลี้ยงในสายงาน |
+| `O10` | A | โอกาส · คอร์สการเงินส่วนบุคคล |
+| `O11` | A | โอกาส · ร่วมทุนร้านเพื่อน |
+| `O12` | A | โอกาส · อาสาสมัครวันหยุด |
+| `kala-opportunity` | B | การ์ดโอกาส (ใช้ร่วม · ใช้เมื่อใบไหนยังไม่มีภาพ) |
 | `kala-table` ✅ (พื้นโต๊ะ · `assets/bg/`) | A | พื้นโต๊ะกะลาแลนด์ |
 | `kala-era-1` ✅ | A | ยุค I · เริ่มต้น |
 | `kala-era-2` ✅ | A | ยุค II · สร้างตัว |
 | `kala-era-3` ✅ | A | ยุค III · จุดสูงสุด |
 | `kala-era-4` ✅ | A | ยุค IV · ส่งต่อ |
-| `kala-incident` | A | การ์ดเคราะห์ (ใช้ร่วม) |
+| `kala-incident` | — | การ์ดเคราะห์ (ใช้ร่วม · ไม่ต้องเจนแล้ว เคราะห์มีภาพครบ 12 ใบ) |
 | `kala-echo-bad` ✅ | A | Echo ผลร้าย (ใช้ร่วม) |
 | `kala-echo-good` ✅ | A | Echo ผลดี (ใช้ร่วม) |
 | `K-E01` ✅ | B | เงินเดือนแรก |
@@ -628,6 +642,330 @@ Composition: Medium-wide, clear subject and readable action, keep focus on the m
 Aspect Ratio: 16:9
 
 Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `O01` · โอกาส · งานฟรีแลนซ์ช่วงสั้น (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A rush freelance job at midnight
+
+Main Characters: the player at a home desk with a laptop (blank screen) and a phone (blank screen) buzzing nonstop; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: typing furiously while a tiny stack of coins grows on one side of the desk and a tower of empty energy-drink cans grows faster on the other
+
+Environment: small condo room at night, city lights through the window
+
+Visual Irony: short-term cash, long-term eye bags
+
+Palette Accent: cobalt blue, sunflower yellow, warm grey
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign, card and screen is blank. No real national flags.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `O02` · โอกาส · สัมมนาเครือข่ายวิชาชีพ (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A professional networking seminar
+
+Main Characters: the player holding a stack of blank business cards in a hotel function room full of people in suits; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes); hi-so look (purple floral silk shirt, thick gold necklace, sunglasses on head)
+
+Main Action: the player politely waiting in line to greet one important guest while everyone else is already crowding around him with their cards held out
+
+Environment: hotel function room with round tables, coffee break station and a stage with a blank screen
+
+Visual Irony: everyone came to network, nobody came to listen
+
+Palette Accent: cobalt blue, purple, sunflower yellow
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign, card and screen is blank. No real national flags.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `O03` · โอกาส · ทุนอบรมต่างประเทศ (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A training scholarship abroad
+
+Main Characters: the player with a rolling suitcase at an airport gate, family and friends waving goodbye behind a glass wall; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: the player waving back excitedly while a friend on the other side of the glass quietly turns away, a little lonely
+
+Environment: bright airport departure gate with a plane outside the window; no flags, no airline logos, departure board blank
+
+Visual Irony: you gain skills, but some friends fade a little
+
+Palette Accent: sky blue, sunflower yellow, warm grey
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign, card and screen is blank. No real national flags.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `O04` · โอกาส · จองซื้อหุ้น IPO (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: Lining up for a hot IPO
+
+Main Characters: the player in a very long queue of hopeful investors stretching around a city block, each holding a phone (blank screen); exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: the player finally reaches the front and receives one tiny coin-sized share in their palm, eyes sparkling anyway
+
+Environment: busy downtown sidewalk in front of a glass office tower
+
+Visual Irony: everyone queued for the dream, each got a crumb
+
+Palette Accent: sunflower yellow, cobalt blue, red
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign, card and screen is blank. No real national flags.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `O05` · โอกาส · ทริปครอบครัวราคาพิเศษ (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A discounted off-season family trip
+
+Main Characters: the player and family at a quiet beach on a cloudy off-season day, the kids laughing anyway; exaggerated but realistic and relatable expressions
+
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf); elderly citizen look (cotton shirt, reading glasses, cloth bag)
+
+Main Action: the family having a happy picnic under one beach umbrella while light drizzle falls, the grandparent holding a second umbrella over the food
+
+Environment: empty off-season beach with closed beach chairs and a few gentle waves
+
+Visual Irony: cheap trip, real smiles
+
+Palette Accent: sky blue, sunflower yellow, warm grey
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign, card and screen is blank. No real national flags.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `O06` · โอกาส · สมาชิกฟิตเนสรายปี (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A yearly gym membership promo
+
+Main Characters: the player signing up at a shiny gym front desk with a huge grin, holding a new water bottle; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: behind the player, a mirror reflection shows a future version of them on the couch with snacks, the membership card gathering dust
+
+Environment: modern gym lobby with treadmills behind glass
+
+Visual Irony: you paid for twelve months of motivation
+
+Palette Accent: cobalt blue, red, warm grey
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign, card and screen is blank. No real national flags.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `O07` · โอกาส · ได้รับเชิญเป็นวิทยากร (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: Invited to speak at a seminar
+
+Main Characters: the player on a small stage holding a microphone, nervous but proud, a modest audience in plastic chairs; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: the player presenting confidently while most of the audience raise their phones (blank screens) to photograph the slides instead of listening
+
+Environment: community seminar room with a projector screen (blank) and a small banner shape (no text)
+
+Visual Irony: they came for the slides, not the speaker
+
+Palette Accent: sunflower yellow, purple, cobalt blue
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign, card and screen is blank. No real national flags.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `O08` · โอกาส · ซื้อรถผ่อนดอกเบี้ยต่ำ (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A low-interest car loan deal
+
+Main Characters: the player proudly driving a shiny new car fresh from the showroom; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: the shiny car is stuck bumper-to-bumper in an endless traffic jam while a long paper chain of blank installment slips trails from the exhaust down the road
+
+Environment: gridlocked city expressway at sunset, elevated train tracks above
+
+Visual Irony: the car is new, the traffic is forever
+
+Palette Accent: red, sunflower yellow, warm grey
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign, card and screen is blank. No real national flags.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `O09` · โอกาส · พี่เลี้ยงในสายงาน (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A senior offers to mentor you
+
+Main Characters: the player sitting across from a kind senior colleague at a coffee shop, taking notes on a blank notebook; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes); elderly citizen look (cotton shirt, reading glasses, cloth bag)
+
+Main Action: the senior draws a simple ladder on a napkin (no text) while the player leans in eagerly, two coffee cups between them
+
+Environment: cozy neighborhood coffee shop with plants and warm light
+
+Visual Irony: the best shortcut is someone who walked the road before you
+
+Palette Accent: sunflower yellow, earth brown, sky blue
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign, card and screen is blank. No real national flags.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `O10` · โอกาส · คอร์สการเงินส่วนบุคคล (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A personal finance course
+
+Main Characters: the player in a small classroom with a calculator and a blank workbook, other adult learners around them; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: the player finally understanding a simple chart drawn on a whiteboard (shapes only, no text), a small light bulb glowing above their head
+
+Environment: evening adult-education classroom with whiteboard and folding tables
+
+Visual Irony: learning to count the money you do not have yet
+
+Palette Accent: cobalt blue, sunflower yellow, warm grey
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign, card and screen is blank. No real national flags.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `O11` · โอกาส · ร่วมทุนร้านเพื่อน (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: Investing in a friend's small shop
+
+Main Characters: the player and a cheerful friend shaking hands in front of a tiny noodle shop being expanded with fresh paint; exaggerated but realistic and relatable expressions
+
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf)
+
+Main Action: the friend proudly shows a freshly hung signboard shape (blank) while a small coin drips back into the player's piggy bank every day
+
+Environment: old shophouse street with a small noodle stall and plastic stools
+
+Visual Irony: small shop, small slice, steady drip
+
+Palette Accent: sunflower yellow, red, earth brown
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign, card and screen is blank. No real national flags.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `O12` · โอกาส · อาสาสมัครวันหยุด (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: Weekend community volunteering
+
+Main Characters: the player in a group of neighbors painting a faded community playground on a Sunday morning; exaggerated but realistic and relatable expressions
+
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf); elderly citizen look (cotton shirt, reading glasses, cloth bag)
+
+Main Action: the player and a neighbor kid painting a slide together, laughing, while paint gets on both their faces
+
+Environment: small community playground under big trees, cans of paint and brushes everywhere
+
+Visual Irony: no budget came, so the neighbors came instead
+
+Palette Accent: sky blue, sunflower yellow, red
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign, card and screen is blank. No real national flags.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```

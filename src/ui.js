@@ -223,10 +223,11 @@
   const artSrc = f => `assets/art/${s.mode && s.mode !== 'base' ? `${s.mode}/` : ''}${f}.webp`;
   // ภาพการ์ดเหตุการณ์: โหมดเสริมลองภาพเฉพาะใบก่อน → ภาพใช้ร่วมของโหมด → ภาพโหมดปกติ (ไฟล์ไหนไม่มีก็ข้าม)
   function artImgs(kind, card) {
-    const common = kind === 'echo' ? `echo-${card.kind}` : `era-${card.era}`;
+    // การ์ดโอกาส: ภาพเฉพาะใบ (O01…) ก่อน แล้วค่อยภาพใช้ร่วม ทั้งสองโหมด
+    const common = kind === 'opportunity' ? 'opportunity' : kind === 'echo' ? `echo-${card.kind}` : `era-${card.era}`;
     const list = s.mode && s.mode !== 'base'
       ? [`${s.mode}/${card.id}`, kind === 'incident' ? `${s.mode}/${s.mode}-incident` : `${s.mode}/${s.mode}-${common}`]
-      : [common];
+      : kind === 'opportunity' ? [card.id, common] : [common];
     if (kind === 'incident' && s.mode === 'base') list.length = 0;
     const srcs = list.map(f => `assets/art/${f}.webp`);
     if (!srcs.length) return '';
@@ -261,7 +262,7 @@
     return `<article class="tcard ecard2 opp" data-id="opp-${id}">
       <header class="pcard-head"><div class="ttl"><small>OPPORTUNITY</small><h3 class="th">${esc(o.title)}</h3></div></header>
       <div class="pbody">
-        <div class="art"><span class="ph">✨</span><img src="${artSrc(s.mode && s.mode !== 'base' ? `${s.mode}-opportunity` : 'opportunity')}" alt="" loading="lazy" onerror="this.remove()"></div>
+        <div class="art"><span class="ph">✨</span>${artImgs('opportunity', { id })}</div>
         ${o.scene ? `<p class="story">${esc(o.scene)}</p>` : ''}
         <div class="eopts"><div class="opt static">${chips(o.cost, o.gain, o)}</div>
           <button class="btn" data-opp="${id}" ${why ? 'disabled' : ''}>รับโอกาสนี้</button>${whyTag(why)}</div>
