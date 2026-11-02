@@ -894,3 +894,9 @@ html[data-mode="kala"] .linkish { color: var(--coral); }
   .cover-sub { font-size: 14px; line-height: 1.5; }
   .cover-ctas .cover-cta { padding: 13px 18px; }
 }
+/* หน้าเกมวาดเต็มจอใต้แถบสถานะ/แถบนำทางของมือถือ (viewport-fit=cover): กันเนื้อหาไม่ให้ซ้อนใต้แถบระบบ
+   แถบล่างของมือถือจึงเห็นสีของหน้าเกมเอง (dock / ปก) แทนสีตายตัวจาก manifest */
+html { background: var(--bg); }
+.topbar { padding-top: env(safe-area-inset-top, 0px); }
+.hero { padding-top: calc(24px + env(safe-area-inset-top, 0px)); }
+/* ปก: ภาพ hero วาดใต้แถบสถานะได้เลย ไม่ต้องเว้น */
