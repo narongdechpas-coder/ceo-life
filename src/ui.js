@@ -401,15 +401,15 @@
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { /* ไม่มี SW ก็เล่นได้ปกติ */ }));
   }
 
-  // ---------------------------------------------------------------- โหมด (ชีวิตปกติ / กะลาแลนด์)
+  // ---------------------------------------------------------------- โหมด (ชีวิตตามแผน / ชีวิตในกะลาแลนด์)
   const pref = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { /* ไม่มีที่เก็บก็เล่นได้ */ } return null; };
   const modeBadge = () => (G.modeOf(s) ? `<span class="mode-badge" title="${esc(G.modeOf(s).name)}">🥥 ${esc(G.modeOf(s).short)}</span>` : '');
   function modePicker() {
     const k = G.MODES.kala;
     if (!k) return '';
-    return `<section class="modes" aria-label="เลือกโหมด">
-      <button class="mode-pick ${s.mode === 'base' ? 'sel' : ''}" data-mode-pick="base"><b>🌿 ชีวิตปกติ</b><small>ชีวิตที่คุณออกแบบได้ เล่นสบายๆ</small></button>
-      <button class="mode-pick kala ${s.mode === 'kala' ? 'sel' : ''}" data-mode-pick="kala"><b>🥥 ${esc(k.name)}</b><small>ชีวิตจริงไม่ได้โลกสวย · มีการ์ดเคราะห์ข้ามไม่ได้</small></button>
+    return `<p class="modes-label">เลือกโลกที่จะใช้ชีวิต</p><section class="modes" aria-label="เลือกโลกที่จะใช้ชีวิต">
+      <button class="mode-pick ${s.mode === 'base' ? 'sel' : ''}" data-mode-pick="base"><b>🌿 ชีวิตตามแผน</b><small>คุณคุมได้ทุกตัวแปร · เหมาะกับเล่นครั้งแรก</small></button>
+      <button class="mode-pick kala ${s.mode === 'kala' ? 'sel' : ''}" data-mode-pick="kala"><b>🥥 ชีวิตในกะลาแลนด์</b><small>มีตัวแปรที่คุมไม่ได้ · ของแพง เคราะห์มาไม่บอก</small></button>
     </section>`;
   }
   function kalaAckModal() {
