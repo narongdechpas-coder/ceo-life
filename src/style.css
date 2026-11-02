@@ -572,6 +572,22 @@ html.m .dock-acts .act { flex-basis: 162px; gap: 4px 7px; padding: 6px 8px 6px 6
 html.m .dock-acts { scrollbar-width: none; }
 html.m .dock-acts::-webkit-scrollbar { display: none; }
 html.m .act-ico { width: 32px; height: 32px; font-size: 20px; border-radius: 9px; }
+/* ปุ่มกิจกรรมเห็นครบทุกปุ่ม ไม่ต้องเลื่อน: จอคอม 5 คอลัมน์ 2 แถว · มือถือ 3×3 แล้วแถวล่างเป็นเวลาที่เหลือ + จบรอบ */
+.dock-acts { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); overflow: visible; scroll-snap-type: none; }
+.dock-acts .act { min-width: 0; }
+html.m .dock { flex-wrap: wrap; gap: 6px 8px; }
+html.m .dock-acts { order: -1; flex: 1 1 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 0; }
+html.m .dock-acts .act { gap: 1px 5px; padding: 4px 5px; border-radius: 10px; }
+html.m .dock-acts .act b { font-size: 13px; }
+html.m .dock-acts .act .chips { flex-wrap: wrap; gap: 0 3px; }
+html.m .dock-acts .act .chip { font-size: 11.5px; line-height: 1.35; letter-spacing: -.02em; }
+html.m .dock-acts .act .why { font-size: 11px; line-height: 1.4; white-space: normal; }
+html.m .dock-acts .act-ico { width: 21px; height: 21px; font-size: 14px; border-radius: 6px; }
+html.m .dock-lead { display: flex; flex: 1; align-items: center; gap: 8px; justify-items: start; }
+html.m .dock-lead b { font-size: 14px; }
+html.m .dock-lead small { font-size: 12px; }
+html.m .dock-end { padding: 4px 22px; }
+html.m .dock-end small { display: none; }
 
 /* วิธีเล่น */
 .ecard.rules { width: min(560px, 100%); }
