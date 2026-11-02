@@ -38,7 +38,9 @@ function inspect(where) {
   // การ์ดไม่ทับแถบบนหรือ dock
   const top = document.querySelector('.topbar'), dock = document.querySelector('.dock');
   for (const c of document.querySelectorAll('.table .tcard:not(.fx-clone)')) {
-    const r = R(c);
+    // แถวการ์ดเลื่อนได้และตัดส่วนที่เกินออก ส่วนที่มองเห็นจึงคิดเฉพาะในกรอบของแถว
+    const row = c.closest('.table-cards'), rr = row ? R(row) : null, r0 = R(c);
+    const r = rr ? { top: Math.max(r0.top, rr.top), bottom: Math.min(r0.bottom, rr.bottom), left: r0.left, right: r0.right } : r0;
     if (r.right < 0 || r.left > vw) continue;
     if (dock && r.bottom > R(dock).top + 1) out.push(`${where}: การ์ด ${name(c)} ทับ dock ${Math.round(r.bottom - R(dock).top)}px`);
     if (top && r.top < R(top).bottom - 1) out.push(`${where}: การ์ด ${name(c)} ทับแถบบน`);

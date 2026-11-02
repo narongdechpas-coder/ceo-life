@@ -900,3 +900,19 @@ html { background: var(--bg); }
 .topbar { padding-top: env(safe-area-inset-top, 0px); }
 .hero { padding-top: calc(24px + env(safe-area-inset-top, 0px)); }
 /* ปก: ภาพ hero วาดใต้แถบสถานะได้เลย ไม่ต้องเว้น */
+/* มือถือ: ภาพการ์ดเหตุการณ์ต้องไม่เตี้ยเป็นแถบ (เดิมเหลือได้ถึง 3.5:1 หัวตัวละครโดนตัด)
+   ให้ภาพสูงอย่างน้อยราว 2:1 แล้วเอาที่มาจากตัวเลือกที่กระชับขึ้น (ชื่อกับผลอยู่บรรทัดเดียวเมื่อพอ) */
+html.m .ecard2 .pbody .art { min-height: var(--ev-art-min, min(44vw, 210px)); }
+html.m .ecard2 .art img { object-position: 50% 35%; }
+html.m .ecard2 .story { padding: 8px 14px 2px; font-size: 14px; line-height: 1.45; }
+html.m .ecard2 .eopts { gap: 5px; padding: 6px 10px 10px; }
+html.m .ecard2 .opt:not(.static) { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; padding: 8px 12px; }
+html.m .ecard2 .opt > b { flex: 0 1 auto; }
+html.m .ecard2 .opt .chips { flex: 0 1 auto; }
+html.m .ecard2 .opt .why { flex-basis: 100%; }
+/* มือถือจอเตี้ย: การ์ดเหตุการณ์ใบเดียวสูงตามเนื้อหาได้ (ภาพไม่โดนบีบหรือซ่อน) ถ้าเกินโต๊ะก็เลื่อนลงดูตัวเลือกสุดท้ายได้ */
+/* ภาพเต็ม 16:9 ไม่ครอป การ์ดสูงตามเนื้อหาและอยู่กลางโต๊ะ ถ้าเกินโต๊ะก็เลื่อนลงดูได้ */
+html.m .table-cards.single { overflow-y: auto; align-items: flex-start; }
+html.m .table-cards.single > .ecard2 { height: auto; flex-shrink: 0; margin-block: auto; }
+html.m .table-cards.single > .ecard2 .pbody { flex: none; overflow: visible; }
+html.m .table-cards.single > .ecard2 .pbody .art { flex: none; height: auto; min-height: 0; aspect-ratio: 16 / 9; max-height: max(150px, 24vh); }
