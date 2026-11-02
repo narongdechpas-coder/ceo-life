@@ -1,6 +1,7 @@
-# LIFE CEO — Image Prompts (27 ภาพ)
+# LIFE CEO — Image Prompts (63 ภาพ)
 
 ภาพประกอบการ์ดชุดแรก 27 ภาพ: Life Project 12, อาชีพ 8, ประจำยุค 4, Echo 2, โอกาส 1
+ชุดที่สอง 36 ภาพ: โอกาสแยกใบ 12 (หัวข้อ 7.1) และเหตุการณ์ชีวิตแยกใบ 24 (หัวข้อ 7.2) ใช้ Style Lock ฉบับเต็มที่ `docs/style-lock-base.md`
 การ์ดเป้าหมายชีวิตใช้ไอคอน ไม่ต้องทำภาพ
 
 ---
@@ -258,6 +259,250 @@ A person stands on a wooden pier at dusk as slightly rougher ripples roll back t
 **opportunity — โอกาสที่เข้ามา**
 ```
 A tall wooden door in a sunlit Thai courtyard stands slightly ajar, warm golden light spilling out through the gap onto stone steps, beyond the courtyard several garden paths branch off in different directions and fade softly into the distance, potted plants and a few floating leaves caught in the light, a small figure seen from behind pausing at the threshold, inviting and hopeful mood with mustard and warm cream tones.
+```
+
+---
+
+## 7.1 โอกาสแยกใบ (12 ภาพ)
+
+การ์ดโอกาสขึ้นพร้อมกันครั้งละ 2–3 ใบ ภาพแยกใบช่วยให้แต่ละใบไม่ซ้ำกัน ใบไหนยังไม่มีภาพ เกมใช้ `opportunity.webp` แทน
+ใช้ Style Lock เต็มจาก `docs/style-lock-base.md` (หรือ Reusable Short Prompt ท้ายไฟล์) ต่อท้ายทุก prompt
+
+| ไฟล์ | การ์ด |
+|---|---|
+| `O01.webp` | งานฟรีแลนซ์ช่วงสั้น |
+| `O02.webp` | สัมมนาเครือข่ายวิชาชีพ |
+| `O03.webp` | ทุนอบรมต่างประเทศ |
+| `O04.webp` | จองซื้อหุ้น IPO |
+| `O05.webp` | ทริปครอบครัวราคาพิเศษ |
+| `O06.webp` | สมาชิกฟิตเนสรายปี |
+| `O07.webp` | ได้รับเชิญเป็นวิทยากร |
+| `O08.webp` | ซื้อรถผ่อนดอกเบี้ยต่ำ |
+| `O09.webp` | พี่เลี้ยงในสายงาน |
+| `O10.webp` | คอร์สการเงินส่วนบุคคล |
+| `O11.webp` | ร่วมทุนร้านเพื่อน |
+| `O12.webp` | อาสาสมัครวันหยุด |
+
+**O01 — งานฟรีแลนซ์ช่วงสั้น**
+```
+A Thai young professional working late at a tidy home desk by a window, laptop open with a blank glowing screen, a phone lighting up with a new message, a small notebook and a cup of tea, city lights soft in the background, focused and quietly determined, a short burst of extra work.
+```
+
+**O02 — สัมมนาเครือข่ายวิชาชีพ**
+```
+A bright hotel function room during a professional seminar coffee break, Thai professionals chatting in small groups, the main character exchanging blank business cards with a friendly colleague, coffee cups and pastries on a side table, warm and welcoming networking mood.
+```
+
+**O03 — ทุนอบรมต่างประเทศ**
+```
+A Thai young professional with a rolling suitcase at a sunny airport departure gate, turning back to wave at family and friends behind a glass wall, a plane visible through the large windows, excitement mixed with a little homesickness, no flags, no airline logos, blank departure screens.
+```
+
+**O04 — จองซื้อหุ้น IPO**
+```
+A Thai person sitting at a cafe table in the morning, looking at a tablet with a simple rising line chart (shapes only, no numbers), a notebook and coffee beside them, other people around also checking their phones, hopeful anticipation about a new investment.
+```
+
+**O05 — ทริปครอบครัวราคาพิเศษ**
+```
+A Thai family of three generations enjoying a quiet off-season beach together, children building a sand castle, grandparents under a beach umbrella, soft clouds and gentle waves, relaxed and joyful family time.
+```
+
+**O06 — สมาชิกฟิตเนสรายปี**
+```
+A Thai person in workout clothes signing up at a bright modern gym reception, holding a new water bottle, treadmills and plants visible behind a glass wall, a friendly staff member smiling, fresh start and motivation.
+```
+
+**O07 — ได้รับเชิญเป็นวิทยากร**
+```
+A Thai professional speaking confidently on a small seminar stage with a microphone, a projector screen behind them showing simple shapes only, an attentive audience in rows of chairs nodding and taking notes, recognition and pride.
+```
+
+**O08 — ซื้อรถผ่อนดอกเบี้ยต่ำ**
+```
+A Thai person standing beside a shiny new compact car at a sunlit car showroom, holding the key and smiling, a salesperson holding a blank contract folder nearby, glass windows and plants, excitement with a hint of thoughtfulness about the commitment.
+```
+
+**O09 — พี่เลี้ยงในสายงาน**
+```
+A Thai young professional sitting across from a kind senior mentor in a cozy coffee shop, the mentor sketching a simple ladder diagram on a napkin (no text), the younger person taking notes eagerly, warm afternoon light, guidance and gratitude.
+```
+
+**O10 — คอร์สการเงินส่วนบุคคล**
+```
+An evening adult-education classroom, Thai learners of different ages at tables with calculators and blank workbooks, an instructor pointing at a whiteboard with a simple pie chart and bar shapes (no text), the main character having an "aha" moment, curiosity and growth.
+```
+
+**O11 — ร่วมทุนร้านเพื่อน**
+```
+A Thai person and a cheerful friend shaking hands in front of a small neighborhood noodle shop being freshly renovated, a ladder and paint cans nearby, a blank wooden signboard, plastic stools and steaming pots, friendship and a small shared dream.
+```
+
+**O12 — อาสาสมัครวันหยุด**
+```
+Thai neighbors of all ages volunteering on a Sunday morning to repaint a small community playground under big shady trees, the main character painting a slide together with a smiling child, paint cans and brushes around, community spirit and warmth.
+```
+
+---
+
+## 7.2 เหตุการณ์ชีวิตแยกใบ (24 ภาพ)
+
+การ์ดเหตุการณ์ใบไหนมีภาพของตัวเอง เกมใช้ภาพนั้นแทนภาพประจำยุค ใบไหนยังไม่มีภาพ เกมใช้ `era-N.webp` เหมือนเดิม
+ภาพต้องเล่า **ช่วงเวลาที่ต้องตัดสินใจ** ห้ามบอกผลของตัวเลือกใดตัวเลือกหนึ่ง ผู้เล่นจะได้ไม่รู้สึกว่าภาพชี้คำตอบ อายุตัวละครหลักให้ตรงตามยุคของการ์ด
+
+| ไฟล์ | ยุค | การ์ด |
+|---|---|---|
+| `V101.webp` | I | เงินเดือนก้อนแรก |
+| `V102.webp` | I | เพื่อนชวนเที่ยวต่างประเทศ |
+| `V103.webp` | I | ข้อเสนอที่ปฏิเสธยาก |
+| `V104.webp` | I | บัตรเครดิตใบแรก |
+| `V105.webp` | I | คอร์สออนไลน์ลดราคา |
+| `V106.webp` | I | นอนดึกติดต่อกันหลายเดือน |
+| `V201.webp` | II | เพื่อนชวนร่วมหุ้น |
+| `V202.webp` | II | งานแต่งเพื่อนสนิท |
+| `V203.webp` | II | บริษัทปรับโครงสร้าง |
+| `V204.webp` | II | พ่อแม่เริ่มต้องการคนดูแล |
+| `V205.webp` | II | โบนัสก้อนใหญ่ |
+| `V206.webp` | II | ลูกค้าคนสำคัญชวนดื่ม |
+| `V301.webp` | III | ข้อเสนองานต่างประเทศ |
+| `V302.webp` | III | ผลตรวจสุขภาพผิดปกติ |
+| `V303.webp` | III | ตลาดหุ้นผันผวนหนัก |
+| `V304.webp` | III | เพื่อนเก่าป่วยหนัก |
+| `V305.webp` | III | คนในบ้านต้องการคุณ |
+| `V306.webp` | III | วิกฤตวัยกลางคน |
+| `V401.webp` | IV | ข้อเสนอเกษียณก่อนกำหนด |
+| `V402.webp` | IV | หลานคนแรก |
+| `V403.webp` | IV | มูลนิธิชวนเป็นกรรมการ |
+| `V404.webp` | IV | ข้อเสนอลงทุนผลตอบแทนสูงผิดปกติ |
+| `V405.webp` | IV | คนใกล้ตัวป่วยเรื้อรัง |
+| `V406.webp` | IV | ส่งต่อความรู้ |
+
+### ยุค I เริ่มต้น (22–30)
+
+**V101 — เงินเดือนก้อนแรก**
+```
+A Thai graduate in their early twenties sitting on the edge of a bed in a small rented room, looking at a phone showing a blank banking screen with a quiet proud smile, a paper gift bag and a small savings jar on the desk beside them, morning light, the first salary and many choices ahead.
+```
+
+**V102 — เพื่อนชวนเที่ยวต่างประเทศ**
+```
+A group of Thai friends in their twenties laughing together in a cafe, one holding up a phone with travel photos (blank screen), the main character in the middle holding a coffee and a wallet, torn between fun with friends and saving, warm afternoon light.
+```
+
+**V103 — ข้อเสนอที่ปฏิเสธยาก**
+```
+A Thai young employee standing in a bright open-plan office while a manager holds out a thick blank project folder, behind the employee a window shows the evening sky and a gym bag on their chair, a decision between career and personal time.
+```
+
+**V104 — บัตรเครดิตใบแรก**
+```
+A Thai young adult at a kitchen table opening an envelope and holding a brand-new plain credit card with no logo, a laptop showing an online shop (blank screen) beside them, a moment of temptation and responsibility, soft morning light.
+```
+
+**V105 — คอร์สออนไลน์ลดราคา**
+```
+A Thai young professional on a sofa at night with a laptop showing an online course page (blank screen), headphones around the neck, a notebook and pen ready, a cat sleeping nearby, ambition and the wish to learn.
+```
+
+**V106 — นอนดึกติดต่อกันหลายเดือน**
+```
+A Thai young professional at a desk late at night, lit by a laptop and a desk lamp, empty coffee cups lined up, a wall clock showing very late hours (no numbers), tired eyes but still typing, a quiet warning about health.
+```
+
+### ยุค II สร้างตัว (31–40)
+
+**V201 — เพื่อนชวนร่วมหุ้น**
+```
+Two Thai friends in their thirties standing inside an empty shophouse unit about to become a coffee shop, one holding blank floor plans and gesturing excitedly, the other thinking carefully with arms crossed, sunlight through the shutters, a shared dream and a real risk.
+```
+
+**V202 — งานแต่งเพื่อนสนิท**
+```
+A Thai wedding reception at a garden venue, the main character helping a close friend in a wedding dress arrange flowers and blank place cards, guests arriving under string lights, friendship and joyful busyness.
+```
+
+**V203 — บริษัทปรับโครงสร้าง**
+```
+A Thai office in mid-restructuring, several empty desks with boxes, the main character at their desk with a growing stack of folders as colleagues carry boxes out, uncertainty and quiet resilience, soft daylight.
+```
+
+**V204 — พ่อแม่เริ่มต้องการคนดูแล**
+```
+A Thai adult in their thirties kneeling to help an elderly father with a walking cane sit down in a simple home living room, the mother watching with worry and relief, family photos on the wall (blank frames), love and a new responsibility.
+```
+
+**V205 — โบนัสก้อนใหญ่**
+```
+A Thai professional at their desk opening an envelope with a happy surprised smile, colleagues cheering in the background, on the desk a small plant, a family photo frame (blank) and a piggy bank, many ways to use the reward.
+```
+
+**V206 — ลูกค้าคนสำคัญชวนดื่ม**
+```
+A Thai professional at an upscale rooftop restaurant at dusk, a big client raising a glass across the table, the main character smiling politely while glancing at a phone with a family message (blank screen), balancing work relationships and personal life.
+```
+
+### ยุค III จุดสูงสุด (41–50)
+
+**V301 — ข้อเสนองานต่างประเทศ**
+```
+A Thai executive in their forties holding a blank job offer letter at home in the evening, a spouse and a child at the dining table behind them, through the window a city skyline, a big opportunity weighed against family life, no flags.
+```
+
+**V302 — ผลตรวจสุขภาพผิดปกติ**
+```
+A Thai professional in their forties sitting in a calm hospital consultation room, a kind doctor pointing at a simple chart on a tablet (shapes only, no text), the patient holding a blank health report with a thoughtful expression, a wake-up call about health.
+```
+
+**V303 — ตลาดหุ้นผันผวนหนัก**
+```
+A Thai investor in their forties at a home desk at night looking at a laptop with a sharply falling red line chart (shapes only, no numbers), hand on chin, a cup of tea going cold, staying calm in a storm, rain on the window.
+```
+
+**V304 — เพื่อนเก่าป่วยหนัก**
+```
+A Thai adult visiting an old school friend in a hospital room, sitting by the bed and holding their hand, a basket of fruit on the side table, an old school photo (blank faces) propped up, friendship, care and memories.
+```
+
+**V305 — คนในบ้านต้องการคุณ**
+```
+A Thai parent in work clothes sitting in a small school classroom across from a kind teacher, their child sitting beside them looking down, a wall clock and a phone buzzing with work messages (blank screen), family needs at an inconvenient time.
+```
+
+**V306 — วิกฤตวัยกลางคน**
+```
+A Thai person in their forties standing alone on a quiet balcony at dawn, holding a mug and looking at the horizon, a calendar on the wall behind with identical-looking days (no numbers), reflection about life direction, soft hazy light.
+```
+
+### ยุค IV ส่งต่อ (51–60+)
+
+**V401 — ข้อเสนอเกษียณก่อนกำหนด**
+```
+A Thai employee in their late fifties at their office desk reading a blank document about early retirement, a framed photo of a garden and a fishing rod leaning in the corner, colleagues working nearby, a peaceful choice between rest and continuing.
+```
+
+**V402 — หลานคนแรก**
+```
+A Thai person in their late fifties gently holding a newborn grandchild in a bright home, the young parents smiling beside them, soft afternoon light through curtains, joy and a new chapter of family.
+```
+
+**V403 — มูลนิธิชวนเป็นกรรมการ**
+```
+A Thai person in their late fifties visiting a rural school supported by an education foundation, children waving from classroom windows, a foundation staff member offering a blank invitation folder, purpose and giving back.
+```
+
+**V404 — ข้อเสนอลงทุนผลตอบแทนสูงผิดปกติ**
+```
+A smooth-talking acquaintance in a shiny suit presenting a glossy blank brochure to a thoughtful Thai person in their late fifties at a cafe, an upward arrow shape glowing too brightly on the brochure, the listener looking carefully over their reading glasses, healthy skepticism.
+```
+
+**V405 — คนใกล้ตัวป่วยเรื้อรัง**
+```
+A Thai person in their late fifties caring for a frail loved one at home, adjusting a blanket on a bed by a window with plants, medicine boxes on the side table, a tired but loving expression, long-term care and devotion.
+```
+
+**V406 — ส่งต่อความรู้**
+```
+A Thai senior professional in their late fifties sitting at a long wooden table with several young colleagues, sharing stories over notebooks and coffee, the younger people listening and taking notes, warm late-afternoon light, mentorship and legacy.
 ```
 
 ---

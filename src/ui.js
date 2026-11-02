@@ -223,11 +223,11 @@
   const artSrc = f => `assets/art/${s.mode && s.mode !== 'base' ? `${s.mode}/` : ''}${f}.webp`;
   // ภาพการ์ดเหตุการณ์: โหมดเสริมลองภาพเฉพาะใบก่อน → ภาพใช้ร่วมของโหมด → ภาพโหมดปกติ (ไฟล์ไหนไม่มีก็ข้าม)
   function artImgs(kind, card) {
-    // การ์ดโอกาส: ภาพเฉพาะใบ (O01…) ก่อน แล้วค่อยภาพใช้ร่วม ทั้งสองโหมด
+    // การ์ดโอกาสและเหตุการณ์: ภาพเฉพาะใบ (O01…, V101…) ก่อน แล้วค่อยภาพใช้ร่วม ทั้งสองโหมด
     const common = kind === 'opportunity' ? 'opportunity' : kind === 'echo' ? `echo-${card.kind}` : `era-${card.era}`;
     const list = s.mode && s.mode !== 'base'
       ? [`${s.mode}/${card.id}`, kind === 'incident' ? `${s.mode}/${s.mode}-incident` : `${s.mode}/${s.mode}-${common}`]
-      : kind === 'opportunity' ? [card.id, common] : [common];
+      : kind === 'opportunity' || kind === 'event' ? [card.id, common] : [common];
     if (kind === 'incident' && s.mode === 'base') list.length = 0;
     const srcs = list.map(f => `assets/art/${f}.webp`);
     if (!srcs.length) return '';
