@@ -750,18 +750,6 @@ html[data-mode="kala"] .pick, html[data-mode="kala"] .panel, html[data-mode="kal
 html[data-mode="kala"] .pick.sel { background: var(--mustard-soft); border-color: var(--coral); }
 html[data-mode="kala"] .tier-badge { background: var(--coral); }
 
-/* ---------------------------------------------------------------- เลือกโหมด */
-.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 760px; width: 100%; justify-self: center; }
-.modes-label { margin: 0 0 -4px; font-size: 13px; letter-spacing: .06em; color: var(--muted); justify-self: center; }
-.mode-pick {
-  text-align: left; background: var(--paper); border: 2px solid var(--line); border-radius: 14px; padding: 12px 14px;
-  display: grid; gap: 2px; font: inherit; color: var(--ink); cursor: pointer;
-}
-.mode-pick b { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 16px; }
-.mode-pick small { color: var(--muted); font-size: 13px; }
-.mode-pick.sel { border-color: var(--sage); background: var(--sage-soft); box-shadow: 0 0 0 3px rgba(63, 107, 79, .15); }
-.mode-pick.kala.sel { border-color: #c8102e; background: #fbedb5; box-shadow: 3px 3px 0 #1e1a16; }
-html.m .modes { grid-template-columns: 1fr; }
 .mode-badge {
   flex: none; font: 600 12px/1 'Kanit', sans-serif; color: #1e1a16; background: #f5c518; border-radius: 4px;
   padding: 4px 7px; transform: rotate(-3deg); white-space: nowrap;
@@ -776,9 +764,8 @@ html.m .rules-foot.two .btn { flex: 1; min-width: 0; }
 .toast.quip { background: #1e1a16; color: #f5c518; border: 2px solid #f5c518; font-weight: 600; max-width: min(560px, calc(100% - 32px)); text-align: center; }
 html[data-mode="kala"] .toast:not(.quip) { background: #1e1a16; }
 
-/* จอแคบ: ปุ่มเลือกโหมดและหัวเรื่องห้ามดันหน้าให้ล้นแนวนอน */
-.hero.setup > *, .modes, .mode-pick { min-width: 0; }
-.mode-pick small { overflow-wrap: anywhere; }
+/* จอแคบ: หัวเรื่องห้ามดันหน้าให้ล้นแนวนอน */
+.hero.setup > * { min-width: 0; }
 
 /* ---------------------------------------------------------------- Life Projects แบบรายชื่อ (การ์ดเยอะ/มือถือ): กดชื่อเปิดการ์ดทีละใบ */
 .proj-tabs { flex: 0 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: stretch; gap: 8px; width: 100%; max-width: 440px; margin: 0 auto; padding: 8px 14px 12px; box-sizing: border-box; }
@@ -842,3 +829,52 @@ html[data-mode="kala"] .ptab.on { box-shadow: 0 0 0 3px var(--mustard), 2px 2px 
 .ptab .lvl { grid-column: 3; justify-self: end; margin-left: 14px; }
 .ptab .chips { grid-column: 4; justify-content: flex-end; min-width: 0; }
 html.m .proj-tabs { max-width: none; padding-left: 28px; padding-right: 28px; }
+
+/* ---------------------------------------------------------------- ปก: ภาพ hero ฉากเดียวกันสองโลก · key message เดียว
+   แคบหรือแนวตั้ง = ภาพบน เนื้อหาเรียงลง · กว้างแนวนอน = ภาพซ้าย เนื้อหาขวา */
+.cover { background: var(--paper); color: var(--ink); }
+.cover-in { min-height: 100vh; min-height: 100dvh; display: grid; grid-template-rows: auto 1fr; }
+.cover-hero { position: relative; overflow: hidden; aspect-ratio: 4 / 3; max-height: 52vh; width: 100%; background: var(--sage-dark); }
+.cover-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; transition: opacity .6s ease; }
+.cover-hero .h-kala { opacity: 0; }
+html[data-mode="kala"] .cover-hero .h-kala { opacity: 1; }
+.cover-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(20, 35, 27, .45)); }
+html[data-mode="kala"] .cover-hero::after { background: linear-gradient(180deg, transparent 55%, rgba(60, 22, 12, .5)); }
+.cover-body { display: grid; align-content: start; gap: 16px; width: 100%; max-width: 520px; margin: 0 auto; padding: 22px 20px calc(28px + env(safe-area-inset-bottom)); box-sizing: border-box; min-width: 0; }
+.cover-logo { margin: 0; font: 800 46px/1 'Kanit', sans-serif; letter-spacing: .01em; color: var(--sage-dark); }
+.cover-logo span { color: var(--mustard); }
+.cover-msg { margin: 0; font: 600 21px/1.4 'Kanit', sans-serif; text-wrap: balance; }
+.cover-msg small { display: block; font: 500 16px/1.5 'Noto Sans Thai', sans-serif; color: var(--muted); margin-top: 2px; }
+.cover-pick { display: grid; gap: 8px; }
+.cover-label { font-size: 12px; letter-spacing: .1em; color: var(--muted); }
+.cover-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 14px; background: var(--sage-soft); }
+.cover-seg button { border: 0; border-radius: 11px; padding: 10px 6px; background: transparent; color: var(--ink); cursor: pointer; display: grid; gap: 1px; text-align: center; font: 600 15px/1.25 'Kanit', sans-serif; min-width: 0; }
+.cover-seg button small { font: 500 11.5px/1.3 'Noto Sans Thai', sans-serif; color: var(--muted); }
+.cover-seg button.sel { background: var(--sage-dark); color: #fff; box-shadow: 0 3px 10px rgba(0, 0, 0, .18); }
+.cover-seg button.sel small { color: inherit; opacity: .85; }
+.cover-sub { margin: 0; font-size: 14.5px; line-height: 1.6; }
+.cover-facts { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted); }
+.cover-facts b { color: var(--ink); font-weight: 600; }
+.cover-ctas { display: grid; gap: 8px; }
+.cover-ctas .cover-cta { padding: 15px 18px; font-size: 18px; background: var(--mustard); color: var(--ink); }
+.cover-ctas .btn.ghost { justify-self: center; }
+.cover-disc { margin: 0; font-size: 12px; line-height: 1.5; color: var(--muted); }
+html[data-mode="kala"] .cover-logo { font-family: var(--kala-head); font-weight: 400; color: var(--ink); }
+html[data-mode="kala"] .cover-seg { background: #efe3c8; }
+html[data-mode="kala"] .cover-seg button.sel { background: var(--coral); }
+html[data-mode="kala"] .cover-ctas .cover-cta { border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+/* จอกว้างแนวนอน (แท็บเล็ตแนวตั้งใช้แบบเรียงลง ภาพจะได้ไม่ถูกครอปจนเหลือแค่ตัวละคร) */
+@media (min-width: 760px) and (min-aspect-ratio: 5/4) {
+  .cover-in { grid-template-columns: minmax(0, 1.5fr) minmax(380px, 1fr); grid-template-rows: 1fr; }
+  .cover-hero { aspect-ratio: auto; max-height: none; height: 100%; min-height: 100vh; min-height: 100dvh; }
+  .cover-hero::after { background: linear-gradient(90deg, transparent 72%, rgba(20, 35, 27, .35)); }
+  html[data-mode="kala"] .cover-hero::after { background: linear-gradient(90deg, transparent 72%, rgba(60, 22, 12, .4)); }
+  .cover-body { align-content: center; padding: 48px; gap: 20px; }
+  .cover-logo { font-size: 68px; }
+  .cover-msg { font-size: 26px; }
+}
+@media (prefers-reduced-motion: reduce) { .cover-hero img { transition: none; } }
+/* หน้าเลือกเป้าหมาย/อาชีพ: บอกโลกที่เลือก กดกลับไปปกได้ */
+.world-chip { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
+.linkish { border: 0; background: none; padding: 2px 4px; font: inherit; font-weight: 600; color: var(--sage-dark); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+html[data-mode="kala"] .linkish { color: var(--coral); }

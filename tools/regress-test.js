@@ -11,7 +11,7 @@ const check = (name, ok, detail) => results.push(`${ok ? 'PASS' : 'FAIL'} ${name
 async function start(page) {
   await page.goto(URL);
   await page.evaluate(() => localStorage.clear()); await page.reload();
-  await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]'); await page.fill('#pname', 'แจ็ค'); await page.click('#name-form [type=submit]');
+  { const cv = page.locator('[data-do="cover-start"]'); if (await cv.count()) await cv.click(); } await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]'); await page.fill('#pname', 'แจ็ค'); await page.click('#name-form [type=submit]');
 }
 const st = page => page.evaluate(() => { const s = window.__lifeceo.state; return { phase: s.phase, round: s.round, energy: s.energy, cash: s.cash, pending: s.pending.length }; });
 
@@ -126,14 +126,15 @@ const st = page => page.evaluate(() => { const s = window.__lifeceo.state; retur
     page.on('pageerror', e => errors.push(e.message)); page.on('dialog', d => d.accept());
     await page.goto(URL); await page.evaluate(() => localStorage.clear()); await page.reload();
     const ids = () => page.evaluate(() => [...document.querySelectorAll('[data-pick-goal],[data-pick-career]')].map(b => b.dataset.pickGoal || b.dataset.pickCareer));
+    await page.click('[data-do="cover-start"]');
     const before = await ids();
-    await page.click('[data-pick-goal]');
+    { const cv = page.locator('[data-do="cover-start"]'); if (await cv.count()) await cv.click(); } await page.click('[data-pick-goal]');
     await page.click('[data-do="reroll"]');
     const after = await ids();
     check('reroll: 3+3 new cards, none repeated', after.length === 6 && after.every(id => !before.includes(id)), `${before} → ${after}`);
     check('reroll: earlier pick cleared', await page.locator('.pick.sel').count() === 0);
     check('reroll: button disabled after use', await page.locator('[data-do="reroll"]').isDisabled());
-    await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]'); await page.fill('#pname', 'แจ็ค'); await page.click('#name-form [type=submit]');
+    { const cv = page.locator('[data-do="cover-start"]'); if (await cv.count()) await cv.click(); } await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]'); await page.fill('#pname', 'แจ็ค'); await page.click('#name-form [type=submit]');
     check('reroll: game starts with a rerolled goal', await page.evaluate(a => a.includes(window.__lifeceo.state.goalId), after));
     await page.screenshot({ path: require('os').tmpdir() + '/reroll.png' });
     await page.close();
@@ -144,19 +145,19 @@ const st = page => page.evaluate(() => { const s = window.__lifeceo.state; retur
     const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
     page.on('pageerror', e => errors.push(e.message));
     await page.goto(URL); await page.evaluate(() => localStorage.clear()); await page.reload();
-    await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
+    { const cv = page.locator('[data-do="cover-start"]'); if (await cv.count()) await cv.click(); } await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
     check('name: modal opens on start', await page.locator('#pname').isVisible());
     await page.click('#name-form [data-do="close"]');
     check('name: back keeps setup and picks', await page.evaluate(() => window.__lifeceo.state.phase === 'setup') && await page.locator('.pick.sel').count() === 2);
     await page.click('[data-do="start"]'); await page.fill('#pname', '   '); await page.keyboard.press('Enter');
     check('name: blank name starts game with no name chip', await page.evaluate(() => window.__lifeceo.state.phase !== 'setup' && window.__lifeceo.state.name === '') && await page.locator('.topbar .who').count() === 0);
     await page.evaluate(() => localStorage.removeItem('lifeceo.v2.save')); await page.reload();
-    await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
+    { const cv = page.locator('[data-do="cover-start"]'); if (await cv.count()) await cv.click(); } await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
     await page.fill('#pname', 'สมชาย<img src=x onerror=alert(1)>'); await page.click('#name-form [type=submit]');
     const nm = await page.evaluate(() => window.__lifeceo.state.name);
     check('name: tags stripped and capped at 20', !/[<>]/.test(nm) && nm.length <= 20 && !(await page.locator('.topbar img').count()), JSON.stringify(nm));
     await page.evaluate(() => localStorage.removeItem('lifeceo.v2.save')); await page.reload();
-    await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
+    { const cv = page.locator('[data-do="cover-start"]'); if (await cv.count()) await cv.click(); } await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]');
     check('name: last name remembered', (await page.inputValue('#pname')).includes('สมชาย'));
     await page.close();
   }
@@ -172,7 +173,7 @@ const st = page => page.evaluate(() => { const s = window.__lifeceo.state; retur
     await page.click('.kala-ack [data-do="close"]');
     check('kala: cancel keeps normal mode', (await mode()) === 'base/base');
     await page.click('[data-mode-pick="kala"]'); await page.click('[data-do="kala-accept"]');
-    check('kala: accept switches mode and theme', (await mode()) === 'kala/kala' && await page.locator('.note.disclaimer').isVisible());
+    check('kala: accept switches mode and theme', (await mode()) === 'kala/kala' && await page.locator('.cover-disc').isVisible());
     await page.click('[data-mode-pick="base"]'); await page.click('[data-mode-pick="kala"]');
     check('kala: no second disclaimer after accepting once', !(await page.locator('.kala-ack').count()) && (await mode()) === 'kala/kala');
     // เกมที่เริ่มด้วยการ์ดเคราะห์ (เลือก seed ที่มีเคราะห์ตอนต้น)

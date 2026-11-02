@@ -27,9 +27,12 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
     await page.evaluate(() => localStorage.clear()); await page.reload();
     // MODE=kala: เลือกโหมดกะลาแลนด์ผ่านหน้าจอจริง (รวมการกดรับทราบ disclaimer)
     if (process.env.MODE === 'kala') { await page.click('[data-mode-pick="kala"]'); await page.click('[data-do="kala-accept"]'); }
+    // ปกขึ้นก่อน: ต้องมีภาพ hero และปุ่มเริ่ม แล้วกดเข้าไปหน้าเลือกเป้าหมาย/อาชีพ
+    if (!(await page.locator('.cover .cover-hero img').count()) || !(await page.locator('[data-do="cover-start"]').count())) problem('cover missing');
+    await page.click('[data-do="cover-start"]');
     const picks = await page.locator('[data-pick-goal]').count() + 'x' + await page.locator('[data-pick-career]').count();
     if (picks !== '3x3') problem(`setup choices ${picks}`);
-    await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]'); await page.fill('#pname', 'แจ็ค'); await page.click('#name-form [type=submit]');
+    { const cv = page.locator('[data-do="cover-start"]'); if (await cv.count()) await cv.click(); } await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]'); await page.fill('#pname', 'แจ็ค'); await page.click('#name-form [type=submit]');
 
     if (!(await page.locator('.topbar .who').textContent().catch(() => '')).includes('แจ็ค')) problem('player name missing from top bar');
     const st = () => page.evaluate(() => { const s = window.__lifeceo.state; return { phase: s.phase, round: s.round, time: s.time }; });
@@ -136,7 +139,7 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
   page.on('dialog', d => d.accept());
   await page.goto(URL);
   await page.evaluate(() => localStorage.clear()); await page.reload();
-  await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]'); await page.fill('#pname', 'แจ็ค'); await page.click('#name-form [type=submit]');
+  { const cv = page.locator('[data-do="cover-start"]'); if (await cv.count()) await cv.click(); } await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]'); await page.fill('#pname', 'แจ็ค'); await page.click('#name-form [type=submit]');
   await page.click('[data-sheet="career"]');
   await page.click('.sheet-overlay', { position: { x: 20, y: 20 } });
   console.log('sheet closes on backdrop:', await page.locator('.sheet').count() === 0);

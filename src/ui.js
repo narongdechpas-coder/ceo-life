@@ -13,7 +13,7 @@
 
   let s = null;
   // showAll = เลขบทที่กด "ดูทั้งหมด" (รีเซ็ตเองเมื่อขึ้นบทใหม่)
-  let ui = { modal: null, sheet: null, showAll: 0, pickGoal: null, pickCareer: null };
+  let ui = { modal: null, sheet: null, showAll: 0, pickGoal: null, pickCareer: null, cover: true };
 
   // ---------------------------------------------------------------- พื้นโต๊ะ (ค่าส่วนตัวของผู้เล่นแต่ละเครื่อง)
   const BG_KEY = 'lifeceo.bg';
@@ -404,14 +404,6 @@
   // ---------------------------------------------------------------- โหมด (ชีวิตตามแผน / ชีวิตในกะลาแลนด์)
   const pref = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { /* ไม่มีที่เก็บก็เล่นได้ */ } return null; };
   const modeBadge = () => (G.modeOf(s) ? `<span class="mode-badge" title="${esc(G.modeOf(s).name)}">🥥 ${esc(G.modeOf(s).short)}</span>` : '');
-  function modePicker() {
-    const k = G.MODES.kala;
-    if (!k) return '';
-    return `<p class="modes-label">เลือกโลกที่จะใช้ชีวิต</p><section class="modes" aria-label="เลือกโลกที่จะใช้ชีวิต">
-      <button class="mode-pick ${s.mode === 'base' ? 'sel' : ''}" data-mode-pick="base"><b>🌿 ชีวิตตามแผน</b><small>คุณคุมได้ทุกตัวแปร · เหมาะกับเล่นครั้งแรก</small></button>
-      <button class="mode-pick kala ${s.mode === 'kala' ? 'sel' : ''}" data-mode-pick="kala"><b>🥥 ชีวิตในกะลาแลนด์</b><small>มีตัวแปรที่คุมไม่ได้ · ของแพง เคราะห์มาไม่บอก</small></button>
-    </section>`;
-  }
   function kalaAckModal() {
     const k = G.MODES.kala;
     return `<div class="overlay"><div class="ecard rules kala-ack" role="dialog" aria-modal="true">
@@ -431,16 +423,44 @@
     run(err);
   }
 
+  // ---------------------------------------------------------------- ปก: key message เดียว · เลือกโลกด้วยการเปลี่ยนภาพ hero ฉากเดียวกัน
+  const WORLD = {
+    base: { name: 'ชีวิตตามแผน', hint: 'คุณคุมได้ทุกตัวแปร', sub: 'ออกแบบชีวิตในอุดมคติ ผลลัพธ์มาจากการตัดสินใจของคุณล้วนๆ เหมาะกับเล่นครั้งแรก' },
+    kala: { name: 'ชีวิตในกะลาแลนด์', hint: 'มีตัวแปรที่คุมไม่ได้', sub: 'แผนเดิม แต่โลกไม่เป็นใจ ข้าวของแพงขึ้นทุกยุค เคราะห์มาโดยไม่บอกล่วงหน้า วัดกันที่การรับมือ' },
+  };
+  function coverScreen() {
+    const m = s.mode === 'kala' ? 'kala' : 'base';
+    const pick = id => `<button type="button" class="${m === id ? 'sel' : ''}" data-mode-pick="${id}" aria-pressed="${m === id}">${WORLD[id].name}<small>${WORLD[id].hint}</small></button>`;
+    return `<main class="cover"><div class="cover-in">
+      <div class="cover-hero" aria-hidden="true">
+        <img class="h-base" src="assets/hero/hero-base.webp" alt="" fetchpriority="high">
+        ${G.MODES.kala ? '<img class="h-kala" src="assets/hero/hero-kala.webp" alt="">' : ''}
+      </div>
+      <div class="cover-body">
+        <h1 class="cover-logo">LIFE <span>CEO</span></h1>
+        <p class="cover-msg">บริหารชีวิตให้เหมือนบริหารบริษัท<small>ทุกการตัดสินใจมีราคา</small></p>
+        ${G.MODES.kala ? `<div class="cover-pick"><span class="cover-label">เลือกโลกที่จะใช้ชีวิต</span>
+          <div class="cover-seg" role="group" aria-label="เลือกโลกที่จะใช้ชีวิต">${pick('base')}${pick('kala')}</div></div>` : ''}
+        <p class="cover-sub">${WORLD[m].sub}</p>
+        <p class="cover-facts"><span><b>8</b> บท</span><span><b>4</b> ยุค อายุ 22–60+</span><span>ผู้เล่นคนเดียว</span></p>
+        <div class="cover-ctas"><button class="btn cover-cta" data-do="cover-start">เริ่มบริหารชีวิต</button>
+          <button class="btn ghost" data-do="rules">📖 วิธีเล่น</button>${installBtn('btn ghost install-cta')}</div>
+        ${m === 'kala' && G.modeOf(s) ? `<p class="cover-disc">⚠️ ${esc(G.modeOf(s).disclaimer)}</p>` : ''}
+      </div>
+    </div></main>`;
+  }
+
   // ---------------------------------------------------------------- screens
   function setupScreen() {
+    if (ui.cover) return coverScreen();
     const goals = s.goalChoices.map(id => { const g = G.goalOf(s, id);
       return `<button class="pick ${ui.pickGoal === id ? 'sel' : ''}" data-pick-goal="${id}"><h3>🎯 ${esc(g.name)}</h3><p>เต็ม +10: ${esc(g.full)}</p><p>บางส่วน +4: ${esc(g.partial)}</p></button>`; }).join('');
     const careers = s.careerChoices.map(id => { const c = G.CAREER[id];
       return `<button class="pick ${ui.pickCareer === id ? 'sel' : ''}" data-pick-career="${id}"><span class="pick-art"><img src="${artSrc(id)}" alt="" loading="lazy" onerror="this.parentElement.remove()"></span><h3>💼 ${esc(c.name)}</h3>
         <p>${c.tiers.map(t => `${esc(t.name)} 🪙${t.salary}`).join(' → ')}</p><p>${esc(c.perkText)}</p>${c.quip ? `<p class="quip-line">💬 ${esc(c.quip)}</p>` : ''}</button>`; }).join('');
     return `<main class="hero setup">
-      <div><h1>LIFE <span>CEO</span></h1><p class="story tagline"><b>ชีวิตที่คุณออกแบบได้</b> <span>เกมจำลองชีวิตสำหรับผู้เล่นคนเดียว 8&nbsp;บท 4&nbsp;ยุค</span></p></div>
-      ${modePicker()}
+      <div><h1>LIFE <span>CEO</span></h1><p class="story tagline"><b>บริหารชีวิตให้เหมือนบริหารบริษัท</b> <span>ทุกการตัดสินใจมีราคา</span></p>
+        ${G.MODES.kala ? `<p class="world-chip">${s.mode === 'kala' ? '🥥' : '🌿'} ${WORLD[s.mode === 'kala' ? 'kala' : 'base'].name} <button class="linkish" data-do="cover">เปลี่ยนโลก</button></p>` : ''}</div>
       <section><div class="section-title"><h2>เลือกเป้าหมายชีวิต</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${goals}</div></section>
       <section><div class="section-title"><h2>เลือกอาชีพเริ่มต้น</h2><small>จั่วมา 3 ใบ เลือก 1</small></div><div class="pickgrid">${careers}</div></section>
       <div class="setup-actions"><button class="btn" data-do="start" ${ui.pickGoal && ui.pickCareer ? '' : 'disabled'}>เริ่มชีวิต →</button>
@@ -983,7 +1003,7 @@
   function newGame() {
     const last = pref('lifeceo.mode');
     s = G.newGame((Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0, last === 'kala' && pref('lifeceo.kalaAck') === '1' ? 'kala' : 'base');
-    ui = { modal: null, sheet: null, showAll: 0, pickGoal: null, pickCareer: null };
+    ui = { modal: null, sheet: null, showAll: 0, pickGoal: null, pickCareer: null, cover: true };
     ai = { status: 'idle', text: '', seed: null };
     window.scrollTo(0, 0);
     render();
@@ -1016,6 +1036,8 @@
       if (!err) document.querySelectorAll('.pick').forEach(el => el.classList.add('fx-enter'));
       return;
     }
+    if (d.do === 'cover-start') { ui.cover = false; window.scrollTo(0, 0); render(); return; }
+    if (d.do === 'cover') { ui.cover = true; window.scrollTo(0, 0); render(); return; }
     if (d.do === 'start') { if (ui.pickGoal && ui.pickCareer) { ui.modal = 'name'; render(); } return; }
     if (d.do === 'end') {
       if (s.time > 0 && !confirm(`ยังเหลือเวลา ${s.time} ช่อง จบรอบเลยไหม`)) return;
