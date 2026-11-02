@@ -467,7 +467,10 @@
   // ---------------------------------------------------------------- คะแนน
   const band = (v, steps) => steps.find(([min]) => v >= min)[1];
   // ช่วงคะแนนชั่วคราว รอ calibrate จาก simulator
-  const TIERS = [[45, 'Life CEO'], [35, 'Strategic Life'], [25, 'In Transition'], [15, 'Overextended'], [-99, 'Reset & Rebuild']];
+  // ช่วงคะแนนตั้งจาก percentile ของ bot ที่มีกลยุทธ์ (tools/balance.js): top 10% / 35% / 65% / 90%
+  const TIERS = [[53, 'Life CEO'], [46, 'Strategic Life'], [38, 'In Transition'], [30, 'Overextended'], [-99, 'Reset & Rebuild']];
+  // โหมดเสริมมีช่วงคะแนนของตัวเอง (คะแนนรวมต่ำกว่าโหมดปกติโดยธรรมชาติ)
+  const tiersOf = s => rule(s, 'tiers') || TIERS;
 
   function summary(s) {
     return {
@@ -495,7 +498,7 @@
       ['ความเครียดค้าง', s.stress >= 6 ? -3 : 0],
     ];
     const total = rows.reduce((t, r) => t + r[1], 0);
-    const tierName = s.gameOver === 'crisis' ? 'Reset & Rebuild' : band(total, TIERS);
+    const tierName = s.gameOver === 'crisis' ? 'Reset & Rebuild' : band(total, tiersOf(s));
     return { rows, total, tier: tierName, goal: goal === 10 ? 'full' : goal === 4 ? 'partial' : 'none', regrets };
   }
 
@@ -507,7 +510,7 @@
   }
 
   const API = {
-    D, MODES, goalOf, CAREER, GOAL, PROJECT, EVENT, ECHO, OPP, INCIDENT, ROUNDS, modeOf, rule, effective,
+    D, MODES, goalOf, TIERS, tiersOf, CAREER, GOAL, PROJECT, EVENT, ECHO, OPP, INCIDENT, ROUNDS, modeOf, rule, effective,
     newGame, migrate, reroll, setMode, chooseSetup, chooseOption, doAction, takeOpportunity, endRound,
     currentCard, actionStatus, actionCost, projectStatus, score, summary,
     eraOf, era, career, tier, energyCap, salary, passive, livingCost, interest, portfolioYield, blocker, sumCost,

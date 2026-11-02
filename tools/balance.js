@@ -189,10 +189,13 @@ const actKeys = [...new Set(smart.flatMap(x => Object.keys(x.acts)))];
 T('6. กิจกรรมที่ใช้ต่อเกม (ค่าเฉลี่ย)', ['bot', ...actKeys], Object.entries(bots).filter(([b]) => b !== 'random').map(([b, l]) => [b, ...actKeys.map(k => f1(mean(l.map(x => x.acts[k] || 0))))]));
 
 // ช่วงคะแนนที่เสนอ: percentile ของ bot ไล่เป้าหมาย
-const st = seeker.map(x => x.total);
+// ช่วงคะแนนที่เสนอ: percentile ของ bot ที่มีกลยุทธ์ทุกแบบรวมกัน (ใกล้คนเล่นจริงกว่าดู bot ที่เก่งที่สุดตัวเดียว)
+// top 10% = Life CEO · 10–35% Strategic Life · 35–65% In Transition · 65–90% Overextended · ล่างสุด 10% Reset & Rebuild
+const st = smart.map(x => x.total);
+const cur = G.tiersOf(G.newGame(1, MODE));
 const tiers = [['Life CEO', q(st, .9)], ['Strategic Life', q(st, .65)], ['In Transition', q(st, .35)], ['Overextended', q(st, .1)]];
-md.push(`\n### 7. ช่วงคะแนนที่เสนอ (จาก percentile ของ bot ไล่เป้าหมาย)\n\n${head(['ระดับ', 'คะแนนตั้งแต่', 'ปัจจุบัน'])}\n${tiers.map((t, i) => row([t[0], t[1], [45, 35, 25, 15][i]])).join('\n')}\n| Reset & Rebuild | ต่ำกว่า ${tiers[3][1]} | ต่ำกว่า 15 |`);
-md.push(`\nการกระจายระดับตอนนี้ (bot ไล่เป้าหมาย): ${Object.entries(by(seeker, 'tier')).map(([k, l]) => `${k} ${pct(l.length, seeker.length)}`).join(' · ')}`);
+md.push(`\n### 7. ช่วงคะแนนที่เสนอ (percentile ของ bot ที่มีกลยุทธ์ทั้ง 5 แบบ)\n\n${head(['ระดับ', 'คะแนนตั้งแต่ (เสนอ)', 'ที่ใช้อยู่'])}\n${tiers.map((t, i) => row([t[0], t[1], cur[i][0]])).join('\n')}\n| Reset & Rebuild | ต่ำกว่า ${tiers[3][1]} | ต่ำกว่า ${cur[3][0]} |`);
+md.push(`\nการกระจายระดับที่ใช้อยู่ (ทุก bot ที่มีกลยุทธ์): ${Object.entries(by(smart, 'tier')).map(([k, l]) => `${k} ${pct(l.length, smart.length)}`).join(' · ')}`);
 
 fs.writeFileSync(OUT, md.join('\n') + '\n');
 console.log(md.slice(1, 4).join('\n'));

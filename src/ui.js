@@ -563,7 +563,7 @@
     return `<main class="hero end">
       <div><h1>${s.gameOver === 'crisis' ? `ชีวิตของ${s.name ? esc(gapIfLatin(s.name)) : 'คุณ'}ต้องเริ่มต้นใหม่` : `ชีวิตของ${s.name ? esc(gapIfLatin(s.name)) : 'คุณ'}`}</h1>
         <p class="story">${esc(c.name)} · ตั้งใจเป็น “${esc(g.name)}” · ${f.goal === 'full' ? 'ทำได้ตามที่ตั้งใจ' : f.goal === 'partial' ? 'ทำได้บางส่วน' : 'ยังไปไม่ถึง'}</p>
-        <p><span class="tier-badge">${esc(f.tier)}</span> <b class="big">${f.total} คะแนน</b> <span class="note">ช่วงคะแนนของแต่ละระดับยังเป็นค่าชั่วคราว</span></p></div>
+        <p><span class="tier-badge">${esc(f.tier)}</span> <b class="big">${f.total} คะแนน</b></p></div>
       ${aiPanel()}
       ${s.aiStory ? `<details class="panel"><summary>ดูเหตุการณ์ทีละบท</summary>${eras}</details>`
         : `<section class="panel"><div class="section-title"><h2>เรื่องเล่า 4 ยุค</h2></div>${eras}</section>`}

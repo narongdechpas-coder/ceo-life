@@ -89,14 +89,14 @@ bot ไม่ใช่คน: ตัวเลขนี้ใช้หาจุ�
 | investor | 6.3 | 3.7 | 5.5 | 0.5 | 1.9 | 0.8 | 1.5 | 0.0 | 0.1 |
 | goalSeeker | 1.2 | 2.1 | 6.1 | 1.0 | 2.2 | 2.1 | 1.8 | 0.2 | 0.2 |
 
-### 7. ช่วงคะแนนที่เสนอ (จาก percentile ของ bot ไล่เป้าหมาย)
+### 7. ช่วงคะแนนที่เสนอ (percentile ของ bot ที่มีกลยุทธ์ทั้ง 5 แบบ)
 
-| ระดับ | คะแนนตั้งแต่ | ปัจจุบัน |
+| ระดับ | คะแนนตั้งแต่ (เสนอ) | ที่ใช้อยู่ |
 | --- | --- | --- |
-| Life CEO | 37 | 45 |
-| Strategic Life | 30 | 35 |
-| In Transition | 24 | 25 |
-| Overextended | 19 | 15 |
-| Reset & Rebuild | ต่ำกว่า 19 | ต่ำกว่า 15 |
+| Life CEO | 38 | 38 |
+| Strategic Life | 29 | 29 |
+| In Transition | 22 | 22 |
+| Overextended | 16 | 16 |
+| Reset & Rebuild | ต่ำกว่า 16 | ต่ำกว่า 16 |
 
-การกระจายระดับตอนนี้ (bot ไล่เป้าหมาย): Reset & Rebuild 4% · In Transition 42% · Overextended 36% · Strategic Life 16% · Life CEO 2%
+การกระจายระดับที่ใช้อยู่ (ทุก bot ที่มีกลยุทธ์): Life CEO 11% · Strategic Life 25% · Overextended 22% · In Transition 32% · Reset & Rebuild 10%
