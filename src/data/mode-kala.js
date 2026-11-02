@@ -57,10 +57,10 @@
     // ------------------------------------------------------------ อาชีพของกะลาแลนด์ (แทนอาชีพโหมดปกติ)
     // ใช้ perk เดิมของ engine: pensionEraIV / learnDiscount / relFree / overtimeBonus / extraOpportunity และ perRound
     careers: [
-      { id: 'K-C01', name: 'พนักงานสัญญาจ้างรายปี', perk: null, quip: 'ต่อสัญญาปีต่อปี ลุ้นทุกเดือนธันวา',
-        perkText: 'เส้นทางมาตรฐาน แต่ขั้นแรกเงินน้อย และต้องลุ้นต่อสัญญาทุกปี',
+      { id: 'K-C01', name: 'พนักงานบริษัท', perk: null, quip: 'เงินเดือนขึ้นปีละ 3% ค่าครองชีพขึ้นปีละ 7% คณิตศาสตร์แบบกะลา',
+        perkText: 'เส้นทางมาตรฐาน · เงินเดือนขึ้นช้ากว่าค่าครองชีพ',
         tiers: [
-          { name: 'สัญญาจ้าง', salary: 4 },
+          { name: 'พนักงานใหม่ (ทดลองงาน)', salary: 4 },
           { name: 'พนักงานประจำ', salary: 6, require: { skills: 3 } },
           { name: 'หัวหน้าแผนก', salary: 8, require: { skills: 6, rel: 5 }, perRound: { stress: 1 } },
         ] },

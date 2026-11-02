@@ -14,7 +14,7 @@
 
 | ไฟล์ | กลุ่ม | การ์ด |
 |---|---|---|
-| `K-C01` | A | อาชีพ · พนักงานสัญญาจ้างรายปี |
+| `K-C01` | A | อาชีพ · พนักงานบริษัท |
 | `K-C02` | A | อาชีพ · ข้าราชการซีเริ่มต้น |
 | `K-C03` | A | อาชีพ · ไรเดอร์ส่งอาหาร |
 | `K-C04` | A | อาชีพ · แม่ค้าออนไลน์ |
@@ -90,21 +90,21 @@
 
 ---
 
-## `K-C01` · อาชีพ · พนักงานสัญญาจ้างรายปี (A)
+## `K-C01` · อาชีพ · พนักงานบริษัท (A)
 ```text
 # SCENE DESCRIPTION
 
-Scene: A contract employee waiting for the annual contract renewal
+Scene: An ordinary company employee comparing a tiny pay raise with rising prices
 
-Main Characters: nervous young employee, indifferent HR manager; exaggerated but realistic and relatable expressions
+Main Characters: tired but hopeful office employee, colleagues in the background busy at their desks; exaggerated but realistic and relatable expressions
 
 Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
 
-Main Action: holding a blank contract with crossed fingers while a calendar page for December falls
+Main Action: holding a small payslip (blank) and a calculator while price-tag shapes (blank) float upward around them like balloons
 
-Environment: cramped open-plan office
+Environment: cramped open-plan office with a water cooler and potted plant
 
-Visual Irony: job security renewed one year at a time
+Visual Irony: salary grows by steps, prices grow by leaps
 
 Palette Accent: cobalt blue, warm grey, paper cream
 
