@@ -780,21 +780,21 @@ html[data-mode="kala"] .toast:not(.quip) { background: #1e1a16; }
 .mode-pick small { overflow-wrap: anywhere; }
 
 /* ---------------------------------------------------------------- Life Projects แบบรายชื่อ (การ์ดเยอะ/มือถือ): กดชื่อเปิดการ์ดทีละใบ */
-.proj-tabs { flex: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 8px 14px 12px; }
+.proj-tabs { flex: 0 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: stretch; gap: 8px; width: 100%; max-width: 440px; margin: 0 auto; padding: 8px 14px 12px; box-sizing: border-box; }
 .ptab {
-  display: inline-flex; align-items: center; gap: 6px; max-width: 100%; cursor: pointer;
+  display: flex; align-items: center; justify-content: flex-start; gap: 6px; width: 100%; text-align: left; cursor: pointer;
   background: #fffdf8; color: var(--ink); border: 0; border-radius: 999px; padding: 5px 12px 5px 6px; font-size: 13px;
   box-shadow: 0 2px 0 rgba(0, 0, 0, .14), 0 5px 12px rgba(0, 0, 0, .18); transition: transform .12s;
 }
 .ptab:hover { transform: translateY(-2px); }
-.ptab .ico { font-size: 18px; line-height: 1; }
+.ptab .ico { flex: none; width: 26px; text-align: center; font-size: 18px; line-height: 1; }
 .ptab b { font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .ptab .lvl { flex: none; font-size: 11px; font-weight: 700; color: #fff; background: var(--sage); border-radius: 6px; padding: 0 5px; }
 .ptab .chips { flex-wrap: nowrap; gap: 0 4px; }
 .ptab .chip { font-size: 12px; }
 .ptab.off { opacity: .55; }
 .ptab.on { box-shadow: 0 0 0 3px var(--mustard), 0 5px 12px rgba(0, 0, 0, .18); }
-html.m .proj-tabs { gap: 6px; padding: 6px 10px 10px; }
+html.m .proj-tabs { gap: 6px; padding: 6px 28px 10px; max-width: none; }
 html.m .ptab { padding: 4px 10px 4px 5px; }
 html.m .ptab b { font-size: 13px; }
 /* ปุ่มปิดมุมบนขวาของการ์ด */
@@ -828,3 +828,7 @@ html[data-mode="kala"] .ptab.on { box-shadow: 0 0 0 3px var(--mustard), 2px 2px 
   html.m .dock-acts .act { padding: 4px 2px; gap: 0 3px; }
   html.m .dock-acts .act-ico { width: 18px; height: 18px; font-size: 12px; }
 }
+/* โหมดรายชื่อ: คำแนะนำเป็นบรรทัดเล็กเหนือรายชื่อ รายชื่ออยู่กลางแนวตั้งของโต๊ะ ถ้ายาวเกินก็เลื่อนในรายชื่อ */
+.table-cards.with-tabs { flex: 0 0 auto; min-height: 0; overflow: visible; padding-top: 0; padding-bottom: 0; margin-top: auto; }
+.table-cards.with-tabs .table-empty { margin: 4px auto 0; font-size: 13px; }
+.table-cards.with-tabs + .proj-tabs { margin-bottom: auto; }

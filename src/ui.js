@@ -694,7 +694,7 @@
     // การ์ดเยอะหรือมือถือ: โต๊ะเหลือรายชื่อ กดชื่อเปิดการ์ดทีละใบเป็นหน้าต่างทับ (เห็นรูปเต็ม)
     return {
       head, tabs: projTabs(list), cards: [],
-      empty: s.time <= 0 ? 'เวลาหมดแล้ว กด "จบรอบ" ด้านล่าง' : 'แตะชื่อโปรเจกต์ด้านล่างเพื่อเปิดการ์ด',
+      empty: s.time <= 0 ? 'เวลาหมดแล้ว กด "จบรอบ" ด้านล่าง' : 'แตะชื่อโปรเจกต์เพื่อเปิดการ์ด',
     };
   }
   const listMode = list => isMobile() || list.length >= 4;
@@ -738,7 +738,7 @@
       <div class="board">
         <main class="table">
           <div class="table-head">${v.head}</div>
-          <div class="table-cards ${s.phase === 'actions' && ui.showAll === s.round ? 'browse' : ''}" id="cards">${v.cards.join('') || `<p class="table-empty">${esc(v.empty || '')}</p>`}</div>
+          <div class="table-cards ${s.phase === 'actions' && ui.showAll === s.round ? 'browse' : ''} ${v.tabs ? 'with-tabs' : ''}" id="cards">${v.cards.join('') || `<p class="table-empty">${esc(v.empty || '')}</p>`}</div>
           ${v.tabs || ''}
         </main>
         ${isDesk() && innerWidth / (parseFloat(document.documentElement.style.getPropertyValue('--z')) || 1) >= 1500 ? sidePanel() : ''}
