@@ -4,11 +4,16 @@
  * ทุกฟังก์ชันที่เปลี่ยน state ส่ง error เป็น string กลับมาถ้าทำไม่ได้ และไม่แตะ state
  */
 (function (root) {
-  const D = (typeof module !== 'undefined' && module.exports) ? require('./data/cards.js') : root.LIFE_CEO_DATA;
+  const NODE = typeof module !== 'undefined' && module.exports;
+  const D = NODE ? require('./data/cards.js') : root.LIFE_CEO_DATA;
+  // โหมดเสริม (เช่น กะลาแลนด์) เพิ่มการ์ดและกติกาบนเกมเดิม โหมดปกติ = 'base'
+  const MODES = (NODE ? require('./data/mode-kala.js') : root.LIFE_CEO_MODES) || {};
+  const modeCards = key => Object.values(MODES).flatMap(m => m[key] || []);
 
   const byId = list => Object.fromEntries(list.map(x => [x.id, x]));
   const CAREER = byId(D.CAREERS), GOAL = byId(D.GOALS), PROJECT = byId(D.PROJECTS);
-  const EVENT = byId(D.EVENTS), ECHO = byId(D.ECHOES), OPP = byId(D.OPPORTUNITIES);
+  const EVENT = byId([...D.EVENTS, ...modeCards('events')]), ECHO = byId([...D.ECHOES, ...modeCards('echoes')]), OPP = byId(D.OPPORTUNITIES);
+  const INCIDENT = byId(modeCards('incidents'));
   const ROUNDS = 8;
   const REROLLS = 1; // สุ่มเป้าหมาย/อาชีพใหม่ได้กี่ครั้งต่อเกม
   const CLAMP10 = ['health', 'rel', 'skills', 'stress'];
@@ -25,6 +30,10 @@
     for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand(s) * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
     return a;
   }
+
+  // ---------------------------------------------------------------- โหมด
+  const modeOf = s => MODES[s.mode] || null;
+  const rule = (s, key) => { const m = modeOf(s); return m && m.rules ? m.rules[key] : undefined; };
 
   // ---------------------------------------------------------------- ค่าที่คำนวณจาก state
   const eraOf = round => Math.min(4, Math.ceil(round / 2));
@@ -44,11 +53,13 @@
   }, 0);
   const passive = s => portfolioYield(s) + pension(s) + ongoingCash(s, +1);
   const obligations = s => ongoingCash(s, -1);
-  const livingCost = s => s.expenses + obligations(s);
-  const interest = s => Math.ceil(s.debt / 4);
+  // กะลาแลนด์: ส่งเงินให้พ่อแม่ตั้งแต่ยุคที่กำหนด นับรวมเป็นค่าครองชีพ
+  const parents = s => (rule(s, 'parentsFromEra') && eraOf(s.round) >= rule(s, 'parentsFromEra') ? rule(s, 'parentsPerRound') || 0 : 0);
+  const livingCost = s => s.expenses + obligations(s) + parents(s);
+  const interest = s => Math.ceil(s.debt / (rule(s, 'interestPer') || 4));
 
   function meets(s, req) {
-    return !req || Object.entries(req).every(([k, v]) => (s[k] || 0) >= v);
+    return !req || Object.entries(req).every(([k, v]) => (k === 'mark' ? !!(s.marks || {})[v] : (s[k] || 0) >= v));
   }
   function sumCost(...costs) {
     const out = {};
@@ -90,7 +101,10 @@
       if (k === 'cash') { if (v < 0) payBill(s, -v, ''); else s.cash += v; continue; }
       if (k === 'impact') { s.lp += v; s.impactLp += v; continue; }
       if (k === 'salary') { s.salaryMod += v; continue; }
-      if (k === 'energy') { s.energy = Math.max(0, s.energy + v); continue; }
+      if (k === 'energy' || k === 'time') { s[k] = Math.max(0, s[k] + v); continue; }
+      if (k === 'expenses') { s.expenses = Math.max(0, s.expenses + v); continue; }
+      if (k === 'mark') { (s.marks = s.marks || {})[v] = true; continue; }
+      if (k === 'promote') { if (career(s).tiers[s.careerTier + 1]) { s.careerTier += 1; s.expenses += 1; } continue; }
       if (k === 'debt' || k === 'portfolio') { s[k] = Math.max(0, s[k] + v); continue; }
       if (CLAMP10.includes(k)) { s[k] = Math.min(10, Math.max(0, s[k] + v)); continue; }
       s[k] += v; // lp
@@ -99,18 +113,21 @@
   // ctx = ผลนี้มาจากการตัดสินใจไหน (ใช้เล่าเรื่องตอนจบเกม)
   //   from  : ข้อความสั้นแบบเดิม (ใช้ในรายการผลสืบเนื่อง)
   //   cause : ส่วนท้ายประโยค "...ที่คุณ<cause>" เช่น 'รูดเลย'
+  // การ์ดเคราะห์: ผลเบาลงเมื่อผ่านเงื่อนไขที่เตรียมไว้ (มีประกัน มีเงินสำรอง ฯลฯ)
+  const effective = (s, o) => (o.soft && meets(s, o.soft.when) ? { ...o, gain: o.soft.gain } : o);
   function applyOutcome(s, o, src, ctx) {
     if (o.clearOngoing) s.ongoing = s.ongoing.filter(x => x.src !== src);
     applyGain(s, o.gain, src);
-    if (o.echo) plantEcho(s, o.echo.id, ctx);
+    if (o.echo && (o.echo.chance == null || rand(s) < o.echo.chance)) plantEcho(s, o.echo.id, ctx, o.echo.delay);
   }
-  function plantEcho(s, id, ctx) {
-    const target = Math.min(4, eraOf(s.round) + 1);
-    s.echoQueue[target].push(id);
+  // delay 'round' = กลับมาในบทถัดไป (โซ่ซวยซ้ำซ้อน) ไม่งั้นรอยุคถัดไป
+  function plantEcho(s, id, ctx, delay) {
+    const target = delay === 'round' ? 'next' : Math.min(4, eraOf(s.round) + 1);
+    (s.echoQueue[target] = s.echoQueue[target] || []).push(id);
     s.echoesPlanted += 1;
     const c = typeof ctx === 'string' ? { from: ctx } : (ctx || {});
     (s.echoLinks = s.echoLinks || []).push({ id, planted: s.round, from: c.from || '', cause: c.cause || '', resolved: null });
-    log(s, `มีผลสะท้อนบางอย่างรออยู่ในยุค ${target}`, 'echo');
+    log(s, target === 'next' ? 'มีผลสะท้อนบางอย่างรออยู่ในบทถัดไป' : `มีผลสะท้อนบางอย่างรออยู่ในยุค ${target}`, 'echo');
   }
   // บันทึกเรื่องราวแบบมีโครงสร้าง สำหรับหน้าสรุปชีวิต
   function story(s, entry) { (s.story = s.story || []).push({ round: s.round, ...entry }); }
@@ -130,13 +147,15 @@
     if (typeof s.impactLp !== 'number') s.impactLp = 0;
     if (typeof s.rerolls !== 'number') s.rerolls = 0;
     if (typeof s.name !== 'string') s.name = '';
+    if (!MODES[s.mode]) s.mode = 'base';
+    if (!s.marks) s.marks = {};
     return s;
   }
 
   // ---------------------------------------------------------------- เริ่มเกม
-  function newGame(seed) {
+  function newGame(seed, mode) {
     const s = {
-      v: 2, seed: seed >>> 0, rng: seed >>> 0, round: 1, phase: 'setup',
+      v: 2, seed: seed >>> 0, rng: seed >>> 0, round: 1, phase: 'setup', mode: MODES[mode] ? mode : 'base', marks: {},
       ...D.START, energy: 0, impactLp: 0, salaryMod: 0, ongoing: [],
       careerId: null, careerTier: 0, goalId: null, name: '',
       projects: {}, completed: [], market: [], projectDeck: [],
@@ -151,8 +170,12 @@
     s.seenChoices = [...s.goalChoices, ...s.careerChoices];
     s.projectDeck = shuffle(s, D.PROJECTS.map(p => p.id));
     s.market = s.projectDeck.splice(0, 3);
-    for (const e of [1, 2, 3, 4]) s.eventDecks[e] = shuffle(s, D.EVENTS.filter(v => v.era === e).map(v => v.id));
+    // โหมดเสริมใช้เหตุการณ์ของโหมดนั้นแทนกองเดิม (ยุคละ 5 ใบ เล่น 2) ถ้าไม่มีค่อยใช้กองปกติ
+    const m = MODES[s.mode];
+    const pool = e => ((m && m.events || []).filter(v => v.era === e).length ? m.events : D.EVENTS).filter(v => v.era === e).map(v => v.id);
+    for (const e of [1, 2, 3, 4]) s.eventDecks[e] = shuffle(s, pool(e));
     s.oppDeck = shuffle(s, D.OPPORTUNITIES.map(o => o.id));
+    s.incidentDeck = m && m.incidents ? shuffle(s, m.incidents.map(x => x.id)) : [];
     return s;
   }
 
@@ -189,6 +212,8 @@
     const e = era(s);
     const firstOfEra = e.rounds[0] === s.round;
     if (firstOfEra) log(s, `— ยุค ${e.id} ${e.name} (อายุ ${e.age}) —`, 'era');
+    // กะลาแลนด์: เงินเฟ้อทุกต้นยุค
+    if (firstOfEra && e.id > 1 && rule(s, 'inflationPerEra')) { s.expenses += rule(s, 'inflationPerEra'); log(s, `เงินเฟ้อ ค่าครองชีพ +${rule(s, 'inflationPerEra')}`, 'bad'); }
     s.flags = { advanced: [] };
     s.time = s.crisis ? D.START.time - 1 : D.START.time;
     // 1 บทใหม่
@@ -197,18 +222,29 @@
     const income = salary(s) + passive(s);
     s.cash += income;
     for (const o of s.ongoing) {
-      const { cash, ...rest } = o.gain;
+      const { cash, rounds, ...rest } = o.gain;
       applyGain(s, rest, o.src);
     }
+    // ผลต่อเนื่องที่มีอายุ: นับลดหลังใช้รอบนี้ หมดแล้วเอาออก (รอบนี้ยังคิดค่าใช้จ่ายด้านล่างอยู่)
+    const expiring = s.ongoing.filter(o => o.gain.rounds != null);
     if (tier(s).perRound) applyGain(s, tier(s).perRound, 'career');
     payBill(s, livingCost(s) + interest(s), 'ค่าใช้จ่าย');
     log(s, `รายรับ ${income} · จ่าย ${livingCost(s)}${interest(s) ? ` + ดอกเบี้ย ${interest(s)}` : ''}`);
+    for (const o of expiring) o.gain.rounds -= 1;
+    s.ongoing = s.ongoing.filter(o => o.gain.rounds == null || o.gain.rounds > 0);
     // 3 เหตุการณ์: Echo ที่ถึงคิวก่อน แล้วตามด้วยเหตุการณ์ของยุค
     const q = s.echoQueue[e.id];
     const take = firstOfEra ? Math.ceil(q.length / 2) : q.length;
-    const due = shuffle(s, q).slice(0, take);
-    for (const id of due) q.splice(q.indexOf(id), 1);
+    const due = [...(s.echoQueue.next || []), ...shuffle(s, q).slice(0, take)];
+    s.echoQueue.next = [];
+    for (const id of due) if (q.includes(id)) q.splice(q.indexOf(id), 1);
     s.pending = due.map(id => ({ kind: 'echo', id }));
+    // กะลาแลนด์: การ์ดเคราะห์มาก่อนทุกอย่าง เลือกไม่ได้ ข้ามไม่ได้
+    if (rule(s, 'incidentChance') && rand(s) < rule(s, 'incidentChance')) {
+      const m = modeOf(s);
+      if (!s.incidentDeck || !s.incidentDeck.length) s.incidentDeck = shuffle(s, m.incidents.map(x => x.id));
+      s.pending.unshift({ kind: 'incident', id: s.incidentDeck.pop() });
+    }
     s.pending.push({ kind: 'event', id: s.eventDecks[e.id].pop() });
     s.phase = 'event';
   }
@@ -216,14 +252,15 @@
   function currentCard(s) {
     const p = s.pending[0];
     if (!p) return null;
-    return { kind: p.kind, card: p.kind === 'echo' ? ECHO[p.id] : EVENT[p.id] };
+    return { kind: p.kind, card: p.kind === 'echo' ? ECHO[p.id] : p.kind === 'incident' ? INCIDENT[p.id] : EVENT[p.id] };
   }
 
   function chooseOption(s, idx) {
     if (s.phase !== 'event') return 'ไม่ได้อยู่ในช่วงเหตุการณ์';
     const { kind, card } = currentCard(s);
-    const o = card.options[idx];
-    if (!o) return 'ไม่มีทางเลือกนี้';
+    const raw = card.options[idx];
+    if (!raw) return 'ไม่มีทางเลือกนี้';
+    const o = effective(s, raw);
     const why = blocker(s, o.cost || {}, o.require);
     if (why) return why;
     payCost(s, o.cost || {});
@@ -234,9 +271,12 @@
       const link = (s.echoLinks || []).find(l => l.id === card.id && !l.resolved);
       if (link) link.resolved = { round: s.round, label: o.label, regret: !!o.regret };
       story(s, { kind: 'echo', id: card.id, good: card.kind === 'good', title: card.title, scene: card.scene || '', label: o.label, tell: said, regret: !!o.regret,
-        from: link ? link.from : '', cause: link ? link.cause || '' : '', planted: link ? link.planted : null });
-    } else story(s, { kind: 'event', title: card.title, scene: card.scene || '', label: o.label, tell: said, echo: !!o.echo });
-    log(s, `${kind === 'echo' ? 'Echo' : 'เหตุการณ์'} "${card.title}" → ${o.label}`, kind === 'echo' ? (card.kind === 'good' ? 'good' : (o.regret ? 'bad' : 'key')) : 'key');
+        from: link ? link.from : '', cause: link ? link.cause || '' : '', planted: link ? link.planted : null, quip: o.quip || '' });
+    } else if (kind === 'incident') story(s, { kind: 'incident', id: card.id, title: card.title, scene: card.scene || '', quip: o.quip || '', soft: o !== raw });
+    else story(s, { kind: 'event', title: card.title, scene: card.scene || '', label: o.label, tell: said, echo: !!o.echo, quip: o.quip || '' });
+    s.lastQuip = o.quip || '';
+    log(s, kind === 'incident' ? `เคราะห์ "${card.title}"${o !== raw ? ' (เบาลงเพราะเตรียมไว้)' : ''}` : `${kind === 'echo' ? 'Echo' : 'เหตุการณ์'} "${card.title}" → ${o.label}`,
+      kind === 'incident' ? 'bad' : kind === 'echo' ? (card.kind === 'good' ? 'good' : (o.regret ? 'bad' : 'key')) : 'key');
     s.pending.shift();
     if (!s.pending.length) s.phase = 'actions';
     return null;
@@ -438,7 +478,7 @@
   }
 
   const API = {
-    D, CAREER, GOAL, PROJECT, EVENT, ECHO, OPP, ROUNDS,
+    D, MODES, CAREER, GOAL, PROJECT, EVENT, ECHO, OPP, INCIDENT, ROUNDS, modeOf, rule, effective,
     newGame, migrate, reroll, chooseSetup, chooseOption, doAction, takeOpportunity, endRound,
     currentCard, actionStatus, actionCost, projectStatus, score, summary,
     eraOf, era, career, tier, energyCap, salary, passive, livingCost, interest, portfolioYield, blocker, sumCost,

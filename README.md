@@ -10,6 +10,7 @@
 |---|---|
 | `docs/design-v0.2.md` | Design doc กติกาและเหตุผล |
 | `src/data/cards.js` | ข้อมูลการ์ดทั้งหมด (แก้ตัวเลขที่นี่) |
+| `src/data/mode-kala.js` | โหมด "กะลาแลนด์ แดนซิวิไลซ์": เหตุการณ์ การ์ดเคราะห์ Echo และกติกาเสริม (เนื้อหาอยู่ที่ `docs/mode-kalaland.md`) |
 | `src/game.js` | Game engine ใช้ร่วมกันทั้งเบราว์เซอร์และ Node |
 | `src/ui.js`, `src/style.css` | หน้าเกม (Style 2) แบบโต๊ะ: บนโต๊ะมีเฉพาะการ์ดที่ต้องตัดสินใจตอนนั้น |
 | `netlify/functions/life-story.mjs` | ให้ Claude เรียบเรียงบทสรุปชีวิตตอนจบเกม (streaming) |
@@ -26,6 +27,12 @@ node tools/validate-cards.js
 ```
 ```bash
 node tools/smoke.js 2000
+```
+```bash
+node tools/smoke.js 2000 kala
+```
+```bash
+node tools/mode-test.js
 ```
 ```bash
 node tools/ui-test.js

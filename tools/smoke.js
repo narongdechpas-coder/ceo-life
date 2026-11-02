@@ -1,7 +1,8 @@
-// เล่นสุ่มหลายเกมเพื่อหาบั๊กของ engine — รัน: node tools/smoke.js [จำนวนเกม]
+// เล่นสุ่มหลายเกมเพื่อหาบั๊กของ engine — รัน: node tools/smoke.js [จำนวนเกม] [โหมด เช่น kala]
 const G = require('../src/game.js');
 
 const N = Number(process.argv[2]) || 2000;
+const MODE = process.argv[3] || 'base';
 let rng = 12345;
 const r = () => ((rng = (rng * 1103515245 + 12345) >>> 0) / 4294967296);
 const pick = a => a[Math.floor(r() * a.length)];
@@ -18,7 +19,7 @@ function invariants(s, where) {
 
 const stats = { complete: 0, crisis: 0, totals: [], burnouts: 0, regrets: 0, echoes: 0, completedProjects: 0, goalFull: 0 };
 for (let g = 0; g < N; g++) {
-  const s = G.newGame(1000 + g);
+  const s = G.newGame(1000 + g, MODE);
   G.chooseSetup(s, pick(s.goalChoices), pick(s.careerChoices));
   let steps = 0;
   while (s.phase !== 'end') {
@@ -51,7 +52,7 @@ for (let g = 0; g < N; g++) {
 
 const t = stats.totals.sort((a, b) => a - b);
 const avg = x => (x / N).toFixed(2);
-console.log(`ผ่าน ${N} เกม ไม่มี error หรือเกมค้าง`);
+console.log(`ผ่าน ${N} เกม${MODE !== 'base' ? ` (โหมด ${MODE})` : ''} ไม่มี error หรือเกมค้าง`);
 console.log(`จบครบ 8 รอบ ${stats.complete} · จบด้วยวิกฤต ${stats.crisis}`);
 console.log(`คะแนน (ผู้เล่นสุ่ม) min ${t[0]} · median ${t[Math.floor(N / 2)]} · max ${t[N - 1]}`);
 console.log(`เฉลี่ยต่อเกม: Burnout ${avg(stats.burnouts)} · Regret ${avg(stats.regrets)} · Echo ${avg(stats.echoes)} · โปรเจกต์ครบ ${avg(stats.completedProjects)} · บรรลุเป้าหมาย ${(stats.goalFull / N * 100).toFixed(1)}%`);

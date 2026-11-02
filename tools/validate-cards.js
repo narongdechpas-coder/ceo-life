@@ -1,5 +1,6 @@
 // ตรวจความถูกต้องของ src/data/cards.js — รัน: node tools/validate-cards.js
 const D = require('../src/data/cards.js');
+const MODES = require('../src/data/mode-kala.js');
 
 const errors = [];
 const err = (where, msg) => errors.push(`${where}: ${msg}`);
@@ -8,13 +9,19 @@ const STAT_KEYS = ['cash', 'energy', 'health', 'rel', 'skills', 'stress', 'debt'
 const COST_KEYS = ['cash', 'energy'];
 const REQ_KEYS = ['cash', 'health', 'rel', 'skills', 'portfolio'];
 const ENGINE_ECHOES = ['E01']; // Burnout สอด E01 จาก engine
-const echoIds = new Set(D.ECHOES.map(e => e.id));
+const echoIds = new Set([...D.ECHOES, ...Object.values(MODES).flatMap(m => m.echoes || [])].map(e => e.id));
 const referenced = new Set(ENGINE_ECHOES);
 
+// ช่องที่โหมดเสริมใช้เพิ่ม (ดูคำอธิบายใน src/data/mode-kala.js)
+const MODE_GAIN_KEYS = ['expenses', 'time', 'promote'];
+let modeCheck = false;
 function checkKeys(where, obj, allowed, label) {
   if (!obj) return;
   for (const [k, v] of Object.entries(obj)) {
-    if (k === 'ongoing' && label === 'gain') { checkKeys(`${where}.ongoing`, v, STAT_KEYS, 'ongoing'); continue; }
+    if (k === 'ongoing' && label === 'gain') { checkKeys(`${where}.ongoing`, v, modeCheck ? [...STAT_KEYS, 'rounds'] : STAT_KEYS, 'ongoing'); continue; }
+    if (modeCheck && label === 'gain' && k === 'mark') { if (typeof v !== 'string') err(where, 'gain.mark ต้องเป็นข้อความ'); continue; }
+    if (modeCheck && label === 'require' && k === 'mark') continue;
+    if (modeCheck && label === 'gain' && MODE_GAIN_KEYS.includes(k)) { if (!Number.isInteger(v)) err(where, `gain.${k} ต้องเป็นจำนวนเต็ม`); continue; }
     if (!allowed.includes(k)) err(where, `${label} มี key ที่ไม่รู้จัก "${k}"`);
     else if (typeof v !== 'number' || !Number.isInteger(v)) err(where, `${label}.${k} ต้องเป็นจำนวนเต็ม`);
     else if (label === 'cost' && v < 0) err(where, `cost.${k} ต้องไม่ติดลบ`);
@@ -27,7 +34,8 @@ function checkEffect(where, o) {
   if (o.echo) {
     referenced.add(o.echo.id);
     if (!echoIds.has(o.echo.id)) err(where, `อ้าง Echo ${o.echo.id} ที่ไม่มีอยู่`);
-    if (o.echo.era !== '+1') err(where, `echo.era รองรับแค่ '+1'`);
+    if (o.echo.delay ? o.echo.delay !== 'round' : o.echo.era !== '+1') err(where, `echo ต้องเป็น era '+1' หรือ delay 'round'`);
+    if (o.echo.chance != null && !(o.echo.chance > 0 && o.echo.chance <= 1)) err(where, 'echo.chance ต้องอยู่ระหว่าง 0–1');
   }
 }
 function uniq(list, name) {
@@ -88,6 +96,34 @@ for (const e of D.ECHOES) {
 D.OPPORTUNITIES.forEach(o => checkEffect(o.id, o));
 D.ACTIONS.forEach(a => checkEffect(a.id, a));
 
+// ---------------------------------------------------------------- โหมดเสริม
+modeCheck = true;
+const allIds = new Set([...D.EVENTS, ...D.ECHOES].map(x => x.id));
+for (const [mid, m] of Object.entries(MODES)) {
+  for (const k of ['name', 'disclaimer']) if (!m[k]) err(mid, `ไม่มี ${k}`);
+  const cards = [...(m.events || []), ...(m.echoes || []), ...(m.incidents || [])];
+  for (const c of cards) { if (allIds.has(c.id)) err(mid, `id ซ้ำ ${c.id}`); allIds.add(c.id); if (!c.scene) err(c.id, 'ไม่มี scene'); }
+  for (const era of [1, 2, 3, 4]) { const n = (m.events || []).filter(e => e.era === era).length; if (n && n < 2) err(mid, `ยุค ${era} มีเหตุการณ์ ${n} ใบ ต้องมีอย่างน้อย 2`); }
+  for (const e of m.events || []) {
+    if (e.options.length < 2) err(e.id, 'ต้องมีอย่างน้อย 2 ทางเลือก');
+    if (!e.options.some(o => !o.require && !Object.keys(o.cost || {}).length)) err(e.id, 'ไม่มีทางเลือกที่เลือกได้เสมอ');
+  }
+  for (const e of m.echoes || []) {
+    if (!e.options.some(o => !o.require && !Object.keys(o.cost || {}).length)) err(e.id, 'ไม่มีทางเลือกที่เลือกได้เสมอ');
+    if (e.kind === 'good' && e.options.some(o => o.regret)) err(e.id, 'Echo ดีไม่ควรมี regret');
+  }
+  for (const c of m.incidents || []) {
+    if (c.options.length !== 1) err(c.id, 'การ์ดเคราะห์ต้องมีทางเดียว (รับกรรม)');
+    const o = c.options[0];
+    if (o.cost || o.require) err(c.id, 'การ์ดเคราะห์ห้ามมี cost/require (ต้องกดได้เสมอ)');
+    if (o.soft) { checkKeys(`${c.id}.soft`, o.soft.gain, STAT_KEYS, 'gain'); if (!o.soft.when) err(c.id, 'soft ต้องมี when'); }
+  }
+  [...(m.events || []), ...(m.echoes || []), ...(m.incidents || [])].forEach(c => c.options.forEach((o, j) => {
+    checkEffect(`${c.id}.opt${j + 1}`, o);
+    if (!o.quip) err(`${c.id}.opt${j + 1}`, 'ไม่มีประโยคกวน (quip)');
+  }));
+}
+
 for (const id of echoIds) if (!referenced.has(id)) err('ECHOES', `${id} ไม่มีการ์ดใดอ้างถึง`);
 
 const sample = { cash: 10, portfolio: 8, debt: 0, health: 8, rel: 8, skills: 8, stress: 1, lp: 10, impactLp: 6,
@@ -102,3 +138,4 @@ for (const g of D.GOALS) {
 if (errors.length) { console.error(`พบ ${errors.length} ปัญหา\n` + errors.map(e => ' - ' + e).join('\n')); process.exit(1); }
 console.log(`ผ่าน: Careers ${D.CAREERS.length} · Goals ${D.GOALS.length} · Projects ${D.PROJECTS.length} · Events ${D.EVENTS.length} · Echoes ${D.ECHOES.length} · Opportunities ${D.OPPORTUNITIES.length}`);
 console.log(`Echo ที่ถูกอ้าง: ${[...referenced].sort().join(', ')}`);
+for (const [mid, m] of Object.entries(MODES)) console.log(`โหมด ${mid}: เหตุการณ์ ${m.events.length} · เคราะห์ ${m.incidents.length} · Echo ${m.echoes.length}`);

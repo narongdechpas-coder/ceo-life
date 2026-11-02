@@ -1,4 +1,4 @@
-// Simulator สำหรับปรับสมดุล: bot 6 แบบเล่นด้วยกลยุทธ์ ไม่ใช่กดสุ่ม — รัน: node tools/balance.js [เกมต่ออาชีพ×เป้าหมาย] [ไฟล์รายงาน]
+// Simulator สำหรับปรับสมดุล: bot 6 แบบเล่นด้วยกลยุทธ์ ไม่ใช่กดสุ่ม — รัน: [MODE=kala] node tools/balance.js [เกมต่ออาชีพ×เป้าหมาย] [ไฟล์รายงาน]
 // ทุก bot เล่นชุด seed เดียวกัน และครบทุกคู่ อาชีพ × เป้าหมาย (8×8) จึงเทียบกันได้ตรงๆ
 // bot มองล่วงหน้า 1 ก้าว: ลองทุกทางบนสำเนา state (engine เป็น JSON ล้วน) แล้วเลือกทางที่ค่าประเมินสูงสุด
 const fs = require('fs');
@@ -6,7 +6,8 @@ const path = require('path');
 const G = require('../src/game.js');
 
 const K = Number(process.argv[2]) || 4;
-const OUT = process.argv[3] || path.resolve(__dirname, '../docs/balance-report.md');
+const MODE = process.env.MODE || 'base';
+const OUT = process.argv[3] || path.resolve(__dirname, `../docs/balance-report${MODE !== 'base' ? `-${MODE}` : ''}.md`);
 const clone = s => JSON.parse(JSON.stringify(s));
 
 // ---------------------------------------------------------------- สุ่มแบบกำหนด seed ได้ (แยกจาก RNG ของเกม)
@@ -89,7 +90,7 @@ function evaluate(s, m, w) {
 
 // ---------------------------------------------------------------- เล่นหนึ่งเกม
 function play(bot, goalId, careerId, seed) {
-  const s = G.newGame(seed);
+  const s = G.newGame(seed, MODE);
   s.goalChoices = [goalId]; s.careerChoices = [careerId];
   G.chooseSetup(s, goalId, careerId);
   const rnd = mkRng(seed ^ 0x9e3779b9);
@@ -141,7 +142,7 @@ const head = cols => [row(cols), row(cols.map(() => '---'))].join('\n');
 const md = [];
 const T = (title, cols, rows) => md.push(`\n### ${title}\n\n${head(cols)}\n${rows.map(row).join('\n')}`);
 
-md.push(`# LIFE CEO — Balance report\n\nสร้างโดย \`node tools/balance.js ${K}\` · ${games.length} เกม (bot ${Object.keys(BOTS).length} แบบ × เป้าหมาย 8 × อาชีพ 8 × ${K} seed)\n\nbot ไม่ใช่คน: ตัวเลขนี้ใช้หาจุดที่ง่าย/ยากผิดปกติ และทางเลือกที่ดีกว่าทางอื่นทุกกรณี ส่วนความสนุกต้องวัดจากการเล่นจริง`);
+md.push(`# LIFE CEO — Balance report${MODE !== 'base' ? ` (โหมด ${MODE})` : ''}\n\nสร้างโดย \`${MODE !== 'base' ? `MODE=${MODE} ` : ''}node tools/balance.js ${K}\` · ${games.length} เกม (bot ${Object.keys(BOTS).length} แบบ × เป้าหมาย 8 × อาชีพ 8 × ${K} seed)\n\nbot ไม่ใช่คน: ตัวเลขนี้ใช้หาจุดที่ง่าย/ยากผิดปกติ และทางเลือกที่ดีกว่าทางอื่นทุกกรณี ส่วนความสนุกต้องวัดจากการเล่นจริง`);
 
 const bots = by(games, 'bot');
 T('1. ภาพรวมต่อกลยุทธ์', ['bot', 'คะแนน p10', 'p50', 'p90', 'เป้าหมายเต็ม', 'บางส่วน', 'Burnout/เกม', 'จบวิกฤต', 'Regret/เกม', 'หนี้สูงสุดเฉลี่ย', 'บทที่ไม่มีอะไรทำ/เกม'],
@@ -170,6 +171,8 @@ const tally = {};
 for (const x of smart) for (const k of x.picks) {
   const parts = k.split(':');
   const id = parts[0] === 'ev' ? parts[1] : `${parts[1]} L${parts[2]}`;
+  const card = G.EVENT[id] || G.ECHO[id] || G.INCIDENT[id];
+  if (card && card.options.length < 2) continue; // การ์ดทางเดียว (เคราะห์ / Echo บางใบ) ไม่มีให้เลือก
   const opt = parts[0] === 'ev' ? parts[2] : parts[3];
   (tally[id] = tally[id] || {})[opt] = (tally[id][opt] || 0) + 1;
 }
