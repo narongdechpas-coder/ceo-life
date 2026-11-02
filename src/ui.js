@@ -227,7 +227,8 @@
     const common = kind === 'opportunity' ? 'opportunity' : kind === 'echo' ? `echo-${card.kind}` : `era-${card.era}`;
     const list = s.mode && s.mode !== 'base'
       ? [`${s.mode}/${card.id}`, kind === 'incident' ? `${s.mode}/${s.mode}-incident` : `${s.mode}/${s.mode}-${common}`]
-      : kind === 'opportunity' || kind === 'event' ? [card.id, common] : [common];
+      // เหตุการณ์โหมดปกติ: ใช้เฉพาะภาพของใบนั้น ยังไม่มีก็เป็นไอคอนยุคบนพื้นสี (ภาพประจำยุคอบอุ่นเกินไปสำหรับการ์ดที่ตึงเครียด)
+      : kind === 'opportunity' ? [card.id, common] : kind === 'event' ? [card.id] : [common];
     if (kind === 'incident' && s.mode === 'base') list.length = 0;
     const srcs = list.map(f => `assets/art/${f}.webp`);
     if (!srcs.length) return '';

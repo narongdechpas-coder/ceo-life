@@ -916,3 +916,7 @@ html.m .table-cards.single { overflow-y: auto; align-items: flex-start; }
 html.m .table-cards.single > .ecard2 { height: auto; flex-shrink: 0; margin-block: auto; }
 html.m .table-cards.single > .ecard2 .pbody { flex: none; overflow: visible; }
 html.m .table-cards.single > .ecard2 .pbody .art { flex: none; height: auto; min-height: 0; aspect-ratio: 16 / 9; max-height: max(150px, 24vh); }
+/* การ์ดที่ยังไม่มีภาพ (เหลือแค่ไอคอนยุค): แถบไอคอนเตี้ยลง ไม่กินที่ตัวเลือก */
+.ecard2 .pbody .art:not(:has(img)) { flex: none; aspect-ratio: auto; height: 72px; min-height: 0; }
+.ecard2 .art:not(:has(img)) .ph { font-size: 40px; }
+html.m .table-cards.single > .ecard2 .pbody .art:not(:has(img)) { aspect-ratio: auto; height: 72px; }
