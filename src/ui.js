@@ -425,12 +425,12 @@
 
   // ---------------------------------------------------------------- ปก: key message เดียว · เลือกโลกด้วยการเปลี่ยนภาพ hero ฉากเดียวกัน
   const WORLD = {
-    base: { name: 'ชีวิตตามแผน', hint: 'คุณคุมได้ทุกตัวแปร', sub: 'ออกแบบชีวิตในอุดมคติ ผลลัพธ์มาจากการตัดสินใจของคุณล้วนๆ เหมาะกับเล่นครั้งแรก' },
-    kala: { name: 'ชีวิตในกะลาแลนด์', hint: 'มีตัวแปรที่คุมไม่ได้', sub: 'แผนเดิม แต่โลกไม่เป็นใจ ข้าวของแพงขึ้นทุกยุค เคราะห์มาโดยไม่บอกล่วงหน้า วัดกันที่การรับมือ' },
+    base: { en: 'PLAN', name: 'ชีวิตตามแผน', hint: 'คุณคุมได้ทุกตัวแปร', sub: 'ออกแบบชีวิตในอุดมคติ ผลลัพธ์มาจากการตัดสินใจของคุณล้วนๆ เหมาะกับเล่นครั้งแรก' },
+    kala: { en: 'KALALAND', name: 'ชีวิตในกะลาแลนด์', hint: 'มีตัวแปรที่คุมไม่ได้', lead: 'ชีวิตเลือกได้...จริงเหรอ?', sub: 'แผนเดิม แต่โลกไม่เป็นใจ ข้าวของแพงขึ้นทุกยุค เคราะห์มาโดยไม่บอกล่วงหน้า วัดกันที่การรับมือ' },
   };
   function coverScreen() {
     const m = s.mode === 'kala' ? 'kala' : 'base';
-    const pick = id => `<button type="button" class="${m === id ? 'sel' : ''}" data-mode-pick="${id}" aria-pressed="${m === id}">${WORLD[id].name}<small>${WORLD[id].hint}</small></button>`;
+    const pick = id => `<button type="button" class="${m === id ? 'sel' : ''}" data-mode-pick="${id}" aria-pressed="${m === id}"><i>${WORLD[id].en}</i>${WORLD[id].name}<small>${WORLD[id].hint}</small></button>`;
     return `<main class="cover"><div class="cover-in">
       <div class="cover-hero" aria-hidden="true">
         <img class="h-base" src="assets/hero/hero-base.webp" alt="" fetchpriority="high">
@@ -441,7 +441,7 @@
         <p class="cover-msg">บริหารชีวิตให้เหมือนบริหารบริษัท<small>ทุกการตัดสินใจมีราคา</small></p>
         ${G.MODES.kala ? `<div class="cover-pick"><span class="cover-label">เลือกโลกที่จะใช้ชีวิต</span>
           <div class="cover-seg" role="group" aria-label="เลือกโลกที่จะใช้ชีวิต">${pick('base')}${pick('kala')}</div></div>` : ''}
-        <p class="cover-sub">${WORLD[m].sub}</p>
+        <p class="cover-sub">${WORLD[m].lead ? `<b class="cover-lead">${WORLD[m].lead}</b> ` : ''}${WORLD[m].sub}</p>
         <p class="cover-facts"><span><b>8</b> บท</span><span><b>4</b> ยุค อายุ 22–60+</span><span>ผู้เล่นคนเดียว</span></p>
         <div class="cover-ctas"><button class="btn cover-cta" data-do="cover-start">เริ่มบริหารชีวิต</button>
           <button class="btn ghost" data-do="rules">📖 วิธีเล่น</button>${installBtn('btn ghost install-cta')}</div>

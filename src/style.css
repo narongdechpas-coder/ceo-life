@@ -852,7 +852,11 @@ html[data-mode="kala"] .cover-hero::after { background: linear-gradient(180deg, 
 .cover-seg button small { font: 500 11.5px/1.3 'Noto Sans Thai', sans-serif; color: var(--muted); }
 .cover-seg button.sel { background: var(--sage-dark); color: #fff; box-shadow: 0 3px 10px rgba(0, 0, 0, .18); }
 .cover-seg button.sel small { color: inherit; opacity: .85; }
-.cover-sub { margin: 0; font-size: 14.5px; line-height: 1.6; }
+.cover-sub { margin: 0; font-size: 14.5px; line-height: 1.6; min-height: 4.8em; }
+.cover-lead { display: block; font: 700 17px/1.4 'Kanit', sans-serif; color: var(--coral); }
+html[data-mode="kala"] .cover-lead { font-family: var(--kala-head); font-weight: 400; }
+.cover-seg button i { font: 700 10.5px/1.2 'Kanit', sans-serif; font-style: normal; letter-spacing: .14em; opacity: .7; }
+.cover-seg button.sel i { opacity: .9; }
 .cover-facts { margin: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted); }
 .cover-facts b { color: var(--ink); font-weight: 600; }
 .cover-ctas { display: grid; gap: 8px; }
