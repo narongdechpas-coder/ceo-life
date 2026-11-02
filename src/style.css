@@ -634,3 +634,84 @@ details.panel[open] > summary { margin-bottom: 6px; }
 .tagline > * { white-space: nowrap; }
 .tagline b { font-family: 'Kanit', sans-serif; font-weight: 500; color: var(--sage-dark); }
 @media (max-width: 400px) { .tagline > span { white-space: normal; } }
+
+/* ================================================================ ธีมกะลาแลนด์: หนังสือพิมพ์หัวสี
+   ใช้ markup ชุดเดิมทั้งหมด เปลี่ยนแค่ token และพื้นผิว (html[data-mode="kala"]) */
+html[data-mode="kala"] {
+  --bg: #efe6d2;
+  --paper: #fbf6e9;
+  --panel: #eadfc6;
+  --line: #2a241e;
+  --ink: #1e1a16;
+  --muted: #5f564b;
+  --sage: #1e1a16;
+  --sage-dark: #c8102e;
+  --sage-soft: #efe3c8;
+  --coral: #c8102e;
+  --coral-soft: #f7d9d4;
+  --mustard: #f5c518;
+  --mustard-soft: #fbedb5;
+  --teal: #1f6e5c;
+  --teal-soft: #dbeadf;
+  --star: #1d4fbf;
+  --shadow: 3px 3px 0 #1e1a16;
+  --kala-head: 'Chonburi', 'Kanit', serif;
+}
+html[data-mode="kala"] body {
+  background-color: var(--bg);
+  /* เม็ดหมึกพิมพ์จางๆ แบบหนังสือพิมพ์ */
+  background-image: radial-gradient(rgba(30, 26, 22, .08) 1px, transparent 1.2px);
+  background-size: 6px 6px;
+}
+/* หัวเรื่องแบบพาดหัว */
+html[data-mode="kala"] .hero h1, html[data-mode="kala"] .th, html[data-mode="kala"] .pcard-head h3,
+html[data-mode="kala"] .ecard-head h3, html[data-mode="kala"] .section-title h2, html[data-mode="kala"] .brand {
+  font-family: var(--kala-head); font-weight: 400; letter-spacing: 0;
+}
+html[data-mode="kala"] .hero h1 span, html[data-mode="kala"] .brand span { color: var(--coral); }
+/* แถบบน: หัวหนังสือพิมพ์ ดำ-แดง */
+html[data-mode="kala"] .topbar { background: var(--ink); border-bottom: 4px solid var(--coral); }
+html[data-mode="kala"] .topbar .who { color: var(--mustard); }
+html[data-mode="kala"] .res { background: rgba(255, 255, 255, .08); }
+/* โต๊ะ: กระดาษหนังสือพิมพ์ ไม่ใช้ภาพวิว */
+html[data-mode="kala"] .table {
+  background: #e6dcc6 radial-gradient(rgba(30, 26, 22, .10) 1px, transparent 1.3px) 0 0 / 7px 7px;
+  box-shadow: inset 0 0 0 3px var(--ink), inset 0 0 40px rgba(30, 26, 22, .15);
+}
+html[data-mode="kala"] .table::before, html[data-mode="kala"] .table::after { display: none; }
+html[data-mode="kala"] .table-head { color: var(--ink); }
+html[data-mode="kala"] .table-head b, html[data-mode="kala"] .table-head span { text-shadow: none; }
+html[data-mode="kala"] .table .btn.ghost { color: var(--ink); border-color: var(--ink); background: var(--paper); }
+html[data-mode="kala"] .table-empty { color: var(--ink); }
+/* การ์ด: ขอบหมึก เงาแข็งแบบงานพิมพ์ */
+html[data-mode="kala"] .tcard { border: 2px solid var(--ink); box-shadow: var(--shadow); border-radius: 10px; }
+html[data-mode="kala"] .pcard-head { background: var(--ink); }
+html[data-mode="kala"] .pcard-foot { background: var(--ink); color: var(--mustard); }
+html[data-mode="kala"] .ecard2.event .pcard-head { background: var(--coral); }
+html[data-mode="kala"] .ecard2.event .pcard-foot { background: var(--coral); color: #fff; }
+html[data-mode="kala"] .lv-badge, html[data-mode="kala"] .out .ab { background: var(--ink); }
+html[data-mode="kala"] .opt, html[data-mode="kala"] .out { border: 1.5px solid var(--ink); background: #fffdf6; }
+html[data-mode="kala"] .opt:hover:not(:disabled), html[data-mode="kala"] .out:hover:not(:disabled) { background: var(--mustard-soft); }
+html[data-mode="kala"] .art { filter: saturate(1.05) contrast(1.02); }
+/* การ์ดเคราะห์: หัวแดงสด + ตรายาง "เคราะห์" เอียง */
+.ecard2.incident .pcard-head, .ecard2.incident .pcard-foot { background: #c8102e; color: #fff; }
+.ecard2.incident .art { background: repeating-linear-gradient(-45deg, #fbedb5 0 14px, #f5c518 14px 28px); }
+.ecard2.incident .art::after {
+  content: 'เคราะห์'; position: absolute; right: 8%; bottom: 14%; z-index: 2;
+  font: 400 26px/1 'Chonburi', 'Kanit', serif; color: #c8102e; padding: 4px 14px;
+  border: 3px solid #c8102e; border-radius: 8px; transform: rotate(-12deg); background: rgba(255, 253, 246, .82);
+}
+.ecard2.incident .opt { border-color: #c8102e; }
+.chip.soft { background: #dbeadf; color: #1f6e5c; border-radius: 999px; padding: 1px 8px; font-size: 12px; }
+/* แถบล่าง: หมึกดำ เส้นเหลือง ปุ่มจบรอบแดง */
+html[data-mode="kala"] .dock { background: var(--ink); border-top: 4px solid var(--mustard); }
+html[data-mode="kala"] .dock-acts .act { border: 2px solid var(--ink); border-radius: 10px; box-shadow: 2px 2px 0 rgba(0, 0, 0, .5); }
+html[data-mode="kala"] .dock-end { background: var(--coral); color: #fff; font-family: var(--kala-head); font-weight: 400; }
+html[data-mode="kala"] .dock-end:hover:not(:disabled) { background: #a50d26; }
+html[data-mode="kala"] .dock-note { background: var(--mustard); color: var(--ink); }
+/* ปุ่มทั่วไปและ panel */
+html[data-mode="kala"] .btn { border-radius: 8px; box-shadow: 2px 2px 0 var(--ink); }
+html[data-mode="kala"] .btn.ghost { background: var(--paper); color: var(--ink); border: 2px solid var(--ink); }
+html[data-mode="kala"] .pick, html[data-mode="kala"] .panel, html[data-mode="kala"] .ecard, html[data-mode="kala"] .sheet { border: 2px solid var(--ink); box-shadow: var(--shadow); }
+html[data-mode="kala"] .pick.sel { background: var(--mustard-soft); border-color: var(--coral); }
+html[data-mode="kala"] .tier-badge { background: var(--coral); }

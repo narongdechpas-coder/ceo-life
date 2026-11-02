@@ -37,9 +37,13 @@
     for (const [k, v] of Object.entries(cost || {})) if (v) out.push(`<span class="chip neg">${ICON[k]}−${v}</span>`);
     for (const [k, v] of Object.entries(gain || {})) {
       if (k === 'ongoing') {
-        const t = Object.entries(v).map(([kk, vv]) => `${ICON[kk]}${sign(vv)}`).join(' ');
-        out.push(`<span class="chip ongoing" title="ทุกต้นรอบ">↻ ${t}/รอบ</span>`);
-      } else if (k === 'salary') out.push(`<span class="chip ${v > 0 ? 'pos' : 'neg'}">เงินเดือน ${sign(v)}</span>`);
+        const t = Object.entries(v).filter(([kk]) => kk !== 'rounds').map(([kk, vv]) => `${ICON[kk]}${sign(vv)}`).join(' ');
+        out.push(`<span class="chip ongoing" title="ทุกต้นรอบ">↻ ${t}/รอบ${v.rounds ? ` ×${v.rounds} บท` : ''}</span>`);
+      } else if (k === 'expenses') out.push(`<span class="chip ${v > 0 ? 'neg' : 'pos'}">🧾 ค่าครองชีพ ${sign(v)}</span>`);
+      else if (k === 'time') out.push(`<span class="chip ${v < 0 ? 'neg' : 'pos'}">⏳${sign(v)}</span>`);
+      else if (k === 'mark') out.push(`<span class="chip pos">${v === 'insured' ? '🛟 มีประกัน' : esc(v)}</span>`);
+      else if (k === 'promote') out.push('<span class="chip pos">🎖️ เลื่อนตำแหน่งทันที</span>');
+      else if (k === 'salary') out.push(`<span class="chip ${v > 0 ? 'pos' : 'neg'}">เงินเดือน ${sign(v)}</span>`);
       else if (k === 'lp' || k === 'impact') out.push(`<span class="chip star">${ICON[k]}${sign(v)}</span>`);
       else {
         const good = k === 'stress' || k === 'debt' ? v < 0 : v > 0;
@@ -211,22 +215,38 @@
   // ---------------------------------------------------------------- modals
   // ---------------------------------------------------------------- event / echo / opportunity cards (วางบนโต๊ะ)
   const ERA_ICON = ['', '🌅', '🏗️', '⛰️', '🌳'];
+  // ภาพการ์ดเหตุการณ์: โหมดเสริมลองภาพเฉพาะใบก่อน → ภาพใช้ร่วมของโหมด → ภาพโหมดปกติ (ไฟล์ไหนไม่มีก็ข้าม)
+  function artImgs(kind, card) {
+    const common = kind === 'echo' ? `echo-${card.kind}` : `era-${card.era}`;
+    const list = s.mode && s.mode !== 'base'
+      ? [`${s.mode}/${card.id}`, kind === 'incident' ? `${s.mode}/${s.mode}-incident` : `${s.mode}/${s.mode}-${common}`]
+      : [common];
+    if (kind === 'incident' && s.mode === 'base') list.length = 0;
+    const srcs = list.map(f => `assets/art/${f}.webp`);
+    if (!srcs.length) return '';
+    // ลองทีละไฟล์: โหลดไม่ได้ก็ย้ายไปไฟล์ถัดไป หมดแล้วเอารูปออก (เหลือไอคอน)
+    return `<img src="${srcs[0]}" data-next="${srcs.slice(1).join('|')}" alt="" loading="lazy" onerror="const n=(this.dataset.next||'').split('|').filter(Boolean);if(n.length){this.dataset.next=n.slice(1).join('|');this.src=n[0];}else this.remove()">`;
+  }
   function eventCard() {
     const { kind, card } = G.currentCard(s);
-    const tone = kind === 'echo' ? `echo-${card.kind}` : 'event';
-    const label = kind === 'echo' ? (card.kind === 'good' ? 'ECHO · ผลสะท้อนที่ดี' : 'ECHO · ผลสะท้อน') : `LIFE EVENT · ยุค ${ROMAN[card.era]}`;
-    const opts = card.options.map((o, i) => {
+    const inc = kind === 'incident';
+    const tone = kind === 'echo' ? `echo-${card.kind}` : inc ? 'incident' : 'event';
+    const label = kind === 'echo' ? (card.kind === 'good' ? 'ECHO · ผลสะท้อนที่ดี' : 'ECHO · ผลสะท้อน') : inc ? 'เคราะห์ · ข้ามไม่ได้' : `LIFE EVENT · ยุค ${ROMAN[card.era]}`;
+    const opts = card.options.map((raw, i) => {
+      // การ์ดเคราะห์: แสดงผลจริงหลังหักสิ่งที่เตรียมไว้ (ประกัน เงินสำรอง ฯลฯ)
+      const o = G.effective(s, raw);
       const why = G.blocker(s, o.cost || {}, o.require);
-      return `<button class="opt ${o.regret ? 'regret' : ''}" data-opt="${i}" ${why ? 'disabled' : ''}><b>${esc(o.label)}</b>${chips(o.cost, o.gain, o)}${whyTag(why)}</button>`;
+      const soft = o !== raw ? '<span class="chip soft">🛟 เบาลงเพราะเตรียมไว้</span>' : '';
+      return `<button class="opt ${o.regret ? 'regret' : ''}" data-opt="${i}" ${why ? 'disabled' : ''}><b>${esc(o.label)}</b>${chips(o.cost, o.gain, o)}${soft}${whyTag(why)}</button>`;
     }).join('');
     return `<article class="tcard ecard2 ${tone}" data-id="ev-${card.id}">
       <header class="pcard-head"><div class="ttl"><small>${label}</small><h3 class="th">${esc(card.title)}</h3></div></header>
       <div class="pbody">
-        <div class="art"><span class="ph">${kind === 'echo' ? '🔮' : ERA_ICON[card.era]}</span><img src="assets/art/${kind === 'echo' ? `echo-${card.kind}` : `era-${card.era}`}.webp" alt="" loading="lazy" onerror="this.remove()"></div>
-        <p class="story">${esc(card.story)}</p>
+        <div class="art"><span class="ph">${kind === 'echo' ? '🔮' : inc ? '⚡' : ERA_ICON[card.era]}</span>${artImgs(kind, card)}</div>
+        <p class="story">${esc(card.story || card.scene)}</p>
         <div class="eopts">${opts}</div>
       </div>
-      <footer class="pcard-foot">${kind === 'echo' ? 'ECHO' : 'LIFE EVENT'}</footer>
+      <footer class="pcard-foot">${kind === 'echo' ? 'ECHO' : inc ? 'INCIDENT' : 'LIFE EVENT'}</footer>
     </article>`;
   }
   function oppCard(id) {
@@ -788,6 +808,8 @@
   // ---------------------------------------------------------------- render
   function render() {
     if (!s) return;
+    // ธีมตามโหมดของเกม (wireframe เดิม เปลี่ยนแค่ token สีและฟอนต์)
+    document.documentElement.dataset.mode = s.mode || 'base';
     if (s.phase === 'setup') app.innerHTML = setupScreen();
     else if (s.phase === 'end') app.innerHTML = endScreen();
     else app.innerHTML = gameScreen();
