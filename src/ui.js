@@ -919,6 +919,9 @@
     // เปลี่ยนโหมดหลังวางภาพเดิมกลับ ภาพเดิมจึงเห็นการเปลี่ยน opacity และเล่น transition
     void (oldHero && oldHero.offsetWidth);
     document.documentElement.dataset.mode = s.mode || 'base';
+    // สีแถบสถานะ/แถบนำทางของมือถือตามโลก (กะลาแลนด์ใช้น้ำตาลอิฐเดียวกับแถบบนและแถบล่างในเกม)
+    const tc = document.querySelector('meta[name="theme-color"]');
+    if (tc) tc.setAttribute('content', s.mode === 'kala' ? '#8a3b26' : '#2d4f3a');
     document.body.classList.toggle('in-game', s.phase !== 'setup' && s.phase !== 'end');
     let m = '';
     if (ui.modal === 'rules') m = rulesModal();
