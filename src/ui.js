@@ -445,7 +445,7 @@
         <p class="cover-facts"><span><b>8</b> บท</span><span><b>4</b> ยุค อายุ 22–60+</span><span>ผู้เล่นคนเดียว</span></p>
         <div class="cover-ctas"><button class="btn cover-cta" data-do="cover-start">เริ่มบริหารชีวิต</button>
           <button class="btn ghost" data-do="rules">📖 วิธีเล่น</button>${installBtn('btn ghost install-cta')}</div>
-        ${m === 'kala' && G.modeOf(s) ? `<p class="cover-disc">⚠️ ${esc(G.modeOf(s).disclaimer)}</p>` : ''}
+        ${G.MODES.kala ? `<p class="cover-disc ${m === 'kala' ? '' : 'off'}" ${m === 'kala' ? '' : 'aria-hidden="true"'}>⚠️ ${esc(G.MODES.kala.disclaimer)}</p>` : ''}
       </div>
     </div></main>`;
   }
@@ -909,10 +909,16 @@
   function render() {
     if (!s) return;
     // ธีมตามโหมดของเกม (wireframe เดิม เปลี่ยนแค่ token สีและฟอนต์)
-    document.documentElement.dataset.mode = s.mode || 'base';
+    // ปก: เก็บภาพ hero ตัวเดิมไว้ข้าม render ภาพจึง dissolve ไปโลกใหม่ (ถ้าสร้างใหม่ทุกครั้ง ภาพจะสลับทันที)
+    const oldHero = document.querySelector('.cover-hero');
     if (s.phase === 'setup') app.innerHTML = setupScreen();
     else if (s.phase === 'end') app.innerHTML = endScreen();
     else app.innerHTML = gameScreen();
+    const newHero = document.querySelector('.cover-hero');
+    if (oldHero && newHero) newHero.replaceWith(oldHero);
+    // เปลี่ยนโหมดหลังวางภาพเดิมกลับ ภาพเดิมจึงเห็นการเปลี่ยน opacity และเล่น transition
+    void (oldHero && oldHero.offsetWidth);
+    document.documentElement.dataset.mode = s.mode || 'base';
     document.body.classList.toggle('in-game', s.phase !== 'setup' && s.phase !== 'end');
     let m = '';
     if (ui.modal === 'rules') m = rulesModal();

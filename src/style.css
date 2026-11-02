@@ -833,9 +833,9 @@ html.m .proj-tabs { max-width: none; padding-left: 28px; padding-right: 28px; }
 /* ---------------------------------------------------------------- ปก: ภาพ hero ฉากเดียวกันสองโลก · key message เดียว
    แคบหรือแนวตั้ง = ภาพบน เนื้อหาเรียงลง · กว้างแนวนอน = ภาพซ้าย เนื้อหาขวา */
 .cover { background: var(--paper); color: var(--ink); }
-.cover-in { min-height: 100vh; min-height: 100dvh; display: grid; grid-template-rows: auto 1fr; }
-.cover-hero { position: relative; overflow: hidden; aspect-ratio: 4 / 3; max-height: 52vh; width: 100%; background: var(--sage-dark); }
-.cover-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; transition: opacity .6s ease; }
+.cover-in { min-height: 100vh; min-height: 100dvh; display: grid; grid-template-rows: minmax(220px, 1fr) auto; }
+.cover-hero { position: relative; overflow: hidden; width: 100%; min-height: 220px; background: var(--sage-dark); }
+.cover-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; transition: opacity .9s ease-in-out; }
 .cover-hero .h-kala { opacity: 0; }
 html[data-mode="kala"] .cover-hero .h-kala { opacity: 1; }
 .cover-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(20, 35, 27, .45)); }
@@ -859,10 +859,14 @@ html[data-mode="kala"] .cover-hero::after { background: linear-gradient(180deg, 
 .cover-ctas .cover-cta { padding: 15px 18px; font-size: 18px; background: var(--mustard); color: var(--ink); }
 .cover-ctas .btn.ghost { justify-self: center; }
 .cover-disc { margin: 0; font-size: 12px; line-height: 1.5; color: var(--muted); }
+/* โลกปกติจองที่ของ disclaimer ไว้ สลับโลกแล้วภาพกับปุ่มไม่กระโดด */
+.cover-disc.off { visibility: hidden; }
 html[data-mode="kala"] .cover-logo { font-family: var(--kala-head); font-weight: 400; color: var(--ink); }
 html[data-mode="kala"] .cover-seg { background: #efe3c8; }
 html[data-mode="kala"] .cover-seg button.sel { background: var(--coral); }
-html[data-mode="kala"] .cover-ctas .cover-cta { border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+/* ปุ่มบนปกหน้าตาเดียวกันทั้งสองโลก สลับแล้วปุ่มไม่กระโดด (เปลี่ยนแค่สีปุ่มหลัก) */
+html[data-mode="kala"] .cover-ctas .btn { border-radius: 12px; box-shadow: none; }
+html[data-mode="kala"] .cover-ctas .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
 /* จอกว้างแนวนอน (แท็บเล็ตแนวตั้งใช้แบบเรียงลง ภาพจะได้ไม่ถูกครอปจนเหลือแค่ตัวละคร) */
 @media (min-width: 760px) and (min-aspect-ratio: 5/4) {
   .cover-in { grid-template-columns: minmax(0, 1.5fr) minmax(380px, 1fr); grid-template-rows: 1fr; }
@@ -878,3 +882,11 @@ html[data-mode="kala"] .cover-ctas .cover-cta { border: 2px solid var(--ink); bo
 .world-chip { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
 .linkish { border: 0; background: none; padding: 2px 4px; font: inherit; font-weight: 600; color: var(--sage-dark); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 html[data-mode="kala"] .linkish { color: var(--coral); }
+/* มือถือจอเล็ก: ระยะห่างกระชับขึ้น ให้ปกพอดีจอมากที่สุด */
+@media (max-width: 759px) and (max-height: 800px) {
+  .cover-body { gap: 11px; padding-top: 16px; padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
+  .cover-logo { font-size: 40px; }
+  .cover-msg { font-size: 19px; }
+  .cover-sub { font-size: 14px; line-height: 1.5; }
+  .cover-ctas .cover-cta { padding: 13px 18px; }
+}
