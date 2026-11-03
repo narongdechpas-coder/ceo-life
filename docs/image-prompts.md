@@ -1,7 +1,7 @@
-# LIFE CEO — Image Prompts (63 ภาพ)
+# LIFE CEO — Image Prompts (82 ภาพ)
 
 ภาพประกอบการ์ดชุดแรก 27 ภาพ: Life Project 12, อาชีพ 8, ประจำยุค 4, Echo 2, โอกาส 1
-ชุดที่สอง 36 ภาพ: โอกาสแยกใบ 12 (หัวข้อ 7.1) และเหตุการณ์ชีวิตแยกใบ 24 (หัวข้อ 7.2) ใช้ Style Lock ฉบับเต็มที่ `docs/style-lock-base.md`
+ชุดที่สอง 36 ภาพ: โอกาสแยกใบ 12 (หัวข้อ 7.1) และเหตุการณ์ชีวิตแยกใบ 24 (หัวข้อ 7.2) · ชุดที่สาม 19 ภาพ: Echo แยกใบ (หัวข้อ 6.1) ใช้ Style Lock ฉบับเต็มที่ `docs/style-lock-base.md`
 การ์ดเป้าหมายชีวิตใช้ไอคอน ไม่ต้องทำภาพ
 
 ---
@@ -243,6 +243,131 @@ A person stands on a wooden pier over calm water as gentle glowing ripples trave
 **echo-bad — ผลที่ต้องรับมือ**
 ```
 A person stands on a wooden pier at dusk as slightly rougher ripples roll back toward them across the water, clouds gathering softly on the horizon, coral and muted navy tones, a lantern in their hand, sense that a past choice has come back and must be faced, thoughtful rather than frightening.
+```
+
+---
+
+## 6.1 Echo แยกใบ (19 ภาพ)
+
+การ์ด Echo ใบไหนมีภาพของตัวเอง เกมใช้ภาพนั้นแทน `echo-good` / `echo-bad` ใบไหนยังไม่มีก็ใช้ภาพรวมเหมือนเดิม
+ภาพต้องเล่า **ผลที่ย้อนกลับมาหลังผ่านไปหลายปี** อายุตัวละครจึงมากกว่าตอนเลือกหนึ่งยุค ใช้ Style Lock เต็มจาก `docs/style-lock-base.md` ต่อท้ายทุก prompt
+E01 ไม่ได้มาจากตัวเลือกใด engine ส่งเข้าคิวเองทุกครั้งที่ผู้เล่น Burnout
+
+| ไฟล์ | ผล | การ์ด | ย้อนกลับมาจาก |
+|---|---|---|---|
+| `E01.webp` | ร้าย | สัญญาณเตือนจากร่างกาย | Burnout ครั้งก่อน |
+| `E02.webp` | ดี | ดอกผลแรก | V101 เริ่มลงทุนทันที · O10 |
+| `E03.webp` | ร้าย | เพื่อนห่างหาย | V102 ไม่ไปเที่ยว |
+| `E04.webp` | ร้าย | หนี้บัตรพอกพูน | V104 รูดบัตรเลย |
+| `E05.webp` | ร้าย | สุขภาพเริ่มฟ้อง | V106 ทำงานต่อ |
+| `E06.webp` | ดี | หุ้นส่วนเก่า | V201 · P07 · O11 |
+| `E07.webp` | ดี | ผลงานที่คนจำได้ | V203 อาสารับงานเพิ่ม |
+| `E08.webp` | ร้าย | ความรู้สึกผิดต่อพ่อแม่ | V204 ไว้ค่อยว่ากัน |
+| `E09.webp` | ดี | เครือข่ายธุรกิจ | V206 · P08 |
+| `E10.webp` | ร้าย | ลูกโตมาโดยไม่มีเรา | V301 รับตำแหน่งต่างประเทศ |
+| `E11.webp` | ร้าย | โรคเรื้อรัง | V302 ไว้ก่อน |
+| `E12.webp` | ดี | ตลาดฟื้นตัว | V303 ถือต่ออย่างมีวินัย |
+| `E13.webp` | ร้าย | บทสนทนาที่ไม่เคยเกิดขึ้น | V305 ให้คู่ชีวิตจัดการ |
+| `E14.webp` | ร้าย | แชร์ลูกโซ่ล่ม | V404 ลงทุน |
+| `E15.webp` | ร้าย | พนักงานลาออก | P01 ขยายสาขา |
+| `E16.webp` | ร้าย | นักลงทุนเร่งผลงาน | P07 รับเงินนักลงทุน |
+| `E17.webp` | ดี | ร่างกายที่ดูแลมา | V106 ปรับตารางชีวิต · P04 |
+| `E18.webp` | ดี | เพื่อนในวันที่ลำบาก | V102 · V202 |
+| `E19.webp` | ดี | ครอบครัวที่อยู่ข้างกัน | V204 · V305 |
+
+**E01 — สัญญาณเตือนจากร่างกาย**
+```
+A Thai professional in their thirties sitting on the edge of an office chair late in the evening, one hand pressed to the back of the neck and eyes closed, a half-finished cup of coffee and a blinking laptop (blank screen) in front of them, colleagues already gone home, the body quietly asking for rest.
+```
+
+**E02 — ดอกผลแรก**
+```
+A Thai person in their thirties watering a small potted money plant on a sunny windowsill, its leaves now noticeably bigger than in an old photo pinned beside it, a tablet with a gently rising line chart (shapes only, no numbers) on the table, quiet satisfaction that early savings have grown.
+```
+
+**E03 — เพื่อนห่างหาย**
+```
+A Thai person alone at their desk on a weekend scrolling a phone (blank screen) while through the window a group of old friends laugh together at a cafe across the street without them, a slightly lonely expression.
+```
+
+**E04 — หนี้บัตรพอกพูน**
+```
+A Thai person at a kitchen table at night staring at a growing stack of blank credit card statements, a plain credit card with no logo on top, a calculator and a cold cup of tea, the stack casting a long shadow, worried but determined.
+```
+
+**E05 — สุขภาพเริ่มฟ้อง**
+```
+A Thai professional in their thirties lying awake in bed at night holding their lower back, a laptop still open on the bedside table (blank screen), a pill bottle and glass of water, city lights through the curtains, the body catching up with years of late nights.
+```
+
+**E06 — หุ้นส่วนเก่า**
+```
+A Thai person stepping into a now busy and successful coffee shop that started as a tiny shophouse, the old business partner behind the counter waving happily, customers filling every table, a framed photo of the empty shop on opening day on the wall (blank faces), warm pride.
+```
+
+**E07 — ผลงานที่คนจำได้**
+```
+A senior Thai executive warmly shaking hands with the main character in a bright office corridor, colleagues smiling and applauding in the background, a thick old project folder under the main character's arm, recognition for loyalty during hard times.
+```
+
+**E08 — ความรู้สึกผิดต่อพ่อแม่**
+```
+A Thai adult hurrying into a simple hospital room where an elderly father rests with an oxygen cannula, the mother sitting tired beside the bed, the adult still holding car keys and a work bag, regret and love in the expression.
+```
+
+**E09 — เครือข่ายธุรกิจ**
+```
+A Thai professional at a lively business lunch being introduced by a friendly contact to a new partner, three people shaking hands over a table with coffee and a blank proposal folder, warm daylight, doors opening through relationships.
+```
+
+**E10 — ลูกโตมาโดยไม่มีเรา**
+```
+A Thai parent standing in the doorway of a teenager's bedroom, the teenager wearing headphones and turned toward a desk, posters (blank) on the wall, a forgotten childhood drawing on the floor, the parent holding a souvenir gift, distance that grew quietly.
+```
+
+**E11 — โรคเรื้อรัง**
+```
+A Thai person in their forties at a kitchen counter in the morning checking blood sugar with a small glucose meter (blank display), a weekly pill organizer and a plate of plain vegetables, sneakers by the door, accepting a new daily routine.
+```
+
+**E12 — ตลาดฟื้นตัว**
+```
+A Thai investor in their forties opening the curtains of a home office in the morning sunlight, a laptop showing a line chart climbing back up (shapes only, no numbers), a steaming cup of tea, calm relief after holding through the storm.
+```
+
+**E13 — บทสนทนาที่ไม่เคยเกิดขึ้น**
+```
+A Thai parent and a teenage child sitting at opposite ends of a quiet dinner table, both looking at their phones (blank screens), an empty chair between them, a school report (blank) left unopened, silence that has become normal.
+```
+
+**E14 — แชร์ลูกโซ่ล่ม**
+```
+A Thai person in their late fifties standing outside a locked, empty office with a "for rent" style blank sign on the glass door, holding a glossy brochure and a phone showing an unanswered call (blank screen), other worried investors gathering behind, shock and disbelief.
+```
+
+**E15 — พนักงานลาออก**
+```
+A Thai shop owner standing in a newly opened branch store as several staff members in aprons walk out carrying their belongings, empty counters and shelves half stocked, the owner holding a set of keys, the cost of growing too fast.
+```
+
+**E16 — นักลงทุนเร่งผลงาน**
+```
+A Thai startup founder in a glass meeting room facing stern investors pointing at a whiteboard with an unrealistically steep arrow (shapes only, no numbers), the founder's team looking exhausted behind laptops, pressure for growth at any cost.
+```
+
+**E17 — ร่างกายที่ดูแลมา**
+```
+A healthy Thai person in their forties jogging energetically along a riverside park at sunrise while peers sit on a bench looking tired, sneakers, a water bottle, the reward of years of looking after the body.
+```
+
+**E18 — เพื่อนในวันที่ลำบาก**
+```
+A Thai person sitting worried on the steps of their home when old friends arrive carrying grocery bags and a pot of food, one friend putting an arm around their shoulder, warm evening light, friendship returned in hard times.
+```
+
+**E19 — ครอบครัวที่อยู่ข้างกัน**
+```
+A Thai professional coming home exhausted late at night to find the family has already prepared dinner, a teenager clearing the table and an elderly parent pouring tea, a note on the fridge (blank), quiet support without being asked.
 ```
 
 ---

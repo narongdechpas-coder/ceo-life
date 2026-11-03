@@ -229,7 +229,7 @@
     const list = s.mode && s.mode !== 'base'
       ? [`${s.mode}/${card.id}`, kind === 'incident' ? `${s.mode}/${s.mode}-incident` : `${s.mode}/${s.mode}-${common}`]
       // เหตุการณ์โหมดปกติ: ใช้เฉพาะภาพของใบนั้น ยังไม่มีก็เป็นไอคอนยุคบนพื้นสี (ภาพประจำยุคอบอุ่นเกินไปสำหรับการ์ดที่ตึงเครียด)
-      : kind === 'opportunity' ? [card.id, common] : kind === 'event' ? [card.id] : [common];
+      : kind === 'opportunity' || kind === 'echo' ? [card.id, common] : kind === 'event' ? [card.id] : [common];
     if (kind === 'incident' && s.mode === 'base') list.length = 0;
     const srcs = list.map(f => `assets/art/${f}.webp`);
     if (!srcs.length) return '';
