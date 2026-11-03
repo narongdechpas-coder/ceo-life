@@ -925,3 +925,10 @@ html.m .table-cards.single > .ecard2 .pbody .art:not(:has(img)) { aspect-ratio: 
 .chip.risk i { font-style: normal; }
 html.m .chip.risk { padding: 0 3px; }
 html.m .chip.risk i { display: none; }
+/* ปก: แถบโหลดภาพประกอบ (แทนที่ปุ่มเริ่ม สูงเท่าปุ่ม หน้าไม่ขยับ) */
+.cover-load { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px 12px; min-height: 57px; }
+.cover-load-bar { grid-column: 1 / -1; height: 12px; border-radius: 999px; background: var(--sage-soft); overflow: hidden; }
+.cover-load-bar i { display: block; height: 100%; background: var(--mustard); border-radius: inherit; transition: width .25s ease; }
+.cover-load span { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+html[data-mode="kala"] .cover-load-bar { background: #efe3c8; }
+html[data-mode="kala"] .cover-load-bar i { background: var(--coral); }

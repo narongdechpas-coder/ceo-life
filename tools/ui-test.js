@@ -29,7 +29,7 @@ const URL = 'file://' + path.resolve(__dirname, '../index.html');
     if (process.env.MODE === 'kala') { await page.click('[data-mode-pick="kala"]'); await page.click('[data-do="kala-accept"]'); }
     // ปกขึ้นก่อน: ต้องมีภาพ hero และปุ่มเริ่ม แล้วกดเข้าไปหน้าเลือกเป้าหมาย/อาชีพ
     if (!(await page.locator('.cover .cover-hero img').count()) || !(await page.locator('[data-do="cover-start"]').count())) problem('cover missing');
-    await page.click('[data-do="cover-start"]');
+    await page.click('[data-do="cover-start"]'); await page.waitForSelector('[data-pick-goal]', { timeout: 30000 });
     const picks = await page.locator('[data-pick-goal]').count() + 'x' + await page.locator('[data-pick-career]').count();
     if (picks !== '3x3') problem(`setup choices ${picks}`);
     { const cv = page.locator('[data-do="cover-start"]'); if (await cv.count()) await cv.click(); } await page.click('[data-pick-goal]'); await page.click('[data-pick-career]'); await page.click('[data-do="start"]'); await page.fill('#pname', 'แจ็ค'); await page.click('#name-form [type=submit]');

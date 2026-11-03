@@ -446,11 +446,60 @@
           <div class="cover-seg" role="group" aria-label="เลือกโลกที่จะใช้ชีวิต">${pick('base')}${pick('kala')}</div></div>` : ''}
         <p class="cover-sub">${WORLD[m].lead ? `<b class="cover-lead">${WORLD[m].lead}</b> ` : ''}${WORLD[m].sub}</p>
         <p class="cover-facts"><span><b>8</b> บท</span><span><b>4</b> ยุค อายุ 22–60+</span><span>ผู้เล่นคนเดียว</span></p>
-        <div class="cover-ctas"><button class="btn cover-cta" data-do="cover-start">เริ่มบริหารชีวิต</button>
+        <div class="cover-ctas">${ui.loading ? `<div class="cover-load" role="status" aria-live="polite">
+            <div class="cover-load-bar"><i id="load-fill" style="width:${Math.round(ui.loading.done / ui.loading.total * 100)}%"></i></div>
+            <span id="load-text">กำลังเตรียมภาพประกอบ ${ui.loading.done}/${ui.loading.total}</span>
+            <button class="linkish" data-do="skip-load">ข้าม</button></div>`
+          : '<button class="btn cover-cta" data-do="cover-start">เริ่มบริหารชีวิต</button>'}
           <button class="btn ghost" data-do="rules">📖 วิธีเล่น</button>${installBtn('btn ghost install-cta')}</div>
         ${G.MODES.kala ? `<p class="cover-disc ${m === 'kala' ? '' : 'off'}" ${m === 'kala' ? '' : 'aria-hidden="true"'}>⚠️ ${esc(G.MODES.kala.disclaimer)}</p>` : ''}
       </div>
     </div></main>`;
+  }
+
+  // ---------------------------------------------------------------- โหลดภาพประกอบทั้งโลกก่อนเริ่ม (ครั้งแรกครั้งเดียวต่อโลก ต่อชุดภาพ)
+  // เพิ่ม/เปลี่ยนภาพเมื่อไหร่ให้เปลี่ยน ART_VER ผู้เล่นจะโหลดใหม่หนึ่งครั้ง
+  const ART_VER = '2026-11-03';
+  const READY_KEY = mode => `lifeceo.artReady.${mode}`;
+  function artList(mode) {
+    const D = G.D, K = G.MODES[mode];
+    if (K) {
+      const ids = [...K.careers, ...K.events, ...(K.incidents || []), ...(K.echoes || [])].map(c => c.id);
+      return [...ids, ...D.PROJECTS.map(p => p.id), ...D.OPPORTUNITIES.map(o => o.id)].map(id => `assets/art/${mode}/${id}.webp`)
+        .concat(`assets/bg/${mode}-table.webp`);
+    }
+    return [...D.CAREERS, ...D.PROJECTS, ...D.EVENTS, ...D.ECHOES, ...D.OPPORTUNITIES].map(c => `assets/art/${c.id}.webp`)
+      .concat('assets/bg/table.webp');
+  }
+  function preloadArt(mode, done) {
+    const list = [...new Set(artList(mode))];
+    const job = ui.loading = { done: 0, total: list.length, ok: 0, skip: false };
+    render();
+    let next = 0;
+    const finish = () => {
+      if (ui.loading !== job) return;
+      ui.loading = null;
+      // โหลดไม่ได้บางไฟล์ (เน็ตหลุด) ยังไม่จำว่าพร้อม คราวหน้าจะลองใหม่
+      if (!job.skip && job.ok >= job.total) pref(READY_KEY(mode), ART_VER);
+      done();
+    };
+    const one = () => {
+      if (job.skip || next >= list.length) return;
+      const img = new Image();
+      img.onload = () => { job.ok++; step(); };
+      img.onerror = step;
+      img.src = list[next++];
+    };
+    function step() {
+      if (job.skip) return;
+      job.done++;
+      const f = document.getElementById('load-fill'), tx = document.getElementById('load-text');
+      if (f) f.style.width = `${Math.round(job.done / job.total * 100)}%`;
+      if (tx) tx.textContent = `กำลังเตรียมภาพประกอบ ${job.done}/${job.total}`;
+      if (job.done >= job.total) finish(); else one();
+    }
+    for (let i = 0; i < 6; i++) one();
+    job.finish = finish;
   }
 
   // ---------------------------------------------------------------- screens
@@ -1036,7 +1085,7 @@
     if (d.do === 'showall') { ui.showAll = ui.showAll === s.round ? 0 : s.round; render(); return; }
     if (d.do === 'new') { ui.sheet = null; if (s.phase === 'setup' || s.phase === 'end' || confirm('เริ่มเกมใหม่? เกมที่เล่นอยู่จะหายไป')) newGame(); return; }
     if (d.do === 'install') { doInstall(); return; }
-    if (d.modePick) { pickMode(d.modePick); return; }
+    if (d.modePick) { if (!ui.loading) pickMode(d.modePick); return; }
     if (d.do === 'kala-accept') { pref('lifeceo.kalaAck', '1'); ui.modal = null; pickMode('kala'); return; }
     if (d.do === 'ai-retry') { ai.status = 'idle'; requestStory(); return; }
     if (d.do === 'rules') { ui.sheet = null; ui.modal = 'rules'; render(); return; }
@@ -1048,7 +1097,13 @@
       if (!err) document.querySelectorAll('.pick').forEach(el => el.classList.add('fx-enter'));
       return;
     }
-    if (d.do === 'cover-start') { ui.cover = false; window.scrollTo(0, 0); render(); return; }
+    if (d.do === 'cover-start') {
+      const go = () => { ui.cover = false; window.scrollTo(0, 0); render(); };
+      const mode = s.mode === 'kala' ? 'kala' : 'base';
+      if (pref(READY_KEY(mode)) === ART_VER) go(); else preloadArt(mode, go);
+      return;
+    }
+    if (d.do === 'skip-load') { if (ui.loading) { ui.loading.skip = true; ui.loading.finish(); } return; }
     if (d.do === 'cover') { ui.cover = true; window.scrollTo(0, 0); render(); return; }
     if (d.do === 'start') { if (ui.pickGoal && ui.pickCareer) { ui.modal = 'name'; render(); } return; }
     if (d.do === 'end') {
