@@ -459,14 +459,15 @@
 
   // ---------------------------------------------------------------- โหลดภาพประกอบทั้งโลกก่อนเริ่ม (ครั้งแรกครั้งเดียวต่อโลก ต่อชุดภาพ)
   // เพิ่ม/เปลี่ยนภาพเมื่อไหร่ให้เปลี่ยน ART_VER ผู้เล่นจะโหลดใหม่หนึ่งครั้ง
-  const ART_VER = '2026-11-03';
+  const ART_VER = '2026-11-03b';
   const READY_KEY = mode => `lifeceo.artReady.${mode}`;
   function artList(mode) {
     const D = G.D, K = G.MODES[mode];
     if (K) {
       const ids = [...K.careers, ...K.events, ...(K.incidents || []), ...(K.echoes || [])].map(c => c.id);
       return [...ids, ...D.PROJECTS.map(p => p.id), ...D.OPPORTUNITIES.map(o => o.id)].map(id => `assets/art/${mode}/${id}.webp`)
-        .concat(`assets/bg/${mode}-table.webp`);
+        // Echo กลาง (E01 Burnout, จากโปรเจกต์/โอกาส) ใช้ภาพรวมของโหมดจนกว่าจะมีภาพ kala/E##
+        .concat(`assets/bg/${mode}-table.webp`, `assets/art/${mode}/${mode}-echo-good.webp`, `assets/art/${mode}/${mode}-echo-bad.webp`);
     }
     return [...D.CAREERS, ...D.PROJECTS, ...D.EVENTS, ...D.ECHOES, ...D.OPPORTUNITIES].map(c => `assets/art/${c.id}.webp`)
       .concat('assets/bg/table.webp');

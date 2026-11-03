@@ -1,4 +1,4 @@
-# KALALAND — Image Prompts v3.0 (โหมดกะลาแลนด์ · 85 ภาพ)
+# KALALAND — Image Prompts v3.0 (โหมดกะลาแลนด์ · 92 ภาพ)
 
 ทุก prompt ใช้ **KALALAND Image Style Lock v3.0** (`docs/kalaland-style-lock.md`) วาง Style Lock เต็มไว้ก่อน แล้วต่อด้วยบล็อก Scene ของแต่ละภาพ (v2.0 เดิมเก็บไว้ที่ `docs/kalaland-style-lock-v2.md`)
 
@@ -91,6 +91,13 @@
 | `K-X09` ✅ | B | ถูกหวย |
 | `K-X10` ✅ | B | รถไฟฟ้าเสร็จ |
 | `K-X11` ✅ | B | ผู้มีอิทธิพลเอาคืน |
+| `E01` (kala) | A | Echo กลาง · สัญญาณเตือนจากร่างกาย (Burnout · engine) |
+| `E02` (kala) | A | Echo กลาง · ดอกผลแรก (O10 คอร์สการเงิน) |
+| `E06` (kala) | A | Echo กลาง · หุ้นส่วนเก่า (P07 หาหุ้นส่วน · O11 ร่วมทุนร้านเพื่อน) |
+| `E09` (kala) | A | Echo กลาง · เครือข่ายธุรกิจ (P08 ระดมทุนจากเครือข่าย) |
+| `E15` (kala) | A | Echo กลาง · พนักงานลาออก (P01 ขยายสาขา) |
+| `E16` (kala) | A | Echo กลาง · นักลงทุนเร่งผลงาน (P07 รับเงินนักลงทุน) |
+| `E17` (kala) | A | Echo กลาง · ร่างกายที่ดูแลมา (P04 วิ่งมาราธอน ค่อยเป็นค่อยไป) |
 | `K-I01` ✅ | A | เคราะห์ · เจอด่าน |
 | `K-I02` ✅ | A | เคราะห์ · คนเมาขับชนแล้วหนี |
 | `K-I03` ✅ | A | เคราะห์ · ซื้อของออนไลน์โดนโกง |
@@ -2073,6 +2080,200 @@ Composition: Medium-wide, clear subject and readable action, keep focus on the m
 Aspect Ratio: 16:9
 
 Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## Echo กลางที่ใช้ในกะลาแลนด์ (7 ภาพ)
+
+โหมดกะลาใช้ Echo บางใบร่วมกับโหมดปกติ เพราะมาจาก Life Project การ์ดโอกาส หรือ Burnout ซึ่งใช้ร่วมกันทั้งสองโหมด
+วางไฟล์เป็น `assets/art/kala/E01.webp` ฯลฯ (ชื่อไฟล์ตอนอัปให้ใส่ `kala-` นำหน้า เช่น `kala-E01.jpg` จะได้ไม่ทับรูปโหมดปกติใน `art-inbox`) ใบไหนยังไม่มี เกมใช้ `kala-echo-good/bad` แทน
+
+## `E01` · Echo กลาง · สัญญาณเตือนจากร่างกาย (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: The body sends its bill
+
+Main Characters: the player slumped at a cluttered office desk late at night, one hand on a stiff neck, a cartoon "low battery" shape glowing over their head (shape only, no numbers); exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: the player's own shadow on the wall stands up and walks out the door with a pillow, leaving the player behind still holding a pen
+
+Environment: nearly empty open-plan office at night, one desk lamp, a wall of sticky notes (blank)
+
+Visual Irony: you skipped rest so long that your body took leave without asking
+
+Palette Accent: warm grey, earth brown, red
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign and screen is blank.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `E02` · Echo กลาง · ดอกผลแรก (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: The first dividend finally arrives
+
+Main Characters: the player proudly holding a tiny potted money plant with a single small coin-shaped leaf; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: the player beams at the one coin leaf while a giant price-tag shaped balloon floats past the window, slightly bigger than the plant (shapes only, no text)
+
+Environment: small condo balcony with laundry hanging
+
+Visual Irony: it grew, just slower than prices
+
+Palette Accent: leaf green, sunflower yellow, warm sand
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign and screen is blank.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `E06` · Echo กลาง · หุ้นส่วนเก่า (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: The old partner did better than expected
+
+Main Characters: the player and a cheerful old partner in an apron toasting with iced coffee cups in front of a busy little shop with a long queue; exaggerated but realistic and relatable expressions
+
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf)
+
+Main Action: customers queue around the block while a frowning landlord figure peeks in the background holding a blank rent notice
+
+Environment: old shophouse street with plastic stools, string lights and a bustling food stall
+
+Visual Irony: success comes with a landlord who also noticed
+
+Palette Accent: sunflower yellow, red, earth brown
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign and screen is blank.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `E09` · Echo กลาง · เครือข่ายธุรกิจ (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: A network brings a new deal
+
+Main Characters: the player at a round lunch table being introduced to a new partner by a smiling middle-aged contact, everyone shaking hands over plates of food; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes); hi-so look (purple floral silk shirt, thick gold necklace, sunglasses on head)
+
+Main Action: a chain of handshakes stretches from table to table across the whole restaurant like a human bridge leading to the player
+
+Environment: busy Thai-Chinese restaurant with a lazy susan, round tables and red lanterns (no text)
+
+Visual Irony: in Kalaland, who you know is the shortest road
+
+Palette Accent: red, sunflower yellow, warm grey
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign and screen is blank.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `E15` · Echo กลาง · พนักงานลาออก (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: Staff walk out of the new branch
+
+Main Characters: the shop owner (the player) holding a big ring of keys at the door of a brand-new branch while staff in matching aprons walk out carrying boxes; exaggerated but realistic and relatable expressions
+
+Character Look: working-class citizen look (faded denim overalls, red-and-white checked pha khao ma scarf)
+
+Main Action: a shiny new branch with every shelf stocked but no one left to sell, a stack of blank help-wanted papers on the counter
+
+Environment: small newly opened shop in a mall corridor
+
+Visual Irony: more branches, fewer people to run them
+
+Palette Accent: earth brown, warm grey, sky blue
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign and screen is blank.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `E16` · Echo กลาง · นักลงทุนเร่งผลงาน (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: Investors want growth by yesterday
+
+Main Characters: the startup founder (the player) at a glass meeting table facing a smiling investor in a sharp suit who points at a whiteboard arrow drawn straight up off the board; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes); hi-so look (purple floral silk shirt, thick gold necklace, sunglasses on head)
+
+Main Action: the arrow on the whiteboard keeps climbing up the wall and across the ceiling while the exhausted team sleeps on beanbags behind
+
+Environment: trendy co-working office with neon-free warm lights and plants
+
+Visual Irony: the target grows faster than the company
+
+Palette Accent: cobalt blue, purple, red
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign and screen is blank.
+
+Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
+```
+
+## `E17` · Echo กลาง · ร่างกายที่ดูแลมา (A)
+```text
+# SCENE DESCRIPTION
+
+Scene: The body that was cared for pays back
+
+Main Characters: the player jogging happily along a park path at sunrise while peers sit on a bench rubbing their knees; exaggerated but realistic and relatable expressions
+
+Character Look: office worker look (pale short-sleeve shirt, lanyard, dark circles under the eyes)
+
+Main Action: the player jogs effortlessly through a light orange haze wearing a simple face mask, the only one still running
+
+Environment: city park with a lake, exercise machines and a few joggers
+
+Visual Irony: healthy in a city that makes it hard to breathe
+
+Palette Accent: leaf green, burnt orange, sky blue
+
+Composition: Medium-wide, the player is the main character, clear subject and readable action
+
+Aspect Ratio: 16:9
+
+Text Policy: Absolutely no text, no letters, no numbers, no logos, no watermarks, and no speech bubbles. Every paper, sign and screen is blank.
 
 Apply the complete KALALAND — BOLD THAI SATIRICAL CARTOON — IMAGE STYLE LOCK v3.0.
 ```
