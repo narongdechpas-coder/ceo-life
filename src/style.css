@@ -939,3 +939,5 @@ html[data-mode="kala"] .cover-load-bar i { background: var(--coral); }
 .story-panel .story-seg { margin: 4px 0 14px; max-width: 520px; }
 .story-panel .ai-note { margin: 0 0 8px; }
 .story-panel .ai-story { padding: 0; border: 0; background: none; box-shadow: none; }
+/* หัวการ์ดโปรเจกต์: ไอคอนหมวดเดียว อยู่บนพื้นสว่าง มองเห็นได้ทั้งหัวเขียวและหัวน้ำตาลอิฐ */
+.pcard-head .ico { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(255, 255, 255, .88); font-size: 20px; line-height: 1; }

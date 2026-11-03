@@ -168,13 +168,11 @@
         <div class="outs">${outs}</div></li>`;
     }).join('');
     const t = p.tags[0];
-    // ไอคอนหลักอยู่ซ้ายแล้ว ด้านขวาแสดงเฉพาะหมวดเพิ่มเติม
-    const tags = p.tags.slice(1).map(x => `<span title="${TAG_TH[x]}">${TAG_ICON[x]}</span>`).join('');
     const why = opts && opts.why;
     const close = opts && opts.close ? '<button class="pclose" data-do="close-proj" aria-label="ปิดการ์ด" title="ปิด">✕</button>' : '';
     return `<article class="tcard pcard ${complete ? 'complete' : ''} ${why ? 'unplayable' : ''} ${close ? 'has-close' : ''}" data-id="${pid}">
       ${why ? `<span class="why-badge">${esc(why)}</span>` : ''}
-      <header class="pcard-head"><span class="ico">${TAG_ICON[t]}</span><div class="ttl"><h3>${esc(p.en)}</h3><p>${esc(p.name)}</p></div><span class="tags">${tags}</span>${close}</header>
+      <header class="pcard-head"><span class="ico" title="${TAG_TH[t]}">${TAG_ICON[t]}</span><div class="ttl"><h3>${esc(p.en)}</h3><p>${esc(p.name)}</p></div>${close}</header>
       <div class="pbody">
         <div class="art t-${t}"><span class="ph">${TAG_ICON[t]}</span><img src="${artSrc(pid)}" alt="" loading="lazy" onerror="this.remove()"></div>
         <ol class="levels">${levels}</ol>
@@ -780,7 +778,8 @@
       empty: s.time <= 0 ? 'เวลาหมดแล้ว กด "จบรอบ" ด้านล่าง' : 'แตะชื่อโปรเจกต์เพื่อเปิดการ์ด',
     };
   }
-  const listMode = list => isMobile() || list.length >= 4;
+  // การ์ดโปรเจกต์ 2 ใบขึ้นไปวางบนโต๊ะพร้อมกันแล้วภาพจะถูกซ่อนเพื่อให้ข้อความพอดี จึงใช้แบบรายชื่อ กดเปิดเห็นภาพเต็มทีละใบ
+  const listMode = list => isMobile() || list.length >= 2;
   // การ์ดที่เปิดอยู่ ล้างทุกต้นรอบ (รอบหน้ารายชื่อกลับมาครบ ยังไม่มีใบไหนเปิดค้าง)
   function openProj() {
     if (ui.openRound !== s.round) { ui.openProj = null; ui.openRound = s.round; }
