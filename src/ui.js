@@ -985,6 +985,7 @@
     else if (s.phase === 'actions' && ui.openProj) m = projPop();
     else if (ui.modal === 'invest' || ui.modal === 'repay') m = amountModal(ui.modal);
     modalRoot.innerHTML = m;
+    keepPhrases(app); keepPhrases(modalRoot);
     const lg = document.getElementById('log'); if (lg) lg.scrollTop = lg.scrollHeight;
     const cards = document.getElementById('cards'); if (cards) cards.scrollLeft = 0;
     fitCards();
@@ -1049,7 +1050,33 @@
   function toast(msg, ms, cls) {
     document.querySelectorAll('.toast').forEach(x => x.remove());
     const t = document.createElement('div'); t.className = `toast ${cls || ''}`; t.textContent = msg;
+    keepPhrases(t);
     document.body.appendChild(t); setTimeout(() => t.remove(), ms || 2200);
+  }
+  // ภาษาไทยไม่มีช่องว่างระหว่างคำ เบราว์เซอร์จึงตัดบรรทัดกลางวลีได้ ("แต่ความ / ตกใจ")
+  // ข้อความในเกมเว้นวรรคระหว่างวลีอยู่แล้ว จึงห่อแต่ละวลีเป็นก้อนเดียว ให้ขึ้นบรรทัดใหม่เฉพาะตรงช่องว่าง
+  // (ก้อนที่ยาวเกินบรรทัดยังตัดภายในได้ตามปกติ เพราะเป็น inline-block ที่กว้างไม่เกินบรรทัด)
+  const PHRASE_SEL = '.story, .quip-line, .cover-sub, .cover-msg, .note, .era-story p, .rules li, .tagline, .disclaimer-box, .table-empty, .pick p, .opt b, .ecard-head h3, .pcard-head .th, .cover-disc, .why';
+  const THAI = /[\u0E00-\u0E7F]/;
+  function keepPhrases(root) {
+    const hosts = root.matches && root.matches('.toast') ? [root] : root.querySelectorAll(PHRASE_SEL);
+    for (const host of hosts) {
+      const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        if (n.parentElement.classList.contains('kp') || !THAI.test(n.nodeValue) || !/\S\s+\S/.test(n.nodeValue)) continue;
+        nodes.push(n);
+      }
+      for (const n of nodes) {
+        const frag = document.createDocumentFragment();
+        n.nodeValue.split(/(\s+)/).forEach(part => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+          const sp = document.createElement('span'); sp.className = 'kp'; sp.textContent = part; frag.appendChild(sp);
+        });
+        n.parentNode.replaceChild(frag, n);
+      }
+    }
   }
   function run(err) { if (err) toast(err); render(); }
   // all-or-nothing: ถ้า engine พังกลางคำสั่ง คืน state เดิมทั้งหมด ผู้เล่นจะไม่เสีย ⚡/🪙 ฟรี

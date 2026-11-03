@@ -932,3 +932,6 @@ html.m .chip.risk i { display: none; }
 .cover-load span { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
 html[data-mode="kala"] .cover-load-bar { background: #efe3c8; }
 html[data-mode="kala"] .cover-load-bar i { background: var(--coral); }
+/* วลีไทยที่คั่นด้วยช่องว่าง: ไม่ตัดกลางวลี (ui.js keepPhrases) */
+.kp { display: inline-block; max-width: 100%; }
+.toast, .story, .quip-line, .cover-sub, .note { text-wrap: pretty; }
