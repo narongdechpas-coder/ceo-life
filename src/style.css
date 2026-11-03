@@ -935,3 +935,7 @@ html[data-mode="kala"] .cover-load-bar i { background: var(--coral); }
 /* วลีไทยที่คั่นด้วยช่องว่าง: ไม่ตัดกลางวลี (ui.js keepPhrases) */
 .kp { display: inline-block; max-width: 100%; }
 .toast, .story, .quip-line, .cover-sub, .note { text-wrap: pretty; }
+/* หน้าจบ: สลับเรื่องเล่า ตามช่วงชีวิต / ให้ Claude เล่า */
+.story-panel .story-seg { margin: 4px 0 14px; max-width: 520px; }
+.story-panel .ai-note { margin: 0 0 8px; }
+.story-panel .ai-story { padding: 0; border: 0; background: none; box-shadow: none; }

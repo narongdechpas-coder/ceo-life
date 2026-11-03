@@ -642,9 +642,7 @@
       <div><h1>${s.gameOver === 'crisis' ? `ชีวิตของ${s.name ? esc(gapIfLatin(s.name)) : 'คุณ'}ต้องเริ่มต้นใหม่` : `ชีวิตของ${s.name ? esc(gapIfLatin(s.name)) : 'คุณ'}`}</h1>
         <p class="story">${esc(c.name)} · ตั้งใจเป็น “${esc(g.name)}” · ${f.goal === 'full' ? 'ทำได้ตามที่ตั้งใจ' : f.goal === 'partial' ? 'ทำได้บางส่วน' : 'ยังไปไม่ถึง'}</p>
         <p><span class="tier-badge">${esc(f.tier)}</span> <b class="big">${f.total} คะแนน</b></p></div>
-      ${aiPanel()}
-      ${s.aiStory ? `<details class="panel"><summary>ดูเหตุการณ์ทีละบท</summary>${eras}</details>`
-        : `<section class="panel"><div class="section-title"><h2>เรื่องเล่า 4 ยุค</h2></div>${eras}</section>`}
+      ${storyPanel(eras)}
       <section class="panel"><div class="section-title"><h2>การตัดสินใจที่ส่งผลต่อเนื่อง</h2><small>เลือกวันนั้น → ผลที่กลับมา → สิ่งที่คุณทำ</small></div>${chains()}</section>
       <section class="panel"><div class="section-title"><h2>คะแนนมาจากไหน</h2></div><table class="score-table">${rows}<tr class="total"><td>รวม</td><td>${f.total}</td></tr></table></section>
       <div><button class="btn" data-do="new">เริ่มชีวิตใหม่</button> <span class="note">seed ${s.seed}${G.modeOf(s) ? ` · โหมด${esc(G.modeOf(s).name)}` : ''}</span></div>
@@ -668,13 +666,25 @@
     flush();
     return out.join('');
   }
+  // เรื่องเล่า: ค่าเริ่มต้นดึงข้อความจากการ์ดตามช่วงชีวิต (ไม่ใช้ token) กดสลับให้ Claude เรียบเรียงได้ ครั้งเดียวต่อเกม
+  function storyPanel(eras) {
+    const canAi = !!s.aiStory || (aiAvailable() && ai.status !== 'off');
+    const view = canAi && ui.storyView === 'ai' ? 'ai' : 'eras';
+    const seg = canAi ? `<div class="cover-seg story-seg" role="group" aria-label="รูปแบบเรื่องเล่า">
+        <button type="button" class="${view === 'eras' ? 'sel' : ''}" data-story="eras" aria-pressed="${view === 'eras'}">ตามช่วงชีวิต<small>สรุปจากการตัดสินใจ</small></button>
+        <button type="button" class="${view === 'ai' ? 'sel' : ''}" data-story="ai" aria-pressed="${view === 'ai'}">✨ ให้ Claude เล่า<small>${s.aiStory ? 'เรียบเรียงไว้แล้ว' : 'ราวครึ่งนาที · ครั้งเดียวต่อเกม'}</small></button>
+      </div>` : '';
+    return `<section class="panel story-panel"><div class="section-title"><h2>เรื่องเล่าชีวิต</h2></div>${seg}
+      <div class="eras-view" ${view === 'eras' ? '' : 'hidden'}>${eras}</div>
+      ${view === 'ai' ? aiPanel() : ''}</section>`;
+  }
   function aiPanel() {
-    const head = note => `<div class="section-title"><h2>เรื่องเล่าชีวิต</h2><small>${note}</small></div>`;
-    if (s.aiStory) return `<section class="panel ai-story">${head('เรียบเรียงโดย Claude จากการตัดสินใจของคุณ')}<div id="ai-text">${mdLite(s.aiStory)}</div></section>`;
+    const head = note => (note ? `<p class="note ai-note">${note}</p>` : '');
+    if (s.aiStory) return `<section class="ai-story">${head('เรียบเรียงโดย Claude จากการตัดสินใจของคุณ')}<div id="ai-text">${mdLite(s.aiStory)}</div></section>`;
     if (!aiAvailable() || ai.status === 'off') return '';
-    if (ai.status === 'fail') return `<section class="panel ai-story">${head('')}<p class="note">เรียบเรียงเรื่องเล่าไม่สำเร็จ ด้านล่างเป็นเรื่องเล่าแบบแยกบท</p>
+    if (ai.status === 'fail') return `<section class="ai-story">${head('')}<p class="note">เรียบเรียงเรื่องเล่าไม่สำเร็จ ด้านล่างเป็นเรื่องเล่าแบบแยกบท</p>
       <button class="btn ghost" data-do="ai-retry">ลองเรียบเรียงอีกครั้ง</button></section>`;
-    return `<section class="panel ai-story loading">${head('Claude กำลังเรียบเรียง…')}<div id="ai-text">${ai.text ? mdLite(stripMark(ai.text))
+    return `<section class="ai-story loading">${head('Claude กำลังเรียบเรียง…')}<div id="ai-text">${ai.text ? mdLite(stripMark(ai.text))
       : '<p class="note">กำลังร้อยเรียงเรื่องราวจากการตัดสินใจทั้งหมดของคุณ อาจใช้เวลาราวครึ่งนาที</p>'}</div></section>`;
   }
   // ส่งเฉพาะข้อเท็จจริงที่หน้าสรุปแสดงอยู่แล้ว Claude จะได้ไม่ต้องเดา
@@ -711,7 +721,7 @@
     try {
       const res = await fetch('/api/life-story', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(facts), signal: ctl.signal });
       // ไม่มี function (เช่น GitHub Pages) หรือยังไม่ได้ตั้ง key: ไม่ต้องให้ลองใหม่
-      if ([404, 405, 503].includes(res.status)) { ai.status = 'off'; if (same()) render(); return; }
+      if ([404, 405, 503].includes(res.status)) { ai.status = 'off'; if (same()) { render(); toast('ตอนนี้ยังให้ Claude เล่าเรื่องไม่ได้ ดูเรื่องเล่าตามช่วงชีวิตแทน', 3200); } return; }
       if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
       const reader = res.body.getReader(), dec = new TextDecoder();
       for (;;) {
@@ -994,7 +1004,6 @@
       const sel = g.querySelector('.pick.sel');
       if (sel && g.scrollWidth > g.clientWidth) g.scrollLeft = sel.offsetLeft - g.offsetLeft - (g.clientWidth - sel.offsetWidth) / 2;
     });
-    if (s.phase === 'end' && !s.aiStory && ai.status === 'idle' && aiAvailable()) setTimeout(requestStory);
     const pname = document.getElementById('pname');
     if (pname) { pname.focus(); pname.select(); document.getElementById('name-form').onsubmit = ev => { ev.preventDefault(); startWithName(); }; }
     const amt = document.getElementById('amt');
@@ -1116,6 +1125,11 @@
     if (d.modePick) { if (!ui.loading) pickMode(d.modePick); return; }
     if (d.do === 'kala-accept') { pref('lifeceo.kalaAck', '1'); ui.modal = null; pickMode('kala'); return; }
     if (d.do === 'ai-retry') { ai.status = 'idle'; requestStory(); return; }
+    if (d.story) {
+      ui.storyView = d.story;
+      if (d.story === 'ai' && !s.aiStory && ai.status !== 'loading') { ai.status = 'idle'; requestStory(); } else render();
+      return;
+    }
     if (d.do === 'rules') { ui.sheet = null; ui.modal = 'rules'; render(); return; }
     if (d.do === 'close') { ui.modal = null; ui.sheet = null; render(); return; }
     if (d.do === 'reroll') {
