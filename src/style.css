@@ -941,3 +941,20 @@ html[data-mode="kala"] .cover-load-bar i { background: var(--coral); }
 .story-panel .ai-story { padding: 0; border: 0; background: none; box-shadow: none; }
 /* หัวการ์ดโปรเจกต์: ไอคอนหมวดเดียว อยู่บนพื้นสว่าง มองเห็นได้ทั้งหัวเขียวและหัวน้ำตาลอิฐ */
 .pcard-head .ico { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(255, 255, 255, .88); font-size: 20px; line-height: 1; }
+/* จอคอม: การ์ดเหตุการณ์/Echo/เคราะห์/โอกาสใบเดียว เป็นแนวตั้งแบบการ์ดโปรเจกต์ที่เปิดดู: ภาพเต็ม 16:9 ด้านบน ข้อความและตัวเลือกด้านล่าง
+   การ์ดสูงตามเนื้อหา อยู่กลางโต๊ะ ถ้าจอเตี้ยภาพจะเตี้ยลงได้ถึง 30% ของจอ (ครอปขอบบนล่างเล็กน้อย ไม่เป็นแถบบาง) */
+html:not(.m) .table-cards.single { overflow-y: auto; align-items: flex-start; }
+html:not(.m) .table-cards.single > .ecard2 { height: auto !important; width: min(480px, 100%) !important; max-width: none; aspect-ratio: auto; flex-shrink: 0; margin-block: auto; }
+html:not(.m) .table-cards.single > .ecard2 .pbody { flex: none; overflow: visible; }
+html:not(.m) .table-cards.single > .ecard2 .pbody .art { display: grid; flex: none; width: 100%; height: auto; min-height: 0; aspect-ratio: 16 / 9; max-height: max(170px, 30vh); }
+html:not(.m) .table-cards.single > .ecard2 .pbody .art img { object-position: 50% 35%; }
+html:not(.m) .table-cards.single > .ecard2 .pbody .art:not(:has(img)) { aspect-ratio: auto; height: 72px; }
+html:not(.m) .table-cards.single > .ecard2 .story { padding: 10px 14px 2px; }
+html:not(.m) .table-cards.single > .ecard2 .eopts { gap: 6px; padding: 8px 12px 12px; }
+html:not(.m) .table-cards.single > .ecard2 .opt:not(.static) { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; padding: 8px 12px; }
+html:not(.m) .table-cards.single > .ecard2 .opt .why { flex-basis: 100%; }
+/* ระหว่างรอตัดสินใจการ์ดบนโต๊ะ ปุ่มกิจกรรมกดไม่ได้อยู่แล้ว ย่อแถบล่างเหลือแถวเดียวทุกขนาดจอ โต๊ะจะได้สูงพอ */
+@media (min-width: 1101px) {
+  html:not(.m) .dock.waiting .dock-acts { display: none; }
+  html:not(.m) .dock.waiting .dock-note { position: static; transform: none; flex: 1; text-align: center; align-self: center; }
+}

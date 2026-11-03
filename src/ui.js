@@ -839,6 +839,8 @@
     const row = document.getElementById('cards');
     // ล้างผลจากรอบก่อน (ResizeObserver เรียกซ้ำกับแถวเดิมได้) ไม่ให้ภาพสูงคงที่ค้างอยู่ระหว่างคำนวณ
     if (row) { row.classList.remove('art-fixed', 'no-art', 'carousel'); row.style.removeProperty('--art-h'); row.classList.toggle('single', all.length === 1); }
+    // จอคอม: การ์ดเหตุการณ์ใบเดียววางแนวนอนด้วย CSS (ภาพซ้าย ข้อความขวา) ไม่ต้องคำนวณขนาดหรือซ่อนภาพ
+    if (row && !isMobile() && all.length === 1 && all[0].classList.contains('ecard2')) return;
     if (!row || isMobile() || row.classList.contains('browse')) {
       // มือถือ และโหมดดูทั้งหมด: การ์ดขนาดปกติ เลื่อนดูได้ แก้แค่ซ่อนภาพเมื่อข้อความล้น
       if (row) row.classList.remove('two-rows');
